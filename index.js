@@ -8,8 +8,10 @@ import flash from 'express-flash';
 import nocache from 'nocache';
 import passport from 'passport';
 import "./config/passportConfig.js"
+import methodOverride from 'method-override'
 import adminRouter from './routes/adminRoutes.js';
 import userRouter from './routes/userRoutes.js'; 
+import bodyParser from 'body-parser';
 
 dotenv.config();
 const app = express();
@@ -21,28 +23,35 @@ const __dirname = dirname(__filename);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Static files
-app.use("/static", express.static(path.join(__dirname, "public/assets")));
-app.use("/assets", express.static(path.join(__dirname, "public/assets/images")));
+app.use(methodOverride('_method'));
+app.use(bodyParser.urlencoded({ extended: true })); 
 
-// Body parsers
+app.use("/static", express.static(path.join(__dirname, "public/assets")));
+app.use("/assets", express.static(path.join(__dirname, "public/admin/assets")));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(nocache())
-// Session middleware before flash
+
+
+
 app.use(session({
-  secret: process.env.SESSION_SECRET, // You should use a more secure secret
+  secret: process.env.SESSION_SECRET, 
   resave: false,
   saveUninitialized: true
 }));
 
 app.use(passport.initialize())
 app.use(passport.session())
-// Flash messages middleware
+
+
 app.use(flash());
 
 
-// Routes
+
 app.use('/admin', adminRouter);
 app.use('/', userRouter);
 

@@ -2,6 +2,13 @@
 import Admin from '../../models/adminModel.js'
 import bcrypt from 'bcryptjs'
 
+
+
+// ---------------- Admin Authentication------------------------------
+
+
+
+
 export const getLoginPage=async(req,res)=>{
   res.render('admin/login', {
     messages: {
@@ -56,7 +63,6 @@ export const createAccount = async (req, res) => {
 };
 
 
-
 export const AdminLogin = async (req, res) => {
   try {
 
@@ -81,7 +87,7 @@ export const AdminLogin = async (req, res) => {
       req.flash('password', 'Incorrect Password');
       return res.redirect('/admin');
     }
-
+      req.session.admin=existingAdmin.email
     console.log('Admin logged in successfully');
     return res.redirect('/admin/dashboard');
   } catch (err) {
@@ -90,6 +96,30 @@ export const AdminLogin = async (req, res) => {
     return res.redirect('/admin');
   }
 };
+
+
+export const AdminLogout=async(req,res)=>{
+  try{
+    console.log(req.session.admin);
+    
+        req.session.destroy((err)=>{
+          if(err){
+            console.log("Error while session destroyed");
+            return res.redirect('/')
+            
+          }
+          console.log("Session destroyed successfully");
+          return res.redirect('/')
+          
+        })
+  }catch(err){
+    console.log("Error during logout",err);
+    
+  }
+}
+
+
+
 
  
 export const AdminDashboard= async (req,res)=>{

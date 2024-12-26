@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- =========================================================
+* Materio - Bootstrap Material Design Admin Template | v2.0.1
+==============================================================
+
+* Product Page: https://themeselection.com/item/materio-bootstrap-html-admin-template/
+* Created by: ThemeSelection
+* License: You must have a valid license purchased in order to legally use the theme for your project.
+* Copyright ThemeSelection (https://themeselection.com)
+
+=========================================================
+ -->
+<!-- beautify ignore:start -->
+
+
+<html lang="en" class="light-style layout-navbar-fixed layout-menu-fixed layout-compact " dir="ltr" data-theme="theme-default" data-assets-path="../../assets/" data-template="vertical-menu-template" data-style="light">
+
+  
+<!-- Mirrored from demos.themeselection.com/materio-bootstrap-html-admin-template/html/vertical-menu-template/app-ecommerce-product-add.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 25 Jun 2024 05:50:30 GMT -->
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>FashionZone Admin Panel</title>
+
+    
+    <meta name="description" content="Start your development with a Dashboard for Bootstrap 5" />
+    <meta name="keywords" content="dashboard, material, material design, bootstrap 5 dashboard, bootstrap 5 design, bootstrap 5">
+    <!-- Canonical SEO -->
+    <link rel="canonical" href="https://themeselection.com/item/materio-bootstrap-html-admin-template/">
+    
+    
+    <!-- ? PROD Only: Google Tag Manager (Default ThemeSelection: GTM-5DDHKGP, PixInvent: GTM-5J3LMKC) -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      '../../../../www.googletagmanager.com/gtm5445.html?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-5DDHKGP');</script>
+    <!-- End Google Tag Manager -->
+    
+    <!-- Favicon -->
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;ampdisplay=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="../../assets/vendor/fonts/remixicon/remixicon.css" />
+    <link rel="stylesheet" href="../../assets/vendor/fonts/flag-icons.css" />
+    
+    <!-- Menu waves for no-customizer fix -->
+    <link rel="stylesheet" href="../../assets/vendor/libs/node-waves/node-waves.css" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="../../assets/vendor/css/rtl/core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="../../assets/vendor/css/rtl/theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="../../assets/css/demo.css" />
+    
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="../../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+    <link rel="stylesheet" href="../../assets/vendor/libs/typeahead-js/typeahead.css" /> 
+    <link rel="stylesheet" href="../../assets/vendor/libs/quill/typography.css">
+<link rel="stylesheet" href="../../assets/vendor/libs/quill/katex.css">
+<link rel="stylesheet" href="../../assets/vendor/libs/quill/editor.css">
+<link rel="stylesheet" href="../../assets/vendor/libs/select2/select2.css">
+<link rel="stylesheet" href="../../assets/vendor/libs/dropzone/dropzone.css">
+<link rel="stylesheet" href="../../assets/vendor/libs/flatpickr/flatpickr.css">
+<link rel="stylesheet" href="../../assets/vendor/libs/tagify/tagify.css" />
+
+    <!-- Page CSS -->
+    
+
+    <!-- Helpers -->
+    <script src="../../assets/vendor/js/helpers.js"></script>
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Template customizer: To hide customizer set displayCustomizer value false in config.js.  -->
+    <script src="../../assets/vendor/js/template-customizer.js"></script>
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="../../assets/js/config.js"></script>
+    
+</head>
+
+
+
+<body>
+
+  
+  <!-- ?PROD Only: Google Tag Manager (noscript) (Default ThemeSelection: GTM-5DDHKGP, PixInvent: GTM-5J3LMKC) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5DDHKGP" height="0" width="0" style="display: none; visibility: hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+  
+  <!-- Layout wrapper -->
+<div class="layout-wrapper layout-content-navbar  ">
+  <div class="layout-container">
+
+    
+    
+
+
+
+
+<!-- Menu -->
+<%- include('../partials/adminsidebar.ejs') -%>
+<!-- / Menu -->
+
+    
+
+    <!-- Layout container -->
+    <div class="layout-page">
+      
+      
+
+
+
+
+
+<!-- Navbar -->
+
+
+<%- include('../partials/adminnavbar.ejs') -%>
+
+<!-- / Navbar -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Content wrapper -->
+<div class="content-wrapper">
+          
+        
+        <!-- Content -->
+        
+          <div class="container-xxl flex-grow-1 container-p-y">
+            
+            
+<div class="app-ecommerce">
+
+  <!-- Add Product -->
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-6 gap-4 gap-md-0">
+
+    <div class="d-flex flex-column justify-content-center">
+      <h4 class="mb-1">Update Product</h4>
+      <p class="mb-0">Update your exisiting product details</p>
+     
+    </div>
+  
+  </div>
+
+  <form action="/admin/updateproduct/<%= product._id %>" method="POST" enctype="multipart/form-data">
+ 
+  <div class="row">
+    <!-- First column-->
+    <div class="col-12 col-lg-8">
+     
+     
+        <!-- Product Information -->
+      <div class="card mb-6">
+        <div class="card-header">
+          <h5 class="card-tile mb-0">Product information</h5>
+        </div>
+        <div class="card-body">
+          <div class="form-floating form-floating-outline mb-5 mt-5">
+            <input 
+            type="text" 
+            class="form-control" 
+            id="ecommerce-product-name" 
+            placeholder="Product Brand" 
+            name="brand" 
+            value="<%= product.brand %>" 
+            aria-label="Product title" 
+            pattern="^[A-Za-z\s]{3,}$"
+         title="Title must contain only letters and spaces, and must be at least 3 characters long."
+          oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '').replace(/\s+/g, ' ');"
+              required>
+          
+          <label for="ecommerce-product-name">Brand</label>
+          </div>
+          <div class="form-floating form-floating-outline mb-5">
+            <input type="text" class="form-control" id="ecommerce-product-name" placeholder="Product Title" name="title" aria-label="Product title"
+            pattern="^[A-Za-z\s]{3,}$"
+            value="<%= product.title %>" 
+         title="Title must contain only letters and spaces, and must be at least 3 characters long."
+          oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '').replace(/\s+/g, ' ');"
+              required>
+              
+            <label for="ecommerce-product-name">Title</label>
+          </div>
+
+          
+         
+          <div class="form-floating form-floating-outline mb-5">
+            <input type="text" class="form-control" id="ecommerce-product-name" placeholder="Product Description" name="description" aria-label="Product Description"
+            pattern="^[A-Za-z\s]{15,}$"
+            value="<%= product.description %>" 
+            title="Title must contain only letters and spaces, and must be at least 15 characters long."
+             oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '').replace(/\s+/g, ' ');"
+                 required
+              required>
+            <label for="ecommerce-product-name">Description</label>
+          </div>
+          
+          
+
+        </div>
+      </div>
+      <!-- /Product Information -->
+
+
+
+
+      <!-- Media -->
+      <div class="card mb-6 shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Product Images</h5>
+        </div>
+        <div class="card-body">
+            <div class="form-group">
+                <div class="row g-3">
+                    <% for (let i = 1; i <= 4; i++) { %>
+                    <!-- Image Input and Preview -->
+                    <div class="col-lg-6 col-md-6">
+                        <div class="border rounded p-3 text-center">
+                            <label for="imageInput<%= i %>" class="file-upload d-block mb-2">
+                                <span class="file-select btn btn-outline-primary btn-sm">Choose Image <%= i %></span>
+                                <input 
+                                    name="images[]" 
+                                    type="file" 
+                                    accept="image/jpeg, image/png" 
+                                    id="imageInput<%= i %>" 
+                                    value="<%=product.images[i - 1]%>"
+                                    class="imageInput d-none" 
+                                    onchange="showPreview(this, 'imagePreview<%= i %>'); openCropModal(this, <%= i %>)">
+                            </label>
+    
+                            <!-- Populate image previews if they exist -->
+                            <img 
+                                id="imagePreview<%= i %>" 
+                                class="img-preview img-fluid rounded mx-auto mt-3" 
+                                alt="Preview" 
+                                style="<%= product.images[i - 1] ? 'display:block;' : 'display:none;' %>; max-height: 150px; object-fit: cover;" 
+                                src="<%= product.images[i - 1] ? '/' + product.images[i - 1] : '' %>">
+                            
+                            <!-- Hidden field for existing image (if any) -->
+                            <input type="hidden" name="existingImages[]" value="<%= product.images[i - 1] ? product.images[i - 1] : '' %>">
+    
+                            <p id="error<%= i %>" class="text-danger mt-2" style="display:none;">Only JPG and PNG files are allowed.</p>
+                        </div>
+                    </div>
+                    <% } %>
+                </div>
+                <p id="imagesErr" class="text-danger mt-3" style="display: none;">Please upload all four images.</p>
+            </div>
+        </div>
+    </div>
+    
+    
+    
+    <!-- Modal for Cropping -->
+    <div class="modal" id="cropperModal" tabindex="-1" role="dialog" aria-labelledby="cropperModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cropperModalLabel">Crop Image</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <img id="imageForCrop"  alt="Image to crop" style="max-width: 100%; display: block;">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="applyCropBtn">Apply Crop</button>
+                </div>
+            </div>
+        </div>
+    </div>
+      <!-- /Media -->
+     
+     
+
+      
+
+      <div class="d-flex align-content-center mt-5 flex-wrap gap-4">
+   
+            <button type="submit"  class="btn btn-warning">Update Product</button>
+      
+      </div>
+
+
+    </div>
+
+
+
+
+    <div class="col-12 col-lg-4">
+      <!-- Pricing Card -->
+      <div class="card mb-6">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Pricing</h5>
+        </div>
+        <div class="card-body">
+          <!-- Base Price -->
+          <div class="form-floating form-floating-outline mb-5 mt-5">
+            <input type="number" required class="form-control" 
+            value="<%= product.price %>" 
+            id="ecommerce-product-price" placeholder="Price" name="price" aria-label="Product price">
+            <label for="ecommerce-product-price">Best Price</label>
+            <p class="text-danger"><%= messages.price && messages.price.length > 0 ? messages.price[0] : '' %></p>
+
+          </div>
+
+          <!-- Discounted Price -->
+          <div class="form-floating form-floating-outline mb-5">
+            <input type="number" required class="form-control" value="<%= product.disPrice %>" 
+             id="ecommerce-product-discount-price" placeholder="Discounted Price" name="disPrice" aria-label="Product discounted price">
+            <label for="ecommerce-product-discount-price">Discounted Price</label>
+          </div>
+         
+         
+        </div>
+      </div>
+      <!-- /Pricing Card -->
+
+
+
+      <!-- Details Card -->
+      <div class="card mb-6">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Details</h5>
+        </div>
+        <div class="card-body">
+          
+          
+            <!-- Color -->
+        
+         
+            <div class="mb-5 col ecommerce-select2-dropdown mt-5">
+                <select id="vendor" name="color" required class="form-select form-select-sm" data-placeholder="Select Vendor">
+                    <option value="" disabled>Select Color</option>
+                    <option value="black" <%= product.color === 'black' ? 'selected' : '' %>>Black</option>
+                    <option value="white" <%= product.color === 'white' ? 'selected' : '' %>>White</option>
+                    <option value="gray" <%= product.color === 'gray' ? 'selected' : '' %>>Gray</option>
+                    <option value="red" <%= product.color === 'red' ? 'selected' : '' %>>Red</option>
+                    <option value="yellow" <%= product.color === 'yellow' ? 'selected' : '' %>>Yellow</option>
+                    <option value="blue" <%= product.color === 'blue' ? 'selected' : '' %>>Blue</option>
+                    <option value="green" <%= product.color === 'green' ? 'selected' : '' %>>Green</option>
+                </select>
+            </div>
+            
+
+
+            <!-- Size -->
+         
+         
+            <div class="mb-5 col ecommerce-select2-dropdown">
+                <select id="vendor" name="size" required class="form-select form-select-sm" data-placeholder="Select Vendor">
+                    <option value="" disabled>Select Size</option>
+                    <option value="S" <%= product.size === 'S' ? 'selected' : '' %>>S</option>
+                    <option value="M" <%= product.size === 'M' ? 'selected' : '' %>>M</option>
+                    <option value="L" <%= product.size === 'L' ? 'selected' : '' %>>L</option>
+                    <option value="XL" <%= product.size === 'XL' ? 'selected' : '' %>>XL</option>
+                    <option value="XXL" <%= product.size === 'XXL' ? 'selected' : '' %>>XXL</option>
+                </select>
+            </div>
+            
+
+          
+          <!-- Category -->
+         
+          <div class="mb-5 col ecommerce-select2-dropdown">
+            <select id="vendor" name="category" required class="form-select form-select-sm" data-placeholder="Select Vendor">
+                <option value="" disabled>Select Category</option>
+                <option value="Classic" <%= product.category === 'Classic' ? 'selected' : '' %>>Classic</option>
+                <option value="Modern" <%= product.category === 'Modern' ? 'selected' : '' %>>Modern</option>
+                <option value="Streetwear" <%= product.category === 'Streetwear' ? 'selected' : '' %>>Streetwear</option>
+                <option value="Athleisure" <%= product.category === 'Athleisure' ? 'selected' : '' %>>Athleisure</option>
+            </select>
+        </div>
+
+
+          <!-- Gender -->
+          <div class="mb-5 col ecommerce-select2-dropdown">
+            <select id="collection" name="gender" required class="form-select form-select-sm" data-placeholder="Collection">
+                <option value="" disabled>Select Gender</option>
+                <option value="men" <%= product.gender === 'men' ? 'selected' : '' %>>Men's Clothing</option>
+                <option value="women" <%= product.gender === 'women' ? 'selected' : '' %>>Women's Clothing</option>
+            </select>
+        </div>
+
+
+          <!-- Status -->
+          <div class="mb-5 col ecommerce-select2-dropdown">
+            <select id="status-org" name="status" required class="form-select form-select-sm" data-placeholder="Select Status">
+                <option value="" disabled>Select Status</option>
+                <option value="Published" <%= product.status === 'Published' ? 'selected' : '' %>>Published</option>
+                <option value="Scheduled" <%= product.status === 'Scheduled' ? 'selected' : '' %>>Scheduled</option>
+                <option value="Inactive" <%= product.status === 'Inactive' ? 'selected' : '' %>>Inactive</option>
+            </select>
+        </div>
+
+
+          <!-- Stock -->
+         
+
+          <div class="mb-5 col ecommerce-select2-dropdown">
+            <select id="status-org" name="stock" required class="form-select form-select-sm" data-placeholder="Select Stock">
+                <option value="">Select Stock</option>
+                <option value="1" <%= product.stock === 1 ? 'selected' : '' %>>1</option>
+                <option value="2" <%= product.stock === 2 ? 'selected' : '' %>>2</option>
+                <option value="3" <%= product.stock === 3 ? 'selected' : '' %>>3</option>
+                <option value="4" <%= product.stock === 4 ? 'selected' : '' %>>4</option>
+                <option value="5" <%= product.stock === 5 ? 'selected' : '' %>>5</option>
+                <option value="6" <%= product.stock === 6 ? 'selected' : '' %>>6</option>
+                <option value="7" <%= product.stock === 7 ? 'selected' : '' %>>7</option>
+                <option value="8" <%= product.stock === 8 ? 'selected' : '' %>>8</option>
+                <option value="9" <%= product.stock === 9 ? 'selected' : '' %>>9</option>
+                <option value="10" <%= product.stock === 10 ? 'selected' : '' %>>10</option>
+            </select>
+        </div>
+
+
+
+          <!-- Tags -->
+          <div class="mb-4">
+            <div class="form-floating form-floating-outline">
+                <!-- Assuming product.tags is an array and you're passing tags from backend -->
+                <input id="ecommerce-product-tags" class="form-control h-auto" name="tags" aria-label="Product Tags" 
+                       value="<%= product.tags ? product.tags.join(', ') : '' %>" placeholder="Enter tags (separate by commas)" />
+                <label for="ecommerce-product-tags">Tags</label>
+            </div>
+        </div>
+
+
+        </div>
+      </div>
+      <!-- /Details Card -->
+
+    </div>
+    <!-- /Second column -->
+
+
+  </div>
+
+
+</form>
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+          </div>
+          
+          <!-- / Content -->
+       
+
+
+<!-- Cropper.js CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
+
+<!-- Cropper.js JS -->
+<script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
+
+
+
+<!-- croper -->
+<script>
+ let cropper; // Global cropper instance
+let currentImageIndex; // Track the current image index
+
+// Open the crop modal when an image is selected
+function openCropModal(inputElement, index) {
+    currentImageIndex = index; // Set the current image index
+    const file = inputElement.files[0]; // Get the selected file
+    const reader = new FileReader();
+    const imageForCrop = document.getElementById('imageForCrop');
+
+    if (file) {
+        // Show the crop modal and set the image to be cropped
+        reader.onload = function (e) {
+            imageForCrop.src = e.target.result;
+            $('#cropperModal').modal('show'); // Show the modal
+
+            // Initialize or reinitialize the cropper
+            if (cropper) {
+                cropper.destroy(); // Destroy previous cropper instance if any
+            }
+
+            cropper = new Cropper(imageForCrop, {
+                aspectRatio: 1, // Set aspect ratio (you can change this to your requirement)
+                viewMode: 1, // Cropper's view mode
+                autoCropArea: 0.8, // The area to crop
+                responsive: true,
+                zoomable: true,
+                scalable: true,
+            });
+        };
+        reader.readAsDataURL(file); // Read the image as a base64 string
+    }
+}
+
+// Handle apply crop action
+document.getElementById('applyCropBtn').onclick = function () {
+    if (cropper) {
+        // Get the cropped image as a DataURL
+        const croppedCanvas = cropper.getCroppedCanvas();
+        const croppedImageDataURL = croppedCanvas.toDataURL('image/jpeg'); // You can use 'image/png' if needed
+
+        // Convert the cropped DataURL to a Blob
+        croppedCanvas.toBlob(function (blob) {
+            // Create a new File object from the Blob
+            const croppedFile = new File([blob], `cropped-${Date.now()}.jpeg`, { type: 'image/jpeg' });
+
+            // Add the cropped File to a hidden input field or replace the current file input
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(croppedFile);
+
+            // Replace the file input's value with the cropped image
+            const fileInput = document.getElementById('imageInput' + currentImageIndex);
+            fileInput.files = dataTransfer.files;
+
+            // Update the preview image
+            const preview = document.getElementById('imagePreview' + currentImageIndex);
+            preview.src = croppedImageDataURL;
+            preview.style.display = 'block'; // Ensure the preview is visible
+
+            // Close the crop modal
+            $('#cropperModal').modal('hide');
+        }, 'image/jpeg'); // Specify the desired output format
+    } else {
+        console.error('Cropper instance not found!');
+    }
+};
+
+</script>
+
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+
+
+
+
+          <!-- Show the image on the input filed after selecting -->
+
+          <script>
+            /**
+             * Shows a preview of the selected image
+             * @param {HTMLInputElement} input - The file input element
+             * @param {string} previewId - The ID of the img element to display the preview
+             */
+            function showPreview(input, previewId) {
+                const file = input.files[0]; // Get the selected file
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const preview = document.getElementById(previewId);
+                        preview.src = e.target.result; // Set the image preview source
+                        preview.style.display = 'block'; // Show the image
+                    };
+                    reader.readAsDataURL(file); // Read the file as a Data URL
+                }
+            }
+        </script>
+
+
+<!-- Image only allowed jpg and png others are restriced  -->
+
+
+<script>
+    // Image Preview Function
+    function showPreview(input, previewId) {
+        const file = input.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            const preview = document.getElementById(previewId);
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        };
+
+        reader.readAsDataURL(file);
+    }
+
+    // Validate Image Type
+    function validateImage(input) {
+        const file = input.files[0];
+        const allowedTypes = ['image/jpeg', 'image/png'];
+
+        if (file && !allowedTypes.includes(file.type)) {
+            document.getElementById('error' + input.id.slice(-1)).style.display = 'block';
+            input.value = ''; // Clear the file input
+            document.getElementById('imagePreview' + input.id.slice(-1)).style.display = 'none'; // Hide the preview
+        } else {
+            document.getElementById('error' + input.id.slice(-1)).style.display = 'none';
+        }
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+          
+
+<!-- Footer -->
+<footer class="content-footer footer bg-footer-theme">
+  <div class="container-xxl">
+    <div class="footer-container d-flex align-items-center justify-content-between py-4 flex-md-row flex-column">
+      <div class="text-body mb-2 mb-md-0">
+        © <script>
+        document.write(new Date().getFullYear())
+
+        </script>, made with <span class="text-danger"><i class="tf-icons ri-heart-fill"></i></span> by <a href="https://themeselection.com/" target="_blank" class="footer-link">ThemeSelection</a>
+      </div>
+      <div class="d-none d-lg-inline-block">
+        
+        <a href="https://themeselection.com/license/" class="footer-link me-4" target="_blank">License</a>
+        <a href="https://themeselection.com/" target="_blank" class="footer-link me-4">More Themes</a>
+        
+        <a href="https://demos.themeselection.com/materio-bootstrap-html-admin-template/documentation/" target="_blank" class="footer-link me-4">Documentation</a>
+        
+        
+        <a href="https://themeselection.com/support/" target="_blank" class="footer-link d-none d-sm-inline-block">Support</a>
+        
+      </div>
+    </div>
+  </div>
+</footer>
+<!-- / Footer -->
+
+          
+          <div class="content-backdrop fade"></div>
+        </div>
+
+
+    </form>
+        <!-- Content wrapper -->
+      </div>
+      <!-- / Layout page -->
+    </div>
+
+    
+    
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+    
+    
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+    
+  </div>
+  <!-- / Layout wrapper -->
+
+  
+
+  
+
+  <!-- Core JS -->
+  <!-- build:js assets/vendor/js/core.js -->
+  <script src="../../assets/vendor/libs/jquery/jquery.js"></script>
+  <script src="../../assets/vendor/libs/popper/popper.js"></script>
+  <script src="../../assets/vendor/js/bootstrap.js"></script>
+  <script src="../../assets/vendor/libs/node-waves/node-waves.js"></script>
+  <script src="../../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+  <script src="../../assets/vendor/libs/hammer/hammer.js"></script>
+  <script src="../../assets/vendor/libs/i18n/i18n.js"></script>
+  <script src="../../assets/vendor/libs/typeahead-js/typeahead.js"></script>
+  <script src="../../assets/vendor/js/menu.js"></script>
+  
+  <!-- endbuild -->
+
+  <!-- Vendors JS -->
+  <script src="../../assets/vendor/libs/quill/katex.js"></script>
+<script src="../../assets/vendor/libs/quill/quill.js"></script>
+<script src="../../assets/vendor/libs/select2/select2.js"></script>
+<script src="../../assets/vendor/libs/dropzone/dropzone.js"></script>
+<script src="../../assets/vendor/libs/jquery-repeater/jquery-repeater.js"></script>
+<script src="../../assets/vendor/libs/flatpickr/flatpickr.js"></script>
+<script src="../../assets/vendor/libs/tagify/tagify.js"></script>
+
+  <!-- Main JS -->
+  <script src="../../assets/js/main.js"></script>
+  
+
+  <!-- Page JS -->
+  <script src="../../assets/js/app-ecommerce-product-add.js"></script>
+  
+</body>
+
+
+<!-- Mirrored from demos.themeselection.com/materio-bootstrap-html-admin-template/html/vertical-menu-template/app-ecommerce-product-add.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 25 Jun 2024 05:50:31 GMT -->
+</html>
+
+<!-- beautify ignore:end -->
+

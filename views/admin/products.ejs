@@ -1,0 +1,187 @@
+
+
+
+
+
+<%- include('../layout/adminheader.ejs') -%>
+
+    </head>
+   <body>
+   
+
+ <!-- Layout wrapper -->
+ <div class="layout-wrapper layout-content-navbar  ">
+    <div class="layout-container">
+  
+      
+      
+  
+  
+  
+ <!-- Menu -->
+<%- include('../partials/adminsidebar.ejs') -%>
+
+<!-- / Menu -->
+  
+      
+  
+      <!-- Layout container -->
+      <div class="layout-page">
+        
+        
+  
+  
+  
+  <!-- Navbar -->
+
+<%- include('../partials/adminnavbar.ejs') -%>
+
+<!-- / Navbar -->
+  
+        
+  
+        <!-- Content wrapper -->
+        <div class="content-wrapper">
+  
+          <!-- Content -->
+          
+            <div class="container-xxl flex-grow-1 container-p-y">
+              
+              
+  <!-- Product List Widget -->
+  
+  
+
+
+  <!-- Product List Table -->
+  <div class="card">
+    <div class="card-header">
+      <h5 class="mb-0">Product Details</h5>
+      
+      <% if (messages.success) { %>
+        <div class="alert alert-success"><%= messages.success %></div>
+    <% } %>
+    <% if (messages.error) { %>
+        <div class="alert alert-danger"><%= messages.error %></div>
+    <% } %>
+
+      <a href="/admin/addproduct"><button type="button" class="btn btn-success mt-5 ">Add New Product</button></a>
+      <div class="d-flex justify-content-between align-items-center row pt-4 gap-4 gap-md-0">
+        <div class="col-md-4 product_status"></div>
+        <div class="col-md-4 product_category"></div>
+        <div class="col-md-4 product_stock"></div>
+      </div>
+    </div>
+    <div class="card-datatable table-responsive">
+      <table class="datatables-products table">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Brand</th>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Discount Price</th>
+            <th>Stock</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (products.length > 0) { %>
+              <% products.forEach(product => { %>
+                  <tr>
+                      <td>1</td>
+                      <td><%= product.brand %></td>
+                      <td style="max-width: 200px;"><%= product.title %></td>
+                      <td><%= product.category %></td>
+                      <td><%= product.price %></td>
+                      <td><%= product.disPrice %></td>
+                      <td><%= product.stock %></td>
+                      <td><%= product.isActive ? 'Listed' : 'Unlisted' %></td> <!-- Show Listed or Unlisted -->
+                      
+                      <td>
+                        <a href="/admin/updateproduct/<%= product._id %>">
+                            <button type="button" class="btn btn-warning">Update</button>
+                        </a>
+                        <!-- Toggle Unlist/List button based on product's isActive status -->
+                        <form action="/admin/toggleproduct/<%= product._id %>" method="POST" style="display:inline;">
+                            <button type="submit" class="btn <%= product.isActive ? 'btn-danger' : 'btn-success' %>">
+                                <%= product.isActive ? 'Unlist' : 'List' %>
+                            </button>
+                        </form>
+                      </td>
+                  </tr>
+              <% }); %>
+          <% } else { %>
+              <tr>
+                  <td colspan="10">No products found</td>
+              </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+  
+  
+            </div>
+            <!-- / Content -->
+  
+            
+            
+  
+  <!-- Footer -->
+  <footer class="content-footer footer bg-footer-theme">
+    <div class="container-xxl">
+      <div class="footer-container d-flex align-items-center justify-content-between py-4 flex-md-row flex-column">
+        <div class="text-body mb-2 mb-md-0">
+          © <script>
+          document.write(new Date().getFullYear())
+  
+          </script>, made with <span class="text-danger"><i class="tf-icons ri-heart-fill"></i></span> by <a href="https://themeselection.com/" target="_blank" class="footer-link">ThemeSelection</a>
+        </div>
+        <div class="d-none d-lg-inline-block">
+          
+          <a href="https://themeselection.com/license/" class="footer-link me-4" target="_blank">License</a>
+          <a href="https://themeselection.com/" target="_blank" class="footer-link me-4">More Themes</a>
+          
+          <a href="https://demos.themeselection.com/materio-bootstrap-html-admin-template/documentation/" target="_blank" class="footer-link me-4">Documentation</a>
+          
+          
+          <a href="https://themeselection.com/support/" target="_blank" class="footer-link d-none d-sm-inline-block">Support</a>
+          
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- / Footer -->
+  
+            
+            <div class="content-backdrop fade"></div>
+          </div>
+          <!-- Content wrapper -->
+        </div>
+        <!-- / Layout page -->
+      </div>
+  
+      
+      
+      <!-- Overlay -->
+      <div class="layout-overlay layout-menu-toggle"></div>
+      
+      
+      <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+      <div class="drag-target"></div>
+      
+    </div>
+
+         
+   </body>

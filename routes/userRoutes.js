@@ -1,14 +1,14 @@
 import express from 'express'
 import { CreateAccount, forgotOtpPage, getEnterPasswordOTP, getForgotPasswordPage, getHomePage, getLoginPage, getNewPasswordPage, getOtpPage, LoginAccount, Logout, resentOTP, resetPassword, sendPasswordResetOTP, VerifyOTP, verifyResentOTP } from '../controllers/userControllers/authControllers.js'
-import { isUserNotAuth } from '../middleware.js'
 import passport from 'passport'
-import { getProduct, getShopPage } from '../controllers/userControllers/productControllers.js'
+import { getProduct, getProductbyId, getShopPage } from '../controllers/userControllers/productControllers.js'
+import { isUserAuthenticated } from '../middileware/auth.js'
 
 const userRouter=express.Router()
 
 // ----------------------------------Authentication Section-------------------------------------------
 
-userRouter.get('/login',isUserNotAuth ,getLoginPage)
+userRouter.get('/login',isUserAuthenticated,getLoginPage)
 userRouter.get('/verifyotp',getOtpPage)
 
 userRouter.post('/login',LoginAccount)
@@ -49,7 +49,7 @@ userRouter.get('/shop',getShopPage)
 userRouter.get('/product',getProduct)
 
 
-
+userRouter.get('/product/:id',getProductbyId)
 
 
 export default userRouter 

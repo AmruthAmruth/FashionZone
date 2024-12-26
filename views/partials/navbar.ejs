@@ -39,13 +39,12 @@
                             <li><a href="contact.html"><i class="fa-brands fa-facebook"></i> Facebook</a></li>
                             <li>
                                 <% if (user) { %>
-                                    <form action="/logout" method="post">
-                                        <button type="submit" class="btn btn-link p-0 text-danger">LOGOUT</button>
-                                      </form>
-                                    <!-- <a href="/profile" class="text-success"><i class="icon-user"></i> <%= user.name %></a> -->
-                                  <% } else { %>
-                                    <a href="/login"><i class="icon-user"></i> Login</a>
-                                  <% } %>
+                                  <form action="/logout" method="post" id="logout-form">
+                                    <button type="button" class="btn btn-link p-0 text-danger" id="logout-button">LOGOUT</button>
+                                  </form>
+                                <% } else { %>
+                                  <a href="/login"><i class="icon-user"></i> Login</a>
+                                <% } %>
                               </li>
                         </ul>
                     </li>
@@ -173,3 +172,28 @@
         </div><!-- End .container-fluid -->
     </div><!-- End .header-middle -->
 </header><!-- End .header -->
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.7/dist/sweetalert2.all.min.js"></script>
+<script>
+  // Add event listener to the logout button
+  document.getElementById('logout-button').addEventListener('click', function(event) {
+    // Prevent the default form submission
+    event.preventDefault();
+
+    // Show SweetAlert2 confirmation prompt
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you really want to logout?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, logout!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // If confirmed, submit the logout form
+        document.getElementById('logout-form').submit();
+      }
+    });
+  });
+</script>
