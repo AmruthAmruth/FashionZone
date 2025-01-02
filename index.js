@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import session from 'express-session'; // Add session middleware
+import session from 'express-session'; 
 import flash from 'express-flash';
 import nocache from 'nocache';
 import passport from 'passport';
@@ -54,9 +54,12 @@ app.use(flash());
 
 app.use('/admin', adminRouter);
 app.use('/', userRouter);
-
+app.use('*', (req, res) => {
+  res.status(404).render('partials/error'); 
+});
 
 const PORT = process.env.PORT || 7000;
+
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log("MongoDB Database Connected Successfully");

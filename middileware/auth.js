@@ -9,9 +9,16 @@ export const isUserAuthenticated=(req,res,next)=>{
 
 
 export const isAdminAuthenticated=(req,res,next)=>{
-         if(!req.session.admin){
-        res.redirect('/admin')
+         if(req.session.admin){
+        res.redirect('/admin/dashboard')
          }
          next()
+}
+
+export const adminAutherization=(req,res,next)=>{
+           if(!req.session.admin){
+              res.redirect('/admin')
+           }
+           next()
 
 }

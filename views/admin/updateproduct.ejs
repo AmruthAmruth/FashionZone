@@ -186,7 +186,7 @@
     <div class="d-flex flex-column justify-content-center">
       <h4 class="mb-1">Update Product</h4>
       <p class="mb-0">Update your exisiting product details</p>
-     
+      <p class="text-danger"><%= messages.message[0] %></p>
     </div>
   
   </div>
@@ -227,7 +227,6 @@
          title="Title must contain only letters and spaces, and must be at least 3 characters long."
           oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '').replace(/\s+/g, ' ');"
               required>
-              
             <label for="ecommerce-product-name">Title</label>
           </div>
 
@@ -257,44 +256,53 @@
       <div class="card mb-6 shadow-sm">
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Product Images</h5>
+            <p class="text-danger"><%= messages.image[0] %></p>
         </div>
         <div class="card-body">
-            <div class="form-group">
-                <div class="row g-3">
-                    <% for (let i = 1; i <= 4; i++) { %>
-                    <!-- Image Input and Preview -->
-                    <div class="col-lg-6 col-md-6">
-                        <div class="border rounded p-3 text-center">
-                            <label for="imageInput<%= i %>" class="file-upload d-block mb-2">
-                                <span class="file-select btn btn-outline-primary btn-sm">Choose Image <%= i %></span>
-                                <input 
-                                    name="images[]" 
-                                    type="file" 
-                                    accept="image/jpeg, image/png" 
-                                    id="imageInput<%= i %>" 
-                                    value="<%=product.images[i - 1]%>"
-                                    class="imageInput d-none" 
-                                    onchange="showPreview(this, 'imagePreview<%= i %>'); openCropModal(this, <%= i %>)">
-                            </label>
-    
-                            <!-- Populate image previews if they exist -->
-                            <img 
-                                id="imagePreview<%= i %>" 
-                                class="img-preview img-fluid rounded mx-auto mt-3" 
-                                alt="Preview" 
-                                style="<%= product.images[i - 1] ? 'display:block;' : 'display:none;' %>; max-height: 150px; object-fit: cover;" 
-                                src="<%= product.images[i - 1] ? '/' + product.images[i - 1] : '' %>">
-                            
-                            <!-- Hidden field for existing image (if any) -->
-                            <input type="hidden" name="existingImages[]" value="<%= product.images[i - 1] ? product.images[i - 1] : '' %>">
-    
-                            <p id="error<%= i %>" class="text-danger mt-2" style="display:none;">Only JPG and PNG files are allowed.</p>
-                        </div>
+          <div class="form-group">
+            <div class="row g-3">
+                <% for (let i = 1; i <= 4; i++) { %>
+                <!-- Image Input and Preview -->
+                <div class="col-lg-6 col-md-6">
+                    <div class="border rounded p-3 text-center">
+                        <label for="imageInput<%= i %>" class="file-upload d-block mb-2">
+                            <span class="file-select btn btn-outline-primary btn-sm">Choose Image <%= i %></span>
+                            <input 
+                                name="images[]" 
+                                type="file" 
+                                accept="image/jpeg, image/png" 
+                                id="imageInput<%= i %>" 
+                                class="imageInput d-none" 
+                                onchange="showPreview(this, 'imagePreview<%= i %>'); openCropModal(this, <%= i %>)">
+                        </label>
+        
+                        <!-- Display existing image -->
+                        <% if (product.images[i - 1]) { %>
+                        <img 
+                            id="imagePreview<%= i %>" 
+                            class="img-preview img-fluid rounded mx-auto mt-3" 
+                            alt="Preview" 
+                            style="display:block; max-height: 150px; object-fit: cover;" 
+                            src="/<%= product.images[i - 1] %>">
+                        <% } else { %>
+                        <img 
+                            id="imagePreview<%= i %>" 
+                            class="img-preview img-fluid rounded mx-auto mt-3" 
+                            alt="Preview" 
+                            style="display:none; max-height: 150px; object-fit: cover;" 
+                            src="">
+                        <% } %>
+                        
+                        <!-- Hidden field to send existing image path to the server -->
+                        <input type="hidden" name="existingImages[]" value="<%= product.images[i - 1] %>">
+        
+                        <p id="error<%= i %>" class="text-danger mt-2" style="display:none;">Only JPG and PNG files are allowed.</p>
                     </div>
-                    <% } %>
                 </div>
-                <p id="imagesErr" class="text-danger mt-3" style="display: none;">Please upload all four images.</p>
+                <% } %>
             </div>
+            <p id="imagesErr" class="text-danger mt-3" style="display: none;">Please upload all four images.</p>
+        </div>
         </div>
     </div>
     
@@ -360,6 +368,7 @@
             <input type="number" required class="form-control" value="<%= product.disPrice %>" 
              id="ecommerce-product-discount-price" placeholder="Discounted Price" name="disPrice" aria-label="Product discounted price">
             <label for="ecommerce-product-discount-price">Discounted Price</label>
+            <p class="text-danger"><%= messages.disPrice[0] %></p>
           </div>
          
          
@@ -473,6 +482,7 @@
                 <input id="ecommerce-product-tags" class="form-control h-auto" name="tags" aria-label="Product Tags" 
                        value="<%= product.tags ? product.tags.join(', ') : '' %>" placeholder="Enter tags (separate by commas)" />
                 <label for="ecommerce-product-tags">Tags</label>
+                <p class="text-danger"><%= messages.tags[0] %></p>
             </div>
         </div>
 

@@ -1,6 +1,27 @@
 <%- include('../layout/header.ejs') -%>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .is-invalid {
+            border-color: red;
+        }
 
+        .invalid-feedback {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .form-control {
+            border: 2px solid #9b9b9b;
+            border-radius: 7px;
+            padding: 10px;
+        }
+
+        .btn {
+            border-radius: 7px;
+            padding: 10px 15px;
+        }
+    </style>
     </head>
     <div class="page-wrapper">
 
@@ -40,55 +61,43 @@
                                     <div class="tab-content">
                                         <div class="tab-pane fade" id="signin-2" role="tabpanel"
                                             aria-labelledby="signin-tab-2">
-                                            <form action="/login" method="post">
+                                          
+
+
+                                          
+                                            <form action="/login" method="post" id="loginForm" novalidate>
                                                 <div class="form-group">
-
-
                                                     <label for="login-email-2">Your Email Address</label>
-
-                                                    <input type="email"
-                                                        style="border: 2px solid #9b9b9b; border-radius: 7px;"
-                                                        class="form-control" id="login-email-2" name="loginEmail"
-                                                        required
-                                                        pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}"
-                                                        oninput="this.value = this.value.replace(/[^A-Za-z0-9@._%+-]/g, '').replace(/\s+/g, ' ');"
-                                                        title="Please enter a valid email address.">
-
-                                                </div><!-- End .form-group -->
-
+                                                    <input type="email" class="form-control" id="login-email-2" name="loginEmail">
+                                                    <div class="invalid-feedback"></div>
+                                                </div>
+                                        
                                                 <div class="form-group">
                                                     <label for="login-password-2">Password</label>
                                                     <div class="input-group">
-
-                                                        <input type="password" class="form-control"
-                                                            style="border: 2px solid #9b9b9b; border-radius: 7px;"
-                                                            id="login-password-2" name="loginPassword"
-                                                            title="Password must be at least 6 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character."
-                                                            pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}"
-                                                            required>
-
+                                                        <input type="password" class="form-control" id="login-password-2" name="loginPassword">
                                                         <div class="input-group-append">
-                                                            <button type="button"
-                                                                class="btn btn-outline-secondary toggle-password "
-                                                                style="border: 2px solid #9b9b9b; border-radius: 7px;"
-                                                                tabindex="-1">
+                                                            <button type="button" class="btn btn-outline-secondary toggle-password" tabindex="-1">
                                                                 <i class="fas fa-eye"></i>
                                                             </button>
                                                         </div>
                                                     </div>
-                                                </div><!-- End .form-group -->
-
-
+                                                    <div class="invalid-feedback"></div>
+                                                </div>
+                                        
                                                 <div class="form-footer">
                                                     <button type="submit" class="btn btn-outline-primary-2">
                                                         <span>LOG IN</span>
                                                         <i class="icon-long-arrow-right"></i>
                                                     </button>
-
-
                                                     <a href="/forgotpassword" class="forgot-link">Forgot Your Password?</a>
-                                                </div><!-- End .form-footer -->
+                                                </div>
                                             </form>
+
+
+
+
+
                                             <div class="form-choice">
                                                 <p class="text-center">or sign in with</p>
                                                 <div class="row">
@@ -120,109 +129,69 @@
 
                                         <div class="tab-pane fade show active" id="register-2" role="tabpanel"
                                             aria-labelledby="register-tab-2">
-                                            <form action="/signup" method="post">
-
+                                           
+                                            <form action="/signup" method="post" id="signupForm" novalidate>
                                                 <div class="form-group">
                                                     <label for="register-name-2">Enter Your Name</label>
-
-                                                    <input type="text" class="form-control"
-                                                        style="border: 2px solid #9b9b9b; border-radius: 7px;"
-                                                        id="register-name-2" name="name" pattern="^[A-Za-z\s]{4,}$"
-                                                        title="Name must contain only letters and spaces, and must be at least 4 characters long."
-                                                        oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '').replace(/\s+/g, ' ');"
-                                                        required>
-
+                                                    <input type="text" class="form-control" id="register-name-2" name="name" required
+                                                        pattern="^[A-Za-z\s]{4,}$"
+                                                        title="Name must contain only letters and spaces, and must be at least 4 characters long.">
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
-
-
+                                        
                                                 <div class="form-group">
                                                     <label for="register-email-2">Your Email Address</label>
-
-                                                    <input type="email" class="form-control"
-                                                        style="border: 2px solid #9b9b9b; border-radius: 7px;"
-                                                        id="register-email-2" name="email" required
+                                                    <input type="email" class="form-control" id="register-email-2" name="email" required
                                                         pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
-                                                        title="Please enter a valid email address."
-                                                        oninput="this.value = this.value.replace(/[^a-zA-Z0-9@._%+-]/g, '')">
-
-                                                </div><!-- End .form-group -->
-
+                                                        title="Please enter a valid email address.">
+                                                    <div class="invalid-feedback"></div>
+                                                </div>
+                                        
                                                 <div class="form-group">
                                                     <label for="password">Password</label>
                                                     <div class="input-group">
-
-
-                                                        <input type="password" class="form-control"
+                                                        <input type="password" class="form-control" id="password" name="password" required
                                                             title="Password must be at least 6 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character."
-                                                            style="border: 2px solid #9b9b9b; border-radius: 7px;"
-                                                            id="password" name="password"
-                                                            pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}"
-                                                            required>
-
-
-
-
+                                                            pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}">
                                                         <div class="input-group-append">
-                                                            <button type="button"
-                                                                class="btn btn-outline-secondary toggle-password"
-                                                                style="border: 2px solid #9b9b9b; border-radius: 7px;"
-                                                                tabindex="-1"
-                                                                onclick="togglePassword('password', this)">
+                                                            <button type="button" class="btn btn-outline-secondary toggle-password" tabindex="-1" onclick="togglePasswordVisibility('password')">
                                                                 <i class="fas fa-eye"></i>
                                                             </button>
                                                         </div>
                                                     </div>
                                                 </div>
-
+                                            
                                                 <div class="form-group">
                                                     <label for="confirm-password">Confirm Password</label>
                                                     <div class="input-group">
-
-
-                                                        <input type="password" class="form-control"
-                                                            title="Password must be at least 6 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character."
-                                                            style="border: 2px solid #9b9b9b; border-radius: 7px;"
-                                                            pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}"
-                                                            id="confirm-password" name="confirmPassword" required>
-
-
-
-
+                                                        <input type="password" class="form-control" id="confirm-password" name="confirmPassword" required
+                                                            title="Password must match the one above."
+                                                            pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}">
                                                         <div class="input-group-append">
-                                                            <button type="button"
-                                                                class="btn btn-outline-secondary toggle-password"
-                                                                style="border: 2px solid #9b9b9b; border-radius: 7px;"
-                                                                tabindex="-1"
-                                                                onclick="togglePassword('confirm-password', this)">
+                                                            <button type="button" class="btn btn-outline-secondary toggle-password" tabindex="-1" onclick="togglePasswordVisibility('confirm-password')">
                                                                 <i class="fas fa-eye"></i>
                                                             </button>
                                                         </div>
                                                     </div>
                                                 </div>
-
-                                                <!-- Error Message Container (Optional) -->
-                                                <div id="error-message" class="text-danger" style="display:none;"></div>
-
-
-
-
-
-
+                                        
+                                                <div class="form-group">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox" class="custom-control-input" id="register-policy-2" required>
+                                                        <label class="custom-control-label" for="register-policy-2">I agree to the <a href="#">privacy policy</a> *</label>
+                                                    </div>
+                                                    <div class="invalid-feedback">You must agree to the privacy policy.</div>
+                                                </div>
+                                        
                                                 <div class="form-footer">
                                                     <button type="submit" class="btn btn-outline-primary-2">
                                                         <span>SIGN UP</span>
                                                         <i class="icon-long-arrow-right"></i>
                                                     </button>
-
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input"
-                                                            id="register-policy-2" required>
-                                                        <label class="custom-control-label" for="register-policy-2">I
-                                                            agree to
-                                                            the <a href="#">privacy policy</a> *</label>
-                                                    </div><!-- End .custom-checkbox -->
-                                                </div><!-- End .form-footer -->
+                                                </div>
                                             </form>
+
+
 
                                             <div class="form-choice">
                                                 <p class="text-center">or sign in with</p>
@@ -251,24 +220,192 @@
 
     </div><!-- End .page-wrapper -->
     <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
-    <script>
-        function togglePassword(inputId, button) {
-            const input = document.getElementById(inputId);
-            const icon = button.querySelector("i");
 
-            if (input.type === "password") {
-                input.type = "text";
-                icon.classList.remove("fa-eye");
-                icon.classList.add("fa-eye-slash");
-            } else {
-                input.type = "password";
-                icon.classList.remove("fa-eye-slash");
-                icon.classList.add("fa-eye");
+
+    <!-- Registration js Validation -->
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const signupForm = document.getElementById('signupForm');
+    
+    signupForm.addEventListener('submit', (event) => {
+        event.preventDefault(); // Prevent form submission for JS validation
+        
+        let isValid = true;
+
+        // List of inputs to check
+        const inputs = [
+            { id: 'register-name-2', regex: /^[A-Za-z\s]{4,}$/, message: 'Please enter a valid name (at least 4 characters).' },
+            { id: 'register-email-2', regex: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, message: 'Please enter a valid email address.' },
+            { id: 'password', regex: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/, message: 'Password must be at least 6 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character.' },
+            { id: 'confirm-password', compareTo: 'password', message: 'Passwords do not match.' },
+            { id: 'register-policy-2', checkbox: true, message: 'You must agree to the privacy policy.' }
+        ];
+
+        // Validate each field
+        inputs.forEach(input => {
+            const field = document.getElementById(input.id);
+            const value = field.value.trim();
+            let isFieldValid = true;
+
+            // Check if the input is required and valid
+            if (input.regex) {
+                isFieldValid = regexValidation(value, input.regex);
+            } else if (input.compareTo) {
+                const password = document.getElementById(input.compareTo).value.trim();
+                isFieldValid = value === password;
+            } else if (input.checkbox) {
+                isFieldValid = field.checked;
             }
+
+            // Show or clear error message
+            if (isFieldValid) {
+                clearError(field);
+            } else {
+                showError(field, input.message);
+                isValid = false;
+            }
+        });
+
+        // Submit the form if everything is valid
+        if (isValid) {
+            signupForm.submit();
         }
+    });
+
+    // Function to validate regex pattern
+    function regexValidation(value, regex) {
+        return value && regex.test(value);
+    }
+
+    // Show error message
+    function showError(input, message) {
+        input.classList.add('is-invalid');
+
+        let feedback = input.nextElementSibling;
+
+        // Check if feedback already exists, and update if so
+        if (!feedback || !feedback.classList.contains('invalid-feedback')) {
+            feedback = document.createElement('div');
+            feedback.classList.add('invalid-feedback');
+            input.parentElement.appendChild(feedback);
+        }
+
+        feedback.textContent = message;
+    }
+
+    // Clear error message
+    function clearError(input) {
+        input.classList.remove('is-invalid');
+        const feedback = input.nextElementSibling;
+        if (feedback && feedback.classList.contains('invalid-feedback')) {
+            feedback.textContent = '';
+        }
+    }
+});
+
+function togglePasswordVisibility(inputId) {
+    var inputField = document.getElementById(inputId);
+    var toggleButton = inputField.nextElementSibling.querySelector('button');
+    
+    if (inputField.type === "password") {
+        inputField.type = "text";  // Show password
+        toggleButton.querySelector('i').classList.remove('fa-eye');
+        toggleButton.querySelector('i').classList.add('fa-eye-slash');
+    } else {
+        inputField.type = "password";  // Hide password
+        toggleButton.querySelector('i').classList.remove('fa-eye-slash');
+        toggleButton.querySelector('i').classList.add('fa-eye');
+    }
+}
+
+
+  </script>
+
+
+
+
+
+
+
+
+
+
+<!-- Login js validation -->
+ <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('loginForm');
+            
+            loginForm.addEventListener('submit', (event) => {
+                event.preventDefault(); // Prevent the form from submitting automatically
+                
+                let isValid = true;
+
+                // Validate Email
+                const emailInput = document.getElementById('login-email-2');
+                const emailValue = emailInput.value.trim();
+                const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+                if (!emailValue) {
+                    showError(emailInput, 'Email is required.');
+                    isValid = false;
+                } else if (!emailRegex.test(emailValue)) {
+                    showError(emailInput, 'Please enter a valid email address.');
+                    isValid = false;
+                } else {
+                    clearError(emailInput);
+                }
+
+                // Validate Password
+                const passwordInput = document.getElementById('login-password-2');
+                const passwordValue = passwordInput.value.trim();
+                const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
+
+                if (!passwordValue) {
+                    showError(passwordInput, 'Password is required.');
+                    isValid = false;
+                } else if (!passwordRegex.test(passwordValue)) {
+                    showError(passwordInput, 'Password must be at least 6 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character.');
+                    isValid = false;
+                } else {
+                    clearError(passwordInput);
+                }
+
+                // If the form is valid, submit the form manually
+                if (isValid) {
+                    loginForm.submit(); // This will submit the form after JS validation
+                }
+            });
+
+            // Show error message
+            function showError(input, message) {
+                input.classList.add('is-invalid');
+                let feedback = input.nextElementSibling;
+                if (!feedback || !feedback.classList.contains('invalid-feedback')) {
+                    feedback = document.createElement('div');
+                    feedback.classList.add('invalid-feedback');
+                    input.parentElement.appendChild(feedback);
+                }
+                feedback.textContent = message;
+            }
+
+            // Clear error message
+            function clearError(input) {
+                input.classList.remove('is-invalid');
+                const feedback = input.nextElementSibling;
+                if (feedback && feedback.classList.contains('invalid-feedback')) {
+                    feedback.textContent = '';
+                }
+            }
+        });
     </script>
+
+
+
+
 
 
 

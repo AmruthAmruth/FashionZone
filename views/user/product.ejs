@@ -3,6 +3,54 @@
 
 <%- include('../layout/header.ejs') -%>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.rawgit.com/elevateweb/elevatezoom/master/jquery.elevateZoom.min.js"></script>
+
+<script>
+  $(document).ready(function () {
+    // Initialize ElevateZoom on the main image
+    function initializeZoom() {
+      $('#product-zoom').elevateZoom({
+        zoomType: "lens",          // Type of zoom
+        lensShape: "round",        // Shape of the zoom lens
+        lensSize: 250,             // Size of the zoom lens
+        scrollZoom: true,          // Enable scroll zoom
+        easing: true,              // Apply easing effect for transitions
+        responsive: true           // Make it responsive
+      });
+    }
+
+    // Initialize zoom for the main product image
+    initializeZoom();  // Initialize zoom for the first image
+
+    // Event listener for thumbnail click
+    $('.product-gallery-item').on('click', function (e) {
+      e.preventDefault();
+      
+      const newImage = $(this).attr('data-image');            // Get new image path
+      const newZoomImage = $(this).attr('data-zoom-image');   // Get new zoom image path
+
+      // Ensure both image paths are correct
+      if (!newImage || !newZoomImage) {
+        console.error("Invalid image paths:", newImage, newZoomImage);
+        return;
+      }
+
+      // Remove previous zoom instance and zoom container
+      $('#product-zoom').removeData('elevateZoom');
+      $('.zoomContainer').remove();  // Remove zoom container
+
+      // Update the main image and zoom image
+      $('#product-zoom')
+        .attr('src', newImage)  // Update the main image source
+        .attr('data-zoom-image', newZoomImage);  // Update the zoom image
+
+      // Reinitialize zoom functionality
+      initializeZoom();  // Re-initialize zoom for the new image
+    });
+  });
+</script>
+
     </head>
 
 <style>
@@ -32,48 +80,11 @@
 </style>
 
 
-<!-- Include jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<!-- Include ElevateZoom plugin -->
-<script src="https://cdn.rawgit.com/elevateweb/elevatezoom/master/jquery.elevateZoom.min.js"></script>
 
 
+<!-- jQuery Library -->
 
-<script>
- $(document).ready(function () {
-  // Initialize zoom with circular lens
-  $('#product-zoom').elevateZoom({
-    zoomType: "lens",
-    lensShape: "round",
-    lensSize: 200,
-    scrollZoom: true,
-    easing: true,
-    responsive: true
-  });
-
-  // Update the zoom when a thumbnail is clicked
-  $('.product-gallery-item').on('click', function (e) {
-    e.preventDefault();
-
-    const newImage = $(this).attr('data-image');
-    const newZoomImage = $(this).attr('data-zoom-image');
-
-    $('#product-zoom')
-      .attr('src', newImage)
-      .data('zoom-image', newZoomImage)
-      .elevateZoom({
-        zoomType: "lens",
-        lensShape: "round",
-        lensSize: 200,
-        scrollZoom: true,
-        easing: true
-      });
-
-    $('.zoomContainer').remove(); // Remove existing zoom container to avoid conflicts
-  });
-});
-  </script>
+  
 
 <body>
     <div class="page-wrapper">
@@ -83,9 +94,9 @@
             <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
                 <div class="container d-flex align-items-center">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                        <li class="breadcrumb-item"><a href="#">Products</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Default</li>
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/shop">Shop</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Product</li>
                     </ol>
 
                     <nav class="product-pager ml-auto" aria-label="Product">
@@ -116,12 +127,16 @@
             <div class="page-content">
                 <div class="container">
                     <div class="product-details-top">
+                      
+                      
+                      
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="product-gallery product-gallery-vertical">
                                     <div class="row">
                                         <figure class="product-main-image cproduct-container">
-                                          <img id="product-zoom" src="/<%=product.images[0] %>" data-zoom-image="/<%=product.images[0] %>" alt="product image">
+                                      
+                                            <img id="product-zoom" src="/<%=product.images[0] %>" data-zoom-image="/<%=product.images[0] %>" alt="product image">
                                       
                                           <a href="#" id="btn-product-gallery" class="btn-product-gallery">
                                             <i class="icon-arrows"></i>
@@ -187,21 +202,20 @@
                                         <label for="size">Stock : <%= product.stock %></label>
                                        
                                       <!-- End .select-custom -->
+ 
+                                    </div><!-- End .details-filter-row -->
+
+                                   
+                                    <div class="details-action-wrapper">
+                                        <form action="/cart/add/<%= product._id %>" method="POST">
+                                            <span>Quantity:</span><input type="number" name="quantity" value="1" min="1" class="quantity-input">
+                                            <div class="product-details-action mt-3">
+                                            <button type="submit" class="btn-product btn-cart">
+                                                <p>Add To Cart</p>
+                                            </button>
+                                        </form>
 
                                         
-                                    </div><!-- End .details-filter-row -->
-
-                                    <div class="details-filter-row details-row-size">
-                                        <label for="qty">Qty:</label>
-                                        <div class="product-details-quantity">
-                                            <input type="number" id="qty" class="form-control" value="1" min="1" max="10" step="1" data-decimals="0" required>
-                                        </div><!-- End .product-details-quantity -->
-                                    </div><!-- End .details-filter-row -->
-
-                                    <div class="product-details-action">
-                                        <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-
-                                        <div class="details-action-wrapper">
                                             <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
                                             <a href="#" class="btn-product btn-compare" title="Compare"><span>Add to Compare</span></a>
                                         </div><!-- End .details-action-wrapper -->
@@ -225,10 +239,116 @@
                                 </div><!-- End .product-details -->
                             </div><!-- End .col-md-6 -->
                         </div><!-- End .row -->
+
+
+                        
                     </div><!-- End .product-details-top -->
 
-                    <!-- End .owl-carousel -->
+
+
+
+
+
+
+
+                    
+                    <h2 class="title text-center mb-4 mt-5">You May Also Like</h2><!-- End .title text-center -->
+<div class="owl-carousel  owl-simple carousel-equal-height carousel-with-shadow" data-toggle="owl" 
+    data-owl-options='{
+        "nav": false, 
+        "dots": true,
+        "margin": 20,
+        "loop": false,
+        "responsive": {
+            "0": {
+                "items":1
+            },
+            "480": {
+                "items":2
+            },
+            "768": {
+                "items":3
+            },
+            "992": {
+                "items":4
+            },
+            "1200": {
+                "items":4,
+                "nav": true,
+                "dots": false
+            }
+        }
+    }'>
+
+    <% relatedProducts.forEach(product => { %>
+        <div class="product product-7 text-center">
+            <figure class="product-media">
+                <% if (product.isNew) { %>
+                    <span class="product-label label-new">New</span>
+                <% } %>
+                <a href="/product/<%= product._id %>?category=<%= product.category %>">
+                    <img src="/<%= product.images[0] %>" alt="<%= product.title %>" class="product-image">
+                </a>
+
+                <div class="product-action-vertical">
+                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>Add to Wishlist</span></a>
+                    <a href="/product/<%= product._id %>?quickview=true" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick View</span></a>
+                    <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
+                </div><!-- End .product-action-vertical -->
+
+                <div class="product-action">
+                    <form action="/cart/add/<%= product._id %>" method="POST">
+                        <input type="number" name="quantity" value="1" min="1" class="quantity-input">
+                        <button type="submit" class="btn-product btn-cart">
+                            <span>Add to carts</span>
+                        </button>
+                    </form>
+                </div><!-- End .product-action -->
+            </figure><!-- End .product-media -->
+
+            <div class="product-body">
+                <div class="product-cat">
+                    <a href="/shop?category=<%= product.category %>"><%= product.category %></a>
+                </div><!-- End .product-cat -->
+                <h3 class="product-title">
+                    <a href="/product/<%= product._id %>?category=<%= product.category %>">
+                        <%= product.title %>
+                    </a>
+                </h3><!-- End .product-title -->
+                <div class="product-price">
+                    $<%= product.price %>
+                </div><!-- End .product-price -->
+                <div class="ratings-container">
+                    <div class="ratings">
+                        <div class="ratings-val" style="width: <%= product.rating * 20 %>%"></div><!-- End .ratings-val -->
+                    </div><!-- End .ratings -->
+                    <span class="ratings-text">( <%= product.reviewsCount || 0 %> Reviews )</span>
+                </div><!-- End .ratings-container -->
+
+                <div class="product-nav product-nav-dots">
+                    color:
+                    
+                
+                </div><!-- End .product-nav -->
+            </div><!-- End .product-body -->
+        </div><!-- End .product -->
+    <% }) %>
+
+</div><!-- End .owl-carousel -->
+
+
+                        
+                        <!-- End .product -->
+
+
+
+
+
+<!-- End .product -->
+                    </div>
                 </div><!-- End .container -->
+
+               
             </div><!-- End .page-content -->
         </main><!-- End .main -->
 

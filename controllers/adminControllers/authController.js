@@ -7,8 +7,6 @@ import bcrypt from 'bcryptjs'
 // ---------------- Admin Authentication------------------------------
 
 
-
-
 export const getLoginPage=async(req,res)=>{
   res.render('admin/login', {
     messages: {

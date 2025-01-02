@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs'
 import User from '../../models/userModel.js'
 import {sendOTP}  from '../../config/userOTPverification.js'
 import OTP from '../../models/userOtpVerification.js'
+import mongoose from 'mongoose'
 
 
 
@@ -65,6 +66,7 @@ export const CreateAccount = async (req, res) => {
       const otpExpiration = Date.now() + 5 * 60 * 1000;
 
       req.session.tempUser = { name, email, password,otpExpiration }; 
+
       return res.redirect('/verifyotp');
   } catch (err) {
       console.log("Error While Creating the Account:", err);
@@ -161,12 +163,22 @@ export const LoginAccount=async(req,res)=>{
                 return res.redirect('/login')
               }
 
+              if(existingUser.isActive===false){
+                req.flash("message","You can not login,becouse you are blocked")
+                console.log(existingUser);
+                
+                return res.redirect('/login')
+              }
+
               req.session.user = {
                 id: existingUser._id,
                 name: existingUser.name,
                 email: existingUser.email
             };
-           
+
+
+
+           req.session.userId= new mongoose.Types.ObjectId(existingUser._id)
             console.log(req.session.user);
             
             return res.redirect('/')

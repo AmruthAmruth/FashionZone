@@ -1,0 +1,498 @@
+
+<%- include('../layout/header.ejs') -%>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    </head>
+
+    <
+        <div class="page-wrapper">
+    <%- include('../partials/navbar.ejs') -%>
+
+<style>
+   .btn-delete {
+    background-color: #ff4d4d; /* Light red for delete */
+    color: white; /* White text */
+    padding: 5px 10px; /* Smaller padding */
+    font-size: 14px; /* Smaller font size */
+    border: none; /* No border */
+    border-radius: 50%; /* Circular button */
+    cursor: pointer; /* Pointer cursor on hover */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+    width: 30px; /* Fixed size */
+    height: 30px; /* Fixed size */
+    text-align: center; /* Center the icon */
+}
+
+/* Hover Effect */
+.btn-delete:hover {
+    background-color: #ff1a1a; /* Darker red on hover */
+}
+
+/* Icon styling */
+.btn-delete i {
+    font-size: 18px; /* Icon size */
+}
+
+/* Focus effect for accessibility */
+.btn-delete:focus {
+    outline: none; /* Remove the default focus outline */
+    box-shadow: 0 0 0 3px rgba(255, 77, 77, 0.4); /* Subtle focus ring */
+}
+
+/* Optional: Custom Styling for the Modal */
+.modal-dialog {
+  max-width: 600px;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.form-group label {
+  font-weight: bold;
+}
+</style>
+</head>
+<body>
+    <main class="main">
+        <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+            <div class="container">
+                <h1 class="page-title">My Account<span>Shop</span></h1>
+            </div><!-- End .container -->
+        </div><!-- End .page-header -->
+        <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+            <div class="container">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">My Account</li>
+                </ol>
+            </div><!-- End .container -->
+        </nav><!-- End .breadcrumb-nav -->
+
+        <div class="page-content">
+            <div class="dashboard">
+                <div class="container">
+                    <div class="row">
+                        <aside class="col-md-4 col-lg-3">
+                            <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="tab-dashboard-link" data-toggle="tab" href="#tab-dashboard" role="tab" aria-controls="tab-dashboard" aria-selected="true">Dashboard</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address" role="tab" aria-controls="tab-address" aria-selected="false">Adresses</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="tab-orders-link" data-toggle="tab" href="#tab-orders" role="tab" aria-controls="tab-orders" aria-selected="false">Orders</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="tab-account-link" data-toggle="tab" href="#tab-account" role="tab" aria-controls="tab-account" aria-selected="false">Account Details</a>
+                                </li>
+                                <li class="nav-item">
+                         
+                                    <a class="nav-link" href="/forgotpassword" role="tab">Forgot Password</a>
+                                </li>
+                                
+                                
+                                <li class="nav-item">
+
+                                    <% if (user) { %>
+                                        <form action="/logout" method="post" id="logout-form-profile">
+                                            <button type="submit" class="btn btn-link p-0 text-danger">Sign Out</button>
+                                        </form>
+                                      <% } else { %>
+                                        <a href="/login"><i class="icon-user"></i> Login</a>
+                                      <% } %>
+
+                                    
+                                    
+                                </li>
+                            </ul>
+                        </aside><!-- End .col-lg-3 -->
+
+                        <div class="col-md-8 col-lg-9">
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel" aria-labelledby="tab-dashboard-link">
+                                    <% if (user) { %>
+                                        <p>Welcome back, <%= user%>! Your shopping adventure awaits—explore exclusive deals, manage your orders, and enjoy a personalized experience crafted just for you.</p>
+                                    <% } else { %>
+                                        <p>Welcome to your ultimate shopping destination! Sign in now to explore exclusive deals, track your orders, and enjoy a seamless shopping experience tailored just for you.</p>
+                                    <% } %>
+                                </div>
+                                <% if (user) { %>
+                                    <p>Name : <%= user%></p>
+                                    <% } %>
+                                <!-- .End .tab-pane -->
+
+                                <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
+                                    <p>No order has been made yet.</p>
+                                    <a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
+                                </div><!-- .End .tab-pane -->
+
+                                <div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-link">
+                                    <p>No downloads available yet.</p>
+                                    <a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
+                                </div><!-- .End .tab-pane -->
+
+                                <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
+                                    <p>The following addresses will be used on the checkout page by default.</p>
+
+                                    <div class="row">
+                                        
+                                        
+                                        <div class="col-lg-12 d-flex">
+                                            <% if (userAddress && userAddress.length > 0) { %>
+                                                <% userAddress.forEach(function(address) { %>
+                                                    <div class="card card-dashboard col-md-6 col-lg-6 m-3">
+                                                        <div class="card-body">
+                                                            <p>
+                                                                <%= address.name %><br>
+                                                                <%= address.house %>, <%= address.landMark || 'N/A' %><br>
+                                                                <%= address.city %>, <%= address.state %>, <%= address.country %> <%= address.pincode %><br>
+                                                                <%= address.phone %><br>
+                                                                <%= user.email %> <!-- Access the email from the user object passed to the template -->
+                                                                
+                                                                <!-- Edit Button -->
+                                                                <a href="javascript:void(0);" 
+                                                                   class="btn-edit" 
+                                                                   data-id="<%= address._id %>" 
+                                                                   data-name="<%= address.name %>" 
+                                                                   data-house="<%= address.house %>" 
+                                                                   data-landmark="<%= address.landMark || '' %>" 
+                                                                   data-city="<%= address.city %>" 
+                                                                   data-state="<%= address.state %>" 
+                                                                   data-country="<%= address.country %>" 
+                                                                   data-pincode="<%= address.pincode %>" 
+                                                                   data-phone="<%= address.phone %>">
+                                                                   Edit
+                                                                </a>
+                                        
+                                                                <!-- Delete Button -->
+                                                                <form action="/profile/delete/<%= address._id %>" method="POST" style="display:inline;">
+                                                                    <button type="submit" class="btn-delete">
+                                                                        <i class="fa fa-trash"></i>
+                                                                    </button>
+                                                                </form>
+                                                            </p>
+                                                        </div><!-- End .card-body -->
+                                                    </div><!-- End .card-dashboard -->
+                                                <% }); %>
+                                            <% } else { %>
+                                                <p>No addresses available.</p>
+                                            <% } %>
+                                        </div><!-- End .col-lg-12 -->
+                                        
+                                      
+
+
+
+
+                                        <!-- Modal Structure -->
+                                        <div id="editAddressModal" class="modal" tabindex="-1" role="dialog">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <form action="/profile/edit" method="POST">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Edit Address</h5>
+                                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <!-- Hidden Input for Address ID -->
+                                                            <input type="hidden" name="addressId" id="addressId">
+                                                            <div class="form-group">
+                                                                <label for="name">Name</label>
+                                                                <input type="text" name="name" id="name" class="form-control">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="house">House</label>
+                                                                <input type="text" name="house" id="house" class="form-control">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="landmark">Landmark</label>
+                                                                <input type="text" name="landmark" id="landmark" class="form-control">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="city">City</label>
+                                                                <input type="text" name="city" id="city" class="form-control">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="state">State</label>
+                                                                <input type="text" name="state" id="state" class="form-control">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="country">Country</label>
+                                                                <input type="text" name="country" id="country" class="form-control">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="pincode">Pincode</label>
+                                                                <input type="text" name="pincode" id="pincode" class="form-control">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="phone">Phone</label>
+                                                                <input type="text" name="phone" id="phone" class="form-control">
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+  
+
+
+
+
+
+
+
+  <h3 class="mt-3 mb-3 text-center">Add New Address</h3>
+  <form action="/address" method="post" class="col-md-12" id="addressForm" novalidate>
+    <div class="row">
+        <div class="col-sm-6">
+            <label>Full Name</label>
+            <input type="text" class="form-control" name="name" placeholder="Enter your full name">
+            <div class="invalid-feedback">Full Name is required.</div>
+        </div>
+        <div class="col-sm-6">
+            <label>Phone Number</label>
+            <input type="number" class="form-control" name="phone" placeholder="Enter your phone number">
+            <div class="invalid-feedback">Phone Number is required.</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <label>Country</label>
+            <input type="text" class="form-control" name="country" placeholder="Enter your country">
+            <div class="invalid-feedback">Country is required.</div>
+        </div>
+        <div class="col-sm-6">
+            <label>State</label>
+            <input type="text" class="form-control" name="state" placeholder="Enter your state">
+            <div class="invalid-feedback">State is required.</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <label>District</label>
+            <input type="text" class="form-control" name="district" placeholder="Enter your district">
+            <div class="invalid-feedback">District is required.</div>
+        </div>
+        <div class="col-sm-6">
+            <label>City</label>
+            <input type="text" class="form-control" name="city" placeholder="Enter your city">
+            <div class="invalid-feedback">City is required.</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <label>Land Mark</label>
+            <input type="text" class="form-control" name="landmark" placeholder="Enter a landmark">
+            <div class="invalid-feedback">Landmark is required.</div>
+        </div>
+        <div class="col-sm-6">
+            <label>House/Building</label>
+            <input type="text" class="form-control" name="house" placeholder="Enter house/building">
+            <div class="invalid-feedback">House/Building is required.</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <label>Postal Code</label>
+            <input type="number" class="form-control" name="pincode" placeholder="Enter postal code">
+            <div class="invalid-feedback">Postal Code is required.</div>
+        </div>
+        <div class="col-sm-6">
+            <label for="address-type">Address Type</label>
+            <select id="address-type" class="form-control" name="type">
+                <option value="">Select Address Type</option>
+                <option value="home">Home</option>
+                <option value="work">Work</option>
+                <option value="other">Other</option>
+            </select>
+            <div class="invalid-feedback">Address Type is required.</div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-outline-primary-2 mt-3">
+        <span>SAVE CHANGES</span>
+        <i class="icon-long-arrow-right"></i>
+    </button>
+</form>
+                                        
+                                        
+                                        <!-- End .col-lg-6 -->
+                                    </div><!-- End .row -->
+                                </div><!-- .End .tab-pane -->
+
+                                <div class="tab-pane fade" id="tab-account" role="tabpanel" aria-labelledby="tab-account-link">
+                                   
+                                   
+                                   <!-- Edit Addresss -->
+                                   
+                                    <form action="/address" method="post" class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <label>Full Name</label>
+                                                <input type="text" class="form-control" name="full-name" required>
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <label>Phone Number</label>
+                                                <input type="number" class="form-control" name="phone-number" required>
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <label>Country</label>
+                                                <input type="text" class="form-control" name="country" required>
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <label>State</label>
+                                                <input type="text" class="form-control" name="state" required>
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <label>District</label>
+                                                <input type="text" class="form-control" name="district" required>
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <label>City</label>
+                                                <input type="text" class="form-control" name="city" required>
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <label>Land Mark</label>
+                                                <input type="text" class="form-control" name="landmark" required>
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <label>House/Building</label>
+                                                <input type="text" class="form-control" name="house-building" required>
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <label>Postal Code</label>
+                                                <input type="number" class="form-control" name="postal-code" required>
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <label for="address-type">Address Type</label>
+                                                <select id="address-type" class="form-control" name="address-type" required>
+                                                    <option value="" disabled selected>Select Address Type</option>
+                                                    <option value="Home">Home</option>
+                                                    <option value="Work">Work</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-outline-primary-2 mt-3">
+                                            <span>SAVE CHANGES</span>
+                                            <i class="icon-long-arrow-right"></i>
+                                        </button>
+                                        
+                                    </form>
+                                    
+                                    
+                                    
+                                  
+                                    
+
+
+
+
+
+
+                                </div><!-- .End .tab-pane -->
+                            </div>
+                        </div><!-- End .col-lg-9 -->
+                    </div><!-- End .row -->
+                </div><!-- End .container -->
+            </div><!-- End .dashboard -->
+        </div><!-- End .page-content -->
+    </main><!-- End .main -->
+
+
+    <script>
+        const form = document.getElementById('addressForm');
+
+form.addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent default form submission
+    let isValid = true;
+
+    // Validate all form fields
+    const inputs = form.querySelectorAll('.form-control');
+    inputs.forEach(input => {
+        const feedback = input.nextElementSibling;
+        const value = input.value.trim();
+
+        if (!value) {
+            input.classList.add('is-invalid');
+            feedback.textContent = `${input.previousElementSibling.textContent} is required.`;
+            isValid = false;
+        } else if (input.name === 'phone') {
+            // Validate phone number
+            const phoneRegex = /^[0-9]{10}$/;
+            if (!phoneRegex.test(value)) {
+                input.classList.add('is-invalid');
+                feedback.textContent = 'Phone Number must be exactly 10 digits.';
+                isValid = false;
+            } else {
+                input.classList.remove('is-invalid');
+                feedback.textContent = '';
+            }
+        } else if (input.name === 'pincode') {
+            // Validate pincode
+            const pincodeRegex = /^[0-9]{6}$/;
+            if (!pincodeRegex.test(value)) {
+                input.classList.add('is-invalid');
+                feedback.textContent = 'Postal Code must be exactly 6 digits.';
+                isValid = false;
+            } else {
+                input.classList.remove('is-invalid');
+                feedback.textContent = '';
+            }
+        } else {
+            input.classList.remove('is-invalid');
+            feedback.textContent = '';
+        }
+    });
+
+    // Allow form submission if valid
+    if (isValid) {
+        alert('Form submitted successfully!');
+        form.submit();
+    }
+});
+
+// Remove error message as user types
+form.querySelectorAll('.form-control').forEach(input => {
+    input.addEventListener('input', function () {
+        if (this.value.trim()) {
+            this.classList.remove('is-invalid');
+            this.nextElementSibling.textContent = '';
+        }
+    });
+});
+
+    </script>
+
+
+</body>
+
+
+</html>
