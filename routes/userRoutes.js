@@ -1,7 +1,7 @@
 import express from 'express'
 import { CreateAccount, forgotOtpPage, getEnterPasswordOTP, getForgotPasswordPage, getHomePage, getLoginPage, getNewPasswordPage, getOtpPage, LoginAccount, Logout, resentOTP, resetPassword, sendPasswordResetOTP, VerifyOTP, verifyResentOTP } from '../controllers/userControllers/authControllers.js'
 import passport from 'passport'
-import { addToCart, getCartPage, getNewArrivals, getProduct, getProductbyId, getShopPage, getUserCart, priceHighToLow, priceLowToHigh, removeFromCart, sortByAToZ, sortByZToA, updateCart } from '../controllers/userControllers/productControllers.js'
+import { addToCart, cartPriceList, getCartPage, getNewArrivals, getProduct, getProductbyId, getShopPage, getUserCart, priceHighToLow, priceLowToHigh, removeFromCart, sortByAToZ, sortByZToA, updateCart } from '../controllers/userControllers/productControllers.js'
 import { isUserAuthenticated } from '../middileware/auth.js'
 import { createAddress, deleteAddress, editAddress, getAddress, getProfilePage } from '../controllers/userControllers/profileControllers.js'
 import mongoose from 'mongoose'
@@ -75,7 +75,7 @@ userRouter.get('/shop/sort/a-to-z',sortByAToZ)
 
 //--------------Cart Section ---------------------------------
 
-userRouter.get('/cart',getUserCart,getCartPage)
+userRouter.get('/cart',getUserCart,cartPriceList,getCartPage)
 userRouter.post('/cart/add/:productId',addToCart)
 userRouter.post('/cart/update/:productId',updateCart)
 userRouter.post('/cart/remove/:productId',removeFromCart)

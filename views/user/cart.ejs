@@ -109,68 +109,94 @@
 			            			<a href="#" class="btn btn-outline-dark-2"><span>UPDATE CART</span><i class="icon-refresh"></i></a>
 		            			</div><!-- End .cart-bottom -->
 	                		</div><!-- End .col-lg-9 -->
+
+
 	                		<aside class="col-lg-3">
 	                			<div class="summary summary-cart">
 	                				<h3 class="summary-title">Cart Total</h3><!-- End .summary-title -->
 
-	                				<table class="table table-summary">
-	                					<tbody>
-	                						<tr class="summary-subtotal">
-	                							<td>Subtotal:</td>
-	                							<td>$160.00</td>
-	                						</tr><!-- End .summary-subtotal -->
-	                						<tr class="summary-shipping">
-	                							<td>Shipping:</td>
-	                							<td>&nbsp;</td>
-	                						</tr>
 
-	                						<tr class="summary-shipping-row">
-	                							<td>
-													<div class="custom-control custom-radio">
-														<input type="radio" id="free-shipping" name="shipping" class="custom-control-input">
-														<label class="custom-control-label" for="free-shipping">Free Shipping</label>
-													</div><!-- End .custom-control -->
-	                							</td>
-	                							<td>$0.00</td>
-	                						</tr><!-- End .summary-shipping-row -->
 
-	                						<tr class="summary-shipping-row">
-	                							<td>
-	                								<div class="custom-control custom-radio">
-														<input type="radio" id="standart-shipping" name="shipping" class="custom-control-input">
-														<label class="custom-control-label" for="standart-shipping">Standart:</label>
-													</div><!-- End .custom-control -->
-	                							</td>
-	                							<td>$10.00</td>
-	                						</tr><!-- End .summary-shipping-row -->
 
-	                						<tr class="summary-shipping-row">
-	                							<td>
-	                								<div class="custom-control custom-radio">
-														<input type="radio" id="express-shipping" name="shipping" class="custom-control-input">
-														<label class="custom-control-label" for="express-shipping">Express:</label>
-													</div><!-- End .custom-control -->
-	                							</td>
-	                							<td>$20.00</td>
-	                						</tr><!-- End .summary-shipping-row -->
 
-	                						<tr class="summary-shipping-estimate">
-	                							<td>Estimate for Your Country<br> <a href="dashboard.html">Change address</a></td>
-	                							<td>&nbsp;</td>
-	                						</tr><!-- End .summary-shipping-estimate -->
+									<table class="table table-summary">
+    <tbody>
+        <!-- Free Shipping -->
+        <tr class="summary-shipping-row">
+            <td>
+                <div class="custom-control custom-radio">
+                    <input 
+                        type="radio" 
+                        id="free-shipping" 
+                        name="shipping" 
+                        class="custom-control-input" 
+                        value="free" 
+                        data-cost="0" 
+                        <%= cartPrice.selectedShipping === 'free' ? 'checked' : '' %>
+                    >
+                    <label class="custom-control-label" for="free-shipping">Free Shipping</label>
+                </div>
+            </td>
+            <td>₹0.00</td>
+        </tr>
+        <!-- Standard Shipping -->
+        <tr class="summary-shipping-row">
+            <td>
+                <div class="custom-control custom-radio">
+                    <input 
+                        type="radio" 
+                        id="standard-shipping" 
+                        name="shipping" 
+                        class="custom-control-input" 
+                        value="standard" 
+                        data-cost="50" 
+                        <%= cartPrice.selectedShipping === 'standard' ? 'checked' : '' %>
+                    >
+                    <label class="custom-control-label" for="standard-shipping">Standard Shipping</label>
+                </div>
+            </td>
+            <td>₹50.00</td>
+        </tr>
+        <!-- Express Shipping -->
+        <tr class="summary-shipping-row">
+            <td>
+                <div class="custom-control custom-radio">
+                    <input 
+                        type="radio" 
+                        id="express-shipping" 
+                        name="shipping" 
+                        class="custom-control-input" 
+                        value="express" 
+                        data-cost="100" 
+                        <%= cartPrice.selectedShipping === 'express' ? 'checked' : '' %>
+                    >
+                    <label class="custom-control-label" for="express-shipping">Express Shipping</label>
+                </div>
+            </td>
+            <td>₹100.00</td>
+        </tr>
+        <!-- Total -->
+        <tr class="summary-total">
+            <td>Total:</td>
+            <td>₹<span id="total-price"><%= cartPrice.total %></span></td>
+        </tr>
+    </tbody>
+</table>
+									
 
-	                						<tr class="summary-total">
-	                							<td>Total:</td>
-	                							<td>$160.00</td>
-	                						</tr><!-- End .summary-total -->
-	                					</tbody>
-	                				</table><!-- End .table table-summary -->
+
+
+
 
 	                				<a href="checkout.html" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
 	                			</div><!-- End .summary -->
 
 		            			<a href="category.html" class="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUE SHOPPING</span><i class="icon-refresh"></i></a>
 	                		</aside><!-- End .col-lg-3 -->
+
+
+
+
 	                	</div><!-- End .row -->
 	                </div><!-- End .container -->
                 </div><!-- End .cart -->
@@ -253,4 +279,35 @@
         </footer><!-- End .footer -->
     </div>
 </body>
+
+
+<script>
+    // Calculate the total price dynamically
+    document.addEventListener('DOMContentLoaded', function () {
+        const radioButtons = document.querySelectorAll('input[name="shipping"]');
+        const totalPriceElement = document.getElementById('total-price');
+        const basePrice = <%= cartPrice.subtotal %>; // Base price passed from the server
+
+        function updatePrice() {
+            let shippingCost = 0;
+            const selected = document.querySelector('input[name="shipping"]:checked');
+            if (selected) {
+                shippingCost = parseFloat(selected.getAttribute('data-cost'));
+            }
+            const total = basePrice + shippingCost;
+            totalPriceElement.textContent = total.toFixed(2); // Update the total price
+        }
+
+        // Add event listeners to all shipping radio buttons
+        radioButtons.forEach(radio => {
+            radio.addEventListener('change', updatePrice);
+        });
+
+        // Initial calculation
+        updatePrice();
+    });
+</script>
+
+
+
 </html>

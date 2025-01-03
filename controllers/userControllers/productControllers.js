@@ -172,11 +172,10 @@ export const sortByZToA = async (req, res) => {
 export const getCartPage = async (req, res) => {
     res.render('user/cart', { 
         user: req.session.user || null, 
-        userCart: req.userCart || null 
+        userCart: req.userCart || null ,
+        cartPrice: req.cartPrice || { subtotal: 0, shippingCost: 0, total: 0, selectedShipping: 'free' }
     });
 };
-
-
 
 
 
@@ -205,6 +204,47 @@ export const getUserCart = async (req, res, next) => {
         res.status(500).send("Internal Server Error");
     }
 };
+
+
+export const cartPriceList = async (req, res, next) => {
+    try {
+        const userId = req.session.userId;
+
+        if (!userId) {
+            console.log("User not logged in");
+            req.cartPrice = null;
+            return next();
+        }
+
+        const cart = await Cart.findOne({ userId: userId });
+
+        if (!cart || !cart.items.length) {
+            console.log("Cart is empty or invalid");
+            req.cartPrice = { subtotal: 0, shippingCost: 0, total: 0, selectedShipping: 'free' };
+            return next();
+        }
+
+        const subtotal = cart.items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+        // Define shipping costs
+        const shippingCosts = { free: 0, standard: 50, express: 100 };
+
+        // Get shipping method from request or default to 'free'
+        const selectedShipping = req.body.shipping || 'free';
+        const shippingCost = shippingCosts[selectedShipping] || 0;
+
+        const total = subtotal + shippingCost;
+
+        req.cartPrice = { subtotal, shippingCost, total, selectedShipping };
+        next();
+    } catch (error) {
+        console.error("Error fetching cart details:", error);
+        req.cartPrice = null;
+        next();
+    }
+};
+
+
 
 
 export const addToCart = async (req, res) => {
@@ -255,8 +295,6 @@ export const addToCart = async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 };
-
-
 
 
 
