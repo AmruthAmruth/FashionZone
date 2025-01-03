@@ -1,5 +1,6 @@
 import Address from "../../models/addressModel.js";
 import mongoose from "mongoose";
+import User from "../../models/userModel.js";
 
 
 
@@ -8,6 +9,39 @@ export const getProfilePage = (req, res) => {
     
     res.render('user/profile', { user: req.session.user || null, userAddress: req.userAddress || null });
 };
+
+
+
+export const updateName=async(req,res)=>{
+    try {    
+        const userId = req.session.userId; 
+        const { name } = req.body;  
+
+
+        const user = await User.findById(userId);
+        console.log(user);
+        
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        user.name = name; 
+        req.session.user.name=name 
+        await user.save();  
+
+       
+        res.redirect('/profile');  
+    } catch (error) {
+        console.error('Error updating name:', error);
+        res.status(500).send('Internal Server Error');
+    }
+}
+
+
+
+
+
+
 
 export const getAddress = async (req, res, next) => {
     try {
@@ -92,9 +126,6 @@ export const deleteAddress=async(req,res)=>{
 
 
 
-
-
-
     export const createAddress = async (req, res) => {
         try {
             console.log(req.body);
@@ -152,3 +183,7 @@ export const deleteAddress=async(req,res)=>{
             return res.status(500).json({ message: 'Server error, please try again later.' });
         }
     };
+
+
+
+

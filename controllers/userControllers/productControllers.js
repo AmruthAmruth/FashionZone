@@ -87,10 +87,8 @@ export const priceHighToLow = async (req, res) => {
     try {
         console.log("high to low working");
 
-        // Await the query to get products sorted by price in descending order
         const products = await Product.find({ isActive: true }).sort({ disPrice: -1 });
 
-        // Render the shop page with the sorted products
         console.log(products);
         
         res.render('user/shop', { 
@@ -173,7 +171,8 @@ export const getCartPage = async (req, res) => {
     res.render('user/cart', { 
         user: req.session.user || null, 
         userCart: req.userCart || null ,
-        cartPrice: req.cartPrice || { subtotal: 0, shippingCost: 0, total: 0, selectedShipping: 'free' }
+        cartPrice: req.cartPrice || { subtotal: 0, shippingCost: 0, total: 0, selectedShipping: 'free' },
+        messages: req.flash() 
     });
 };
 
@@ -333,45 +332,67 @@ export const removeFromCart = async (req, res) => {
 
 
 
+
+
 export const updateCart = async (req, res) => {
     try {
         const productId = req.params.productId; 
         const action = req.body.action; 
         
+        // Maximum quantity allowed per person
+        const MAX_QUANTITY = 5;
+
         if (!req.session.user) {
             return res.redirect('/login'); 
         }
 
         const userId = req.session.userId; 
-
-      
         const cart = await Cart.findOne({ userId: userId });
+        const product = await Product.findById(productId);
 
         if (!cart) {
-            
             return res.redirect('/cart');
         }
 
         const productIndex = cart.items.findIndex(item => item.productId.toString() === productId);
 
         if (productIndex > -1) {
-           
-            const product = cart.items[productIndex];
-
+            const item = cart.items[productIndex];
+            const availableStock = product.stock;
+            const maxAllowedQuantity = Math.min(availableStock, MAX_QUANTITY); // Max between available stock and max quantity per person
+            
             if (action === 'increase') {
-                product.quantity += 1; 
-            } else if (action === 'decrease' && product.quantity > 1) {
-                product.quantity -= 1; 
+                // Check if the user is trying to exceed the available stock or max allowed quantity
+                if (item.quantity < maxAllowedQuantity) {
+                    item.quantity += 1;
+                } else {
+                    req.flash('error', `You can only add up to ${maxAllowedQuantity} items for this product, based on the available stock.`);
+                    return res.redirect('/cart');
+                }
+            } else if (action === 'decrease' && item.quantity > 1) {
+                item.quantity -= 1;  // Decrease quantity by 1, but prevent going below 1
             }
 
-           
             await cart.save();
         }
 
-       
         return res.redirect('/cart');
     } catch (err) {
         console.error("Error while updating cart:", err);
         res.status(500).send("Internal Server Error");
     }
 };
+
+
+
+
+
+
+
+
+// --------------------Checkout Section ---------------------------------
+
+
+export const checkoutPage=(req,res)=>{
+    res.render('user/chekout',{  user: req.session.user || null})
+}

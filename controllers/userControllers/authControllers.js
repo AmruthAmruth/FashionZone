@@ -101,11 +101,7 @@ export const VerifyOTP = async (req, res) => {
 
       await newUser.save();
 
-      req.session.user = {
-          id: newUser._id,
-          name: newUser.name,
-          email: newUser.email
-      };
+      req.session.user = newUser
 
       req.session.tempUser = null; 
       await OTP.deleteMany({ email: tempUser.email }); 
@@ -170,16 +166,12 @@ export const LoginAccount=async(req,res)=>{
                 return res.redirect('/login')
               }
 
-              req.session.user = {
-                id: existingUser._id,
-                name: existingUser.name,
-                email: existingUser.email
-            };
+              req.session.user =existingUser
 
 
 
            req.session.userId= new mongoose.Types.ObjectId(existingUser._id)
-            console.log(req.session.user);
+            console.log("Session User ",req.session.user);
             
             return res.redirect('/')
 

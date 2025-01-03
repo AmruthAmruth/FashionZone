@@ -1,9 +1,9 @@
 import express from 'express'
 import { CreateAccount, forgotOtpPage, getEnterPasswordOTP, getForgotPasswordPage, getHomePage, getLoginPage, getNewPasswordPage, getOtpPage, LoginAccount, Logout, resentOTP, resetPassword, sendPasswordResetOTP, VerifyOTP, verifyResentOTP } from '../controllers/userControllers/authControllers.js'
 import passport from 'passport'
-import { addToCart, cartPriceList, getCartPage, getNewArrivals, getProduct, getProductbyId, getShopPage, getUserCart, priceHighToLow, priceLowToHigh, removeFromCart, sortByAToZ, sortByZToA, updateCart } from '../controllers/userControllers/productControllers.js'
+import { addToCart, cartPriceList, checkoutPage, getCartPage, getNewArrivals, getProduct, getProductbyId, getShopPage, getUserCart, priceHighToLow, priceLowToHigh, removeFromCart, sortByAToZ, sortByZToA, updateCart } from '../controllers/userControllers/productControllers.js'
 import { isUserAuthenticated } from '../middileware/auth.js'
-import { createAddress, deleteAddress, editAddress, getAddress, getProfilePage } from '../controllers/userControllers/profileControllers.js'
+import { createAddress, deleteAddress, editAddress, getAddress, getProfilePage, updateName } from '../controllers/userControllers/profileControllers.js'
 import mongoose from 'mongoose'
 
 const userRouter=express.Router()
@@ -34,7 +34,9 @@ userRouter.get('/auth/google/callback',passport.authenticate('google',{failureRe
     console.log("Google login Successfully completed");
     
     req.session.userId=new mongoose.Types.ObjectId(req.user._id)
-    req.session.user=req.user.name
+    console.log(req.user);
+    
+    req.session.user=req.user
     res.redirect('/')
 })
 
@@ -87,8 +89,18 @@ userRouter.post('/cart/remove/:productId',removeFromCart)
 userRouter.get('/profile', getAddress, getProfilePage);
 
 
-
 userRouter.post('/address',createAddress)
 userRouter.post('/profile/delete/:addressId',deleteAddress)
 userRouter.post('/profile/edit',editAddress)
+userRouter.post('/updatename',updateName)
+
+
+
+// ---------------Checkout Section------------------------
+
+userRouter.get('/chekout',checkoutPage)
+
+
+
+
 export default userRouter 

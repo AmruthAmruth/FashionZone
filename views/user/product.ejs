@@ -3,53 +3,7 @@
 
 <%- include('../layout/header.ejs') -%>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.rawgit.com/elevateweb/elevatezoom/master/jquery.elevateZoom.min.js"></script>
 
-<script>
-  $(document).ready(function () {
-    // Initialize ElevateZoom on the main image
-    function initializeZoom() {
-      $('#product-zoom').elevateZoom({
-        zoomType: "lens",          // Type of zoom
-        lensShape: "round",        // Shape of the zoom lens
-        lensSize: 250,             // Size of the zoom lens
-        scrollZoom: true,          // Enable scroll zoom
-        easing: true,              // Apply easing effect for transitions
-        responsive: true           // Make it responsive
-      });
-    }
-
-    // Initialize zoom for the main product image
-    initializeZoom();  // Initialize zoom for the first image
-
-    // Event listener for thumbnail click
-    $('.product-gallery-item').on('click', function (e) {
-      e.preventDefault();
-      
-      const newImage = $(this).attr('data-image');            // Get new image path
-      const newZoomImage = $(this).attr('data-zoom-image');   // Get new zoom image path
-
-      // Ensure both image paths are correct
-      if (!newImage || !newZoomImage) {
-        console.error("Invalid image paths:", newImage, newZoomImage);
-        return;
-      }
-
-      // Remove previous zoom instance and zoom container
-      $('#product-zoom').removeData('elevateZoom');
-      $('.zoomContainer').remove();  // Remove zoom container
-
-      // Update the main image and zoom image
-      $('#product-zoom')
-        .attr('src', newImage)  // Update the main image source
-        .attr('data-zoom-image', newZoomImage);  // Update the zoom image
-
-      // Reinitialize zoom functionality
-      initializeZoom();  // Re-initialize zoom for the new image
-    });
-  });
-</script>
 
     </head>
 
@@ -136,7 +90,7 @@
                                     <div class="row">
                                         <figure class="product-main-image cproduct-container">
                                       
-                                            <img id="product-zoom" src="/<%=product.images[0] %>" data-zoom-image="/<%=product.images[0] %>" alt="product image">
+                                            <img id="product-zoom" src="/<%=product.images[0] %>" style="width: 450px; height: 455px; object-fit: cover;"  data-zoom-image="/<%=product.images[0] %>" alt="product image">
                                       
                                           <a href="#" id="btn-product-gallery" class="btn-product-gallery">
                                             <i class="icon-arrows"></i>
@@ -173,6 +127,13 @@
 
 
                             <div class="col-md-6">
+
+
+
+
+
+
+
                                 <div class="product-details">
                                     <h1 class="product-title"><%= product.brand %></h1><!-- End .product-title -->
                                     <div class="ratings-container">
@@ -181,45 +142,56 @@
                                         </div><!-- End .ratings -->
                                         <a class="ratings-text" href="#product-review-link" id="review-link">( 2 Reviews )</a>
                                     </div><!-- End .rating-container -->
-                                    
+                                
                                     <h2 class="product-title"><%= product.title %></h2>
                                     <div class="product-price">
-                                        <span class="original-price"><%= product.price %></span> <!-- Original Price -->
-                                        <span class="discounted-price"><%= product.disPrice %></span> <!-- Discounted Price -->
+                                        <span class="original-price">₹ <%= product.price %></span> <!-- Original Price -->
+                                        <span class="discounted-price">₹ <%= product.disPrice %></span> <!-- Discounted Price -->
                                     </div>
                                     <div class="product-content">
                                         <p><%= product.description %> </p>
                                     </div><!-- End .product-content -->
-
+                                
                                     <div class="details-filter-row details-row-size">
                                         <label>Color:<%= product.color %></label>
-
-                                        <!-- End .product-nav -->
                                     </div><!-- End .details-filter-row -->
-
+                                
                                     <div class="details-filter-row details-row-size">
                                         <label for="size">Size : <%= product.size %></label>
                                         <label for="size">Stock : <%= product.stock %></label>
-                                       
-                                      <!-- End .select-custom -->
- 
                                     </div><!-- End .details-filter-row -->
-
-                                   
+                                
                                     <div class="details-action-wrapper">
-                                        <form action="/cart/add/<%= product._id %>" method="POST">
-                                            <span>Quantity:</span><input type="number" name="quantity" value="1" min="1" class="quantity-input">
+                                        <form action="/cart/add/<%= product._id %>" method="POST" id="add-to-cart-form">
+                                            <span>Quantity:</span>
+                                            <!-- Adjust the max attribute of the quantity input based on stock -->
+                                            <input type="number" name="quantity" value="1" min="1" max="<%= product.stock %>" class="quantity-input" id="quantity-input">
+                                            
                                             <div class="product-details-action mt-3">
-                                            <button type="submit" class="btn-product btn-cart">
-                                                <p>Add To Cart</p>
-                                            </button>
+                                                <button type="submit" class="btn-product btn-cart">
+                                                    <p>Add To Cart</p>
+                                                </button>
+                                            </div>
                                         </form>
+                                
+                                        <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
+                                        <a href="#" class="btn-product btn-compare" title="Compare"><span>Add to Compare</span></a>
+                                    </div><!-- End .details-action-wrapper -->
+                                </div>
+                                
+                                
+                                
 
-                                        
-                                            <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
-                                            <a href="#" class="btn-product btn-compare" title="Compare"><span>Add to Compare</span></a>
-                                        </div><!-- End .details-action-wrapper -->
-                                    </div><!-- End .product-details-action -->
+
+
+
+
+
+
+
+
+
+
 
                                     <div class="product-details-footer">
                                         <div class="product-cat">
@@ -357,18 +329,103 @@
         <%- include('../partials/footer.ejs')-%>
   
 
+<!-- Add to cart Sweet popup -->
+
+
+<script>
+    document.getElementById('add-to-cart-form').addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevent the form from submitting immediately
+
+        // Show SweetAlert when the form is submitted
+        Swal.fire({
+            icon: 'success',
+            title: 'Added to Cart',
+            text: 'Your item has been added to the cart!',
+        }).then((result) => {
+            // After the popup closes, submit the form programmatically
+            if (result.isConfirmed) {
+                this.submit(); // Submit the form after the user closes the popup
+            }
+        });
+    });
+</script>
 
 
 
 
+<!-- SweetAlert Script -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    const quantityInput = document.getElementById('quantity-input');
+    const maxStock = <%= product.stock %>;  // Passing stock value from EJS to JavaScript
+    
+    quantityInput.addEventListener('input', function () {
+        const quantity = parseInt(quantityInput.value);
+        if (quantity > maxStock) {
+            // Show SweetAlert Popup when the quantity exceeds stock
+            Swal.fire({
+                icon: 'warning',
+                title: 'Maximum Quantity Reached',
+                text: `Sorry, you can only add up to ${maxStock} items to your cart.`,
+                confirmButtonText: 'OK'
+            });
+            quantityInput.value = maxStock;  // Set the quantity back to the max available stock
+        }
+    });
+</script>
 
 
+<!-- Zooming Script Section -->
 
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.rawgit.com/elevateweb/elevatezoom/master/jquery.elevateZoom.min.js"></script>
 
+<script>
+  $(document).ready(function () {
+    // Initialize ElevateZoom on the main image
+    function initializeZoom() {
+      $('#product-zoom').elevateZoom({
+        zoomType: "lens",          // Type of zoom
+        lensShape: "round",        // Shape of the zoom lens
+        lensSize: 250,             // Size of the zoom lens
+        scrollZoom: true,          // Enable scroll zoom
+        easing: true,              // Apply easing effect for transitions
+        responsive: true           // Make it responsive
+      });
+    }
 
+    // Initialize zoom for the main product image
+    initializeZoom();  // Initialize zoom for the first image
 
+    // Event listener for thumbnail click
+    $('.product-gallery-item').on('click', function (e) {
+      e.preventDefault();
+      
+      const newImage = $(this).attr('data-image');            // Get new image path
+      const newZoomImage = $(this).attr('data-zoom-image');   // Get new zoom image path
 
+      // Ensure both image paths are correct
+      if (!newImage || !newZoomImage) {
+        console.error("Invalid image paths:", newImage, newZoomImage);
+        return;
+      }
+
+      // Remove previous zoom instance and zoom container
+      $('#product-zoom').removeData('elevateZoom');
+      $('.zoomContainer').remove();  // Remove zoom container
+
+      // Update the main image and zoom image
+      $('#product-zoom')
+        .attr('src', newImage)  // Update the main image source
+        .attr('data-zoom-image', newZoomImage);  // Update the zoom image
+
+      // Reinitialize zoom functionality
+      initializeZoom();  // Re-initialize zoom for the new image
+    });
+  });
+</script>
 
 
 

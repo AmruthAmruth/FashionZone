@@ -122,9 +122,58 @@
                                         <p>Welcome to your ultimate shopping destination! Sign in now to explore exclusive deals, track your orders, and enjoy a seamless shopping experience tailored just for you.</p>
                                     <% } %>
                                 </div>
-                                <% if (user) { %>
-                                    <p>Name : <%= user%></p>
-                                    <% } %>
+
+
+
+
+
+<!-- User Profile Section -->
+<% if (user) { %>
+    <p>Name: <%= user.name %></p>
+    <p>Email: <%= user.email %></p>
+    <p>Status: <%= user.isActive %></p>
+
+    <!-- Edit Button -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editNameModal">
+        Edit
+    </button>
+<% } else { %>
+    <p>User not logged in or session expired.</p>
+<% } %>
+
+<!-- Modal for Editing User Name -->
+<div class="modal fade" id="editNameModal" tabindex="-1" aria-labelledby="editNameModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editNameModalLabel">Edit Name</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <% if (user) { %>
+                    <!-- Form to Edit Name -->
+                    <form action="/updatename" method="POST">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">New Name</label>
+                            <input type="text" class="form-control" id="name" name="name" value="<%= user.name %>" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </form>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
                                 <!-- .End .tab-pane -->
 
                                 <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
@@ -427,6 +476,28 @@
     </main><!-- End .main -->
 
 
+
+
+
+
+
+    
+
+
+
+
+
+
+
+<!-- Bootstrap JS and Popper (Required for Bootstrap Modal) -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+
+
+
+
+
     <script>
         const form = document.getElementById('addressForm');
 
@@ -490,6 +561,49 @@ form.querySelectorAll('.form-control').forEach(input => {
 });
 
     </script>
+
+
+
+
+
+
+<script>
+    // Wait for the DOM to be ready
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get all the "Edit" buttons
+        const editButtons = document.querySelectorAll('.btn-edit');
+
+        // Add click event listener to each "Edit" button
+        editButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                // Get data attributes from the clicked button
+                const addressId = button.getAttribute('data-id');
+                const name = button.getAttribute('data-name');
+                const house = button.getAttribute('data-house');
+                const landmark = button.getAttribute('data-landmark');
+                const city = button.getAttribute('data-city');
+                const state = button.getAttribute('data-state');
+                const country = button.getAttribute('data-country');
+                const pincode = button.getAttribute('data-pincode');
+                const phone = button.getAttribute('data-phone');
+
+                // Populate the modal form fields
+                document.getElementById('addressId').value = addressId;
+                document.getElementById('name').value = name;
+                document.getElementById('house').value = house;
+                document.getElementById('landmark').value = landmark;
+                document.getElementById('city').value = city;
+                document.getElementById('state').value = state;
+                document.getElementById('country').value = country;
+                document.getElementById('pincode').value = pincode;
+                document.getElementById('phone').value = phone;
+
+                // Show the modal
+                $('#editAddressModal').modal('show');
+            });
+        });
+    });
+</script>
 
 
 </body>
