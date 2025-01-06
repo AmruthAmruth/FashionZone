@@ -1,36 +1,86 @@
-import categoryModel from "../../models/categoryModel.js";
+import Category from "../../models/categoryModel.js";
 
 
 
 export const getCategoryPage=async(req,res)=>{
-    res.render('admin/category')
+
+        try{
+            const categories= await Category.find()
+            if (!categories || categories.length === 0) {
+                return res.render('admin/category', { categories: [], message: "No categories found" });
+            }
+            const message = "Category List";
+            res.render('admin/category', { categories,message  });
+            
+        }catch(err){
+            console.log("Error while tring to get the category page",err);
+
+        }
+
 }
 
 
-export const  addCategory=async(req,res)=>{
+export const createCategory=async(req,res)=>{
     try{
-           const {category,description}=req.body
-           const lowerCaseCategory = category.toLowerCase();
-           const existingCategory = await Category.findOne({ category: new RegExp(`^${lowerCaseCategory}$`, 'i') });
 
-           if(existingCategory){
-            req.flash('error','already exists a category with this name')
-            res.redirect('/admin/addcategory')
-    }else{
-        const category = new categoryModel({
-            category:category,
-            description,
+        const {category,description}=req.body
 
+  if(!category || !description){
+    return res.redirect('admin/categories')
+  }
+          
+        const newCategory= new Category({
+            category,
+            description
         })
-        console.log("New Category added Successfully");
-        
-    await category.save();
-    res.redirect('/admin/category')
-    }
+
+            await newCategory.save()
+            res.redirect('/admin/categories');
 
 
     }catch(err){
-        console.log("Error while adding new category",err);
+        console.log("Error while trying to add category",err);
+        
+    }
+}
+
+
+export const editCategory=async(req,res)=>{
+    try{
+        const categoryId = req.params.id; 
+        const { category, description } = req.body; 
+        const categoryToUpdate = await Category.findById(categoryId);
+
+        categoryToUpdate.category = category;
+        categoryToUpdate.description = description;
+
+        await categoryToUpdate.save();
+
+        res.redirect('/admin/categories'); 
+
+    }catch(err){
+        console.log("Error while tring to edit the category");
+        res.redirect('/admin/categories'); 
+        
+    }
+}
+
+
+
+
+export const showAndHideCategory=async(req,res)=>{
+    try{
+
+        const categoryId = req.params.id; 
+    const category = await Category.findById(categoryId);
+
+    category.isListed = !category.isListed;
+
+    await category.save(); 
+    res.redirect('/admin/categories');
+
+    }catch(err){
+        console.log("Error while tring to hide or show the catogory");
         
     }
 }

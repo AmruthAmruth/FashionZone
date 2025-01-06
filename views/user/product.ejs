@@ -89,51 +89,31 @@
                                 <div class="product-gallery product-gallery-vertical">
                                     <div class="row">
                                         <figure class="product-main-image cproduct-container">
-                                      
                                             <img id="product-zoom" src="/<%=product.images[0] %>" style="width: 450px; height: 455px; object-fit: cover;"  data-zoom-image="/<%=product.images[0] %>" alt="product image">
-                                      
-                                          <a href="#" id="btn-product-gallery" class="btn-product-gallery">
-                                            <i class="icon-arrows"></i>
-                                          </a>
+                                            <a href="#" id="btn-product-gallery" class="btn-product-gallery">
+                                                <i class="icon-arrows"></i>
+                                            </a>
                                         </figure><!-- End .product-main-image -->
-                                      
+                        
                                         <div id="product-zoom-gallery" class="product-image-gallery">
-                                          <a class="product-gallery-item active" href="#" data-image="/<%=product.images[0]%>" data-zoom-image="/<%=product.images[0] %>">
-                                            <img src="/<%=product.images[0]%>" alt="product side">
-                                          </a>
-                                      
-                                          <a class="product-gallery-item" href="#" data-image="/<%=product.images[1]%>" data-zoom-image="/<%=product.images[1]%>">
-                                            <img src="/<%=product.images[1]%>" alt="product cross">
-                                          </a>
-                                      
-                                          <a class="product-gallery-item" href="#" data-image="/<%=product.images[2]%>" data-zoom-image="/<%=product.images[2]%>">
-                                            <img src="/<%=product.images[2]%>" alt="product with model">
-                                          </a>
-                                      
-                                          <a class="product-gallery-item" href="#" data-image="/<%=product.images[3]%>" data-zoom-image="/<%=product.images[3]%>">
-                                            <img src="/<%=product.images[3]%>" alt="product back">
-                                          </a>
+                                            <a class="product-gallery-item active" href="#" data-image="/<%=product.images[0]%>" data-zoom-image="/<%=product.images[0] %>">
+                                                <img src="/<%=product.images[0]%>" alt="product side">
+                                            </a>
+                                            <a class="product-gallery-item" href="#" data-image="/<%=product.images[1]%>" data-zoom-image="/<%=product.images[1]%>">
+                                                <img src="/<%=product.images[1]%>" alt="product cross">
+                                            </a>
+                                            <a class="product-gallery-item" href="#" data-image="/<%=product.images[2]%>" data-zoom-image="/<%=product.images[2]%>">
+                                                <img src="/<%=product.images[2]%>" alt="product with model">
+                                            </a>
+                                            <a class="product-gallery-item" href="#" data-image="/<%=product.images[3]%>" data-zoom-image="/<%=product.images[3]%>">
+                                                <img src="/<%=product.images[3]%>" alt="product back">
+                                            </a>
                                         </div><!-- End .product-image-gallery -->
-                                      </div><!-- End .row -->
+                                    </div><!-- End .row -->
                                 </div><!-- End .product-gallery -->
                             </div><!-- End .col-md-6 -->
-
-
-
-
-
-
-
-
-
+                        
                             <div class="col-md-6">
-
-
-
-
-
-
-
                                 <div class="product-details">
                                     <h1 class="product-title"><%= product.brand %></h1><!-- End .product-title -->
                                     <div class="ratings-container">
@@ -142,7 +122,7 @@
                                         </div><!-- End .ratings -->
                                         <a class="ratings-text" href="#product-review-link" id="review-link">( 2 Reviews )</a>
                                     </div><!-- End .rating-container -->
-                                
+                        
                                     <h2 class="product-title"><%= product.title %></h2>
                                     <div class="product-price">
                                         <span class="original-price">₹ <%= product.price %></span> <!-- Original Price -->
@@ -151,65 +131,66 @@
                                     <div class="product-content">
                                         <p><%= product.description %> </p>
                                     </div><!-- End .product-content -->
-                                
+                        
                                     <div class="details-filter-row details-row-size">
                                         <label>Color:<%= product.color %></label>
                                     </div><!-- End .details-filter-row -->
-                                
-                                    <div class="details-filter-row details-row-size">
-                                        <label for="size">Size : <%= product.size %></label>
-                                        <label for="size">Stock : <%= product.stock %></label>
-                                    </div><!-- End .details-filter-row -->
-                                
+                                    
+                                    
+                                    
+                                    <div class="details-filter-row details-row-size" style="display: flex; flex-wrap: nowrap; align-items: center;">
+                                        <label for="size" style="margin-right: 10px; white-space: nowrap;">Size: <%= product.size %></label> 
+                                        <label for="stock" style="white-space: nowrap;">
+                                            Stock: 
+                                            <% if (product.stock === 0) { %>
+                                                <span class="out-of-stock text-danger" style="color: red; font-weight: bold;">Out of stock</span>
+                                            <% } else { %>
+                                                <%= product.stock %>
+                                            <% } %>
+                                        </label>
+                                    </div>
+                                    
+                                    
+                                    <!-- End .details-filter-row -->
+                        
+                                  
+                                  
                                     <div class="details-action-wrapper">
                                         <form action="/cart/add/<%= product._id %>" method="POST" id="add-to-cart-form">
                                             <span>Quantity:</span>
                                             <!-- Adjust the max attribute of the quantity input based on stock -->
-                                            <input type="number" name="quantity" value="1" min="1" max="<%= product.stock %>" class="quantity-input" id="quantity-input">
-                                            
+                                            <input type="number" name="quantity" value="1" min="1" max="5" class="quantity-input" id="quantity-input">
+                        
                                             <div class="product-details-action mt-3">
+                                                <% if (product.stock > 0) { %>
                                                 <button type="submit" class="btn-product btn-cart">
                                                     <p>Add To Cart</p>
                                                 </button>
+                                                <% } %>
                                             </div>
                                         </form>
-                                
+                        
                                         <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
                                         <a href="#" class="btn-product btn-compare" title="Compare"><span>Add to Compare</span></a>
                                     </div><!-- End .details-action-wrapper -->
                                 </div>
-                                
-                                
-                                
-
-
-
-
-
-
-
-
-
-
-
-
-                                    <div class="product-details-footer">
-                                        <div class="product-cat">
-                                            <span>Category:</span>
-                                            <a href="#"><%= product.category %></a>
-                                            
-                                        </div><!-- End .product-cat -->
-
-                                        <div class="social-icons social-icons-sm">
-                                            <span class="social-label">Share:</span>
-                                            <a href="#" class="social-icon" title="Facebook" target="_blank"><i class="icon-facebook-f"></i></a>
-                                            <a href="#" class="social-icon" title="Twitter" target="_blank"><i class="icon-twitter"></i></a>
-                                            <a href="#" class="social-icon" title="Instagram" target="_blank"><i class="icon-instagram"></i></a>
-                                            <a href="#" class="social-icon" title="Pinterest" target="_blank"><i class="icon-pinterest"></i></a>
-                                        </div>
-                                    </div><!-- End .product-details-footer -->
-                                </div><!-- End .product-details -->
+                        
+                                <div class="product-details-footer">
+                                    <div class="product-cat">
+                                        <span>Category:</span>
+                                        <a href="#"><%= product.category %></a>
+                                    </div><!-- End .product-cat -->
+                        
+                                    <div class="social-icons social-icons-sm">
+                                        <span class="social-label">Share:</span>
+                                        <a href="#" class="social-icon" title="Facebook" target="_blank"><i class="icon-facebook-f"></i></a>
+                                        <a href="#" class="social-icon" title="Twitter" target="_blank"><i class="icon-twitter"></i></a>
+                                        <a href="#" class="social-icon" title="Instagram" target="_blank"><i class="icon-instagram"></i></a>
+                                        <a href="#" class="social-icon" title="Pinterest" target="_blank"><i class="icon-pinterest"></i></a>
+                                    </div>
+                                </div><!-- End .product-details-footer -->
                             </div><!-- End .col-md-6 -->
+                        </div><!-- End .col-md-6 -->
                         </div><!-- End .row -->
 
 
@@ -355,25 +336,35 @@
 
 <!-- SweetAlert Script -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script>
-    const quantityInput = document.getElementById('quantity-input');
-    const maxStock = <%= product.stock %>;  // Passing stock value from EJS to JavaScript
-    
-    quantityInput.addEventListener('input', function () {
-        const quantity = parseInt(quantityInput.value);
-        if (quantity > maxStock) {
-            // Show SweetAlert Popup when the quantity exceeds stock
-            Swal.fire({
-                icon: 'warning',
-                title: 'Maximum Quantity Reached',
-                text: `Sorry, you can only add up to ${maxStock} items to your cart.`,
-                confirmButtonText: 'OK'
-            });
-            quantityInput.value = maxStock;  // Set the quantity back to the max available stock
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+        const quantityInput = document.getElementById('quantity-input');
+        const stock = <%= product.stock %>; // Get the stock value from the backend
+        const maxLimit = Math.min(5, stock); // Set the max limit based on stock or 5
+        
+        // Set the maximum value for the input
+        quantityInput.max = maxLimit;
+
+        // If the user tries to increase the quantity beyond the limit, reset it to the max limit and show SweetAlert
+        quantityInput.addEventListener('input', function() {
+            if (parseInt(quantityInput.value) > maxLimit) {
+                // Reset the input value to the maximum allowed quantity
+                quantityInput.value = maxLimit;
+                
+                // Show SweetAlert message
+                Swal.fire({
+                    title: 'Oops!',
+                    text: `You can only add up to ${maxLimit} items.`,
+                    icon: 'warning',
+                    confirmButtonText: 'Okay'
+                });
+            }
+        });
     });
 </script>
+
+
+
 
 
 <!-- Zooming Script Section -->

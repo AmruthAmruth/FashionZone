@@ -1,0 +1,638 @@
+<%- include('../layout/header.ejs') -%>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+
+
+
+    </head>
+
+    < <div class="page-wrapper">
+        <%- include('../partials/navbar.ejs') -%>
+
+            <body>
+
+
+
+
+                <div class="page-wrapper">
+
+
+                    <main class="main">
+                        <div class="page-header text-center"
+                            style="background-image: url('/static  /images/page-header-bg.jpg')">
+                            <div class="container">
+                                <h1 class="page-title">Checkout<span>Shop</span></h1>
+                            </div><!-- End .container -->
+                        </div><!-- End .page-header -->
+                        <nav aria-label="breadcrumb" class="breadcrumb-nav">
+                            <div class="container">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                                    <li class="breadcrumb-item"><a href="/shop">Shop</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+                                </ol>
+                            </div><!-- End .container -->
+                        </nav><!-- End .breadcrumb-nav -->
+
+                        <div class="page-content">
+
+
+
+
+
+
+
+
+
+
+
+                            <div class="checkout">
+                                <div class="container">
+
+
+
+                                    <div class="row">
+
+                                        <div class="col-lg-9" id="addressContainer">
+                                            <div class="d-flex justify-content-between align-items-center m-3">
+                                                <h3 class="address-heading">Delivery Address</h3>
+                                                <button type="button" class="btn btn-outline-primary-2 mb-1"
+                                                    data-toggle="modal" data-target="#addAddressModal">
+                                                    <span>Add Address</span>
+                                                    <i class="icon-long-arrow-right"></i>
+                                                </button>
+                                            </div>
+                                        
+                                            <% if (Array.isArray(userAddress)) { %>
+                                                <% userAddress.forEach((address, index)=> { %>
+                                                    <div class="card card-dashboard mb-2 address-card" data-address-id="<%= address._id %>">
+                                                        <div class="card-body d-flex justify-content-between align-items-center p-0 m-1">
+                                                            <div>
+                                                                <!-- Ensure radio button value is set to address._id -->
+                                                                <input type="radio" class="pl-4 ml-3 mr-1" name="addressRadioButton" 
+                                                                    id="addressRadio<%= index %>" value="<%= address._id %>"
+                                                                    <%= index === 0 ? 'checked' : '' %> 
+                                                                    >
+                                                                <p class="pl-5">
+                                                                    <strong><%= address.name %></strong><br>
+                                                                    <%= address.type %> <br>
+                                                                    <%= address.phone %><br>
+                                                                    <%= address.city %>, <%= address.district %>, <%= address.state %>, <%= address.country %> <br>
+                                                                    <%= address.house %>, <%= address.pincode %>
+                                                                </p>
+                                                            </div>
+                                                            <a href="#" class="edit-address text-right mr-3" 
+                                                                data-toggle="modal" 
+                                                                data-target="#editAddressModal"
+                                                                data-name="<%= address.name %>" 
+                                                                data-phone="<%= address.phone %>"
+                                                                data-address="<%= address.house %>"
+                                                                data-street="<%= address.city %>"
+                                                                data-postal-code="<%= address.pincode %>"
+                                                                data-state="<%= address.state %>"
+                                                                data-country="<%= address.country %>" 
+                                                                data-district="<%= address.district %>"
+                                                                data-address-type="<%= address.type %>"
+                                                                data-address-id="<%= address._id %>">
+                                                                <i class="icon-edit" style="color: #cc9966;"></i>EDIT
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                <% }); %>
+                                            <% } else { %>
+                                                <p>No addresses found.</p>
+                                            <% } %>
+                                        </div>
+                                        
+                                        <aside class="col-lg-3">
+                                            <div class="summary">
+                                                <h3 class="summary-title">Your Order</h3>
+                                                <form method="POST" action="/createorder" id="orderForm">
+                                                    <input type="hidden" id="selectedAddressId" name="selectedAddressId">
+                                        
+                                                    <table class="table table-summary">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Product</th>
+                                                                <th>Total</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <% let subtotal = 0; %>
+                                                            <% userProducts.forEach(product => { %>
+                                                                <% product.items.forEach(item => { %>
+                                                                    <tr>
+                                                                        <td><a href="#"><%= item.title %></a></td>
+                                                                        <td>$<%= item.price * item.quantity %></td>
+                                                                    </tr>
+                                                                    <% subtotal += item.price * item.quantity; %>
+                                                                <% }); %>
+                                                            <% }); %>
+                                        
+                                                            <tr class="summary-subtotal">
+                                                                <td>Subtotal:</td>
+                                                                <td>$<%= subtotal %></td>
+                                                            </tr>
+                                        
+                                                            <tr>
+                                                                <td>Shipping:</td>
+                                                                <td>Free shipping</td>
+                                                            </tr>
+                                        
+                                                            <tr class="summary-total">
+                                                                <td>Total:</td>
+                                                                <td>$<%= subtotal %></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                        
+                                                    <input type="hidden" name="totalAmount" value="<%= subtotal %>">
+                                                    <input type="hidden" name="products" value="<%= JSON.stringify(userProducts) %>">
+                                                    <div class="accordion-summary" id="accordion-payment">
+                                                        <div class="card mb-2">
+                                                            <div class="card-header" id="heading-1">
+                                                                <h2 class="card-title" id="paymentLabel">Payment Methods</h2>
+                                                            </div>
+                                                        </div>
+                                        
+                                                        <div class="card mb-1">
+                                                            <div class="card-header" id="heading-2">
+                                                                <h2 class="card-title">
+                                                                    <input type="radio" name="paymentMethod" id="payment-method-2" value="Razor pay">
+                                                                    <label for="payment-method-2" role="button" data-toggle="collapse" href="#collapse-2" aria-expanded="false" aria-controls="collapse-2">Debit Card/Credit Card/UPI</label>
+                                                                </h2>
+                                                            </div>
+                                                            <div id="collapse-2" class="collapse" aria-labelledby="heading-2" data-parent="#accordion-payment">
+                                                                <div class="card-body">
+                                                                    Online Payment
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                        
+                                                        <div class="card mb-1">
+                                                            <div class="card-header" id="heading-3">
+                                                                <h2 class="card-title">
+                                                                    <input type="radio" name="paymentMethod" id="payment-method-3" value="Cash on Delivery">
+                                                                    <label for="payment-method-3" role="button" data-toggle="collapse" href="#collapse-3" aria-expanded="false" aria-controls="collapse-3">Cash on Delivery</label>
+                                                                </h2>
+                                                            </div>
+                                                            <div id="collapse-3" class="collapse" aria-labelledby="heading-3" data-parent="#accordion-payment">
+                                                                <div class="card-body">
+                                                                    A method of collecting payment that requires customers to pay for goods at the time of delivery.
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                        
+                                                        <div class="card">
+                                                            <div class="card-header" id="heading-wallet">
+                                                                <h2 class="card-title">
+                                                                    <input type="radio" name="paymentMethod" id="payment-method-wallet" value="Wallet">
+                                                                    <label for="payment-method-wallet" role="button" data-toggle="collapse" href="#collapse-wallet" aria-expanded="false" aria-controls="collapse-wallet">Wallet</label>
+                                                                </h2>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                        
+                                                    <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block" id="placeOrderButton">
+                                                        <span class="btn-text">Place Order</span>
+                                                        <span class="btn-hover-text">Place Order</span>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </aside>
+                                        
+
+                                    
+
+
+                                     
+<!-- Modal for Editing Address -->
+<div class="modal fade" id="editAddressModal" tabindex="-1" role="dialog" aria-labelledby="editAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title text-center w-100" id="editAddressModalLabel">Edit Address</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-5">
+              
+              
+                <form id="editAddressForm" action="/checkouteditaddress" method="POST">
+                    <!-- Hidden input field for Address ID -->
+                    <input type="hidden" id="editAddressId" name="addressId">
+                
+                    <!-- Full Name -->
+                    <div class="form-group">
+                        <label for="editName">Full Name</label>
+                        <input type="text" class="form-control" id="editName" name="name" required>
+                    </div>
+                
+                    <!-- Phone Number -->
+                    <div class="form-group">
+                        <label for="editPhone">Phone Number</label>
+                        <input type="text" class="form-control" id="editPhone" name="phone" required>
+                    </div>
+                
+                    <!-- Address -->
+                    <div class="form-group">
+                        <label for="editAddress">Address</label>
+                        <input type="text" class="form-control" id="editAddress" name="house" required>
+                    </div>
+                
+                    <!-- Street -->
+                    <div class="form-group">
+                        <label for="editStreet">Street</label>
+                        <input type="text" class="form-control" id="editStreet" name="street" required>
+                    </div>
+                
+                    <!-- Postal Code -->
+                    <div class="form-group">
+                        <label for="editPostalCode">Postal Code</label>
+                        <input type="text" class="form-control" id="editPostalCode" name="postalCode" required>
+                    </div>
+                
+                    <!-- State -->
+                    <div class="form-group">
+                        <label for="editState">State</label>
+                        <input type="text" class="form-control" id="editState" name="state" required>
+                    </div>
+                
+                    <!-- Country -->
+                    <div class="form-group">
+                        <label for="editCountry">Country</label>
+                        <input type="text" class="form-control" id="editCountry" name="country" required>
+                    </div>
+                
+                    <!-- District -->
+                    <div class="form-group">
+                        <label for="editDistrict">District</label>
+                        <input type="text" class="form-control" id="editDistrict" name="district" required>
+                    </div>
+                
+                    <!-- Address Type -->
+                    <div class="form-group">
+                        <label for="editAddressType">Address Type</label>
+                        <input type="text" class="form-control" id="editAddressType" name="addressType" required>
+                    </div>
+                
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-outline-primary w-100">Save Address</button>
+                    </div>
+                </form>
+                
+
+
+
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+                                        
+
+
+                                        <!-- edi Address Modal  end-->
+
+
+
+                                        <!-- Add Address Modal -->
+                                        <div class="modal fade" id="addAddressModal" tabindex="-1" role="dialog" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-primary text-white">
+                                                        <h5 class="modal-title text-center w-100" id="addAddressModalLabel">Add Address</h5>
+                                                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body p-5">
+                                                        <form action="/checkoutaddaddress" method="post" id="addressForm" novalidate>
+                                                            <div class="row">
+                                                                <div class="col-sm-6 mb-3">
+                                                                    <label for="name">Full Name</label>
+                                                                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter your full name" required>
+                                                                    <div class="invalid-feedback">Full Name is required.</div>
+                                                                </div>
+                                                                <div class="col-sm-6 mb-3">
+                                                                    <label for="phone">Phone Number</label>
+                                                                    <input type="number" class="form-control" id="phone" name="phone" placeholder="Enter your phone number" required>
+                                                                    <div class="invalid-feedback">Phone Number is required.</div>
+                                                                </div>
+                                                            </div>
+                                        
+                                                            <div class="row">
+                                                                <div class="col-sm-6 mb-3">
+                                                                    <label for="country">Country</label>
+                                                                    <input type="text" class="form-control" id="country" name="country" placeholder="Enter your country" required>
+                                                                    <div class="invalid-feedback">Country is required.</div>
+                                                                </div>
+                                                                <div class="col-sm-6 mb-3">
+                                                                    <label for="state">State</label>
+                                                                    <input type="text" class="form-control" id="state" name="state" placeholder="Enter your state" required>
+                                                                    <div class="invalid-feedback">State is required.</div>
+                                                                </div>
+                                                            </div>
+                                        
+                                                            <div class="row">
+                                                                <div class="col-sm-6 mb-3">
+                                                                    <label for="district">District</label>
+                                                                    <input type="text" class="form-control" id="district" name="district" placeholder="Enter your district" required>
+                                                                    <div class="invalid-feedback">District is required.</div>
+                                                                </div>
+                                                                <div class="col-sm-6 mb-3">
+                                                                    <label for="city">City</label>
+                                                                    <input type="text" class="form-control" id="city" name="city" placeholder="Enter your city" required>
+                                                                    <div class="invalid-feedback">City is required.</div>
+                                                                </div>
+                                                            </div>
+                                        
+                                                            <div class="row">
+                                                                <div class="col-sm-6 mb-3">
+                                                                    <label for="landmark">Landmark</label>
+                                                                    <input type="text" class="form-control" id="landmark" name="landmark" placeholder="Enter a landmark" required>
+                                                                    <div class="invalid-feedback">Landmark is required.</div>
+                                                                </div>
+                                                                <div class="col-sm-6 mb-3">
+                                                                    <label for="house">House/Building</label>
+                                                                    <input type="text" class="form-control" id="house" name="house" placeholder="Enter house/building" required>
+                                                                    <div class="invalid-feedback">House/Building is required.</div>
+                                                                </div>
+                                                            </div>
+                                        
+                                                            <div class="row">
+                                                                <div class="col-sm-6 mb-3">
+                                                                    <label for="pincode">Postal Code</label>
+                                                                    <input type="number" class="form-control" id="pincode" name="pincode" placeholder="Enter postal code" required>
+                                                                    <div class="invalid-feedback">Postal Code is required.</div>
+                                                                </div>
+                                                                <div class="col-sm-6 mb-3">
+                                                                    <label for="address-type">Address Type</label>
+                                                                    <select id="address-type" class="form-control" name="type" required>
+                                                                        <option value="">Select Address Type</option>
+                                                                        <option value="HOME">Home</option>
+                                                                        <option value="WORK">Work</option>
+                                                                        <option value="Other">Other</option>
+                                                                    </select>
+                                                                    <div class="invalid-feedback">Address Type is required.</div>
+                                                                </div>
+                                                            </div>
+                                        
+                                                            <div class="text-center mt-4">
+                                                                <button type="submit" class="btn btn-outline-primary w-100">
+                                                                    <span>SAVE ADDRESS</span>
+                                                                    <i class="icon-long-arrow-right"></i>
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+
+                                        <!-----Add Address modal End------>
+
+
+
+                                    </div><!-- End .row -->
+
+
+
+
+
+
+
+
+
+
+
+                                </div><!-- End .container -->
+                            </div><!-- End .checkout -->
+                        </div><!-- End .page-content -->
+                    </main><!-- End .main -->
+                </div>
+
+                <%- include('../partials/footer.ejs') -%>
+
+
+                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                <script>
+                    document.getElementById('placeOrderButton').addEventListener('click', function (event) {
+                        event.preventDefault(); // Prevent form submission
+                
+                        const selectedAddressRadio = document.querySelector('input[name="addressRadioButton"]:checked');
+                        const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+                
+                        // Validate Address Selection
+                        if (!selectedAddressRadio) {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Please select a delivery address.',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                            return;
+                        }
+                
+                        // Validate Payment Method Selection
+                        if (!selectedPaymentMethod) {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Please select a payment method.',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                            return;
+                        }
+                
+                        // Set selected address ID into the hidden input field
+                        document.getElementById('selectedAddressId').value = selectedAddressRadio.value;
+                
+                        // Success Popup
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Your order has been placed successfully!',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Submit the form if the user confirms
+                                document.getElementById('orderForm').submit();
+                            }
+                        });
+                    });
+                </script>
+                
+                
+
+
+
+
+
+
+
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Set the hidden fields dynamically before form submission
+    document.getElementById('orderForm').addEventListener('submit', function (e) {
+        // Get the selected address
+        var selectedAddressRadio = document.querySelector('input[name="addressRadioButton"]:checked');
+        if (selectedAddressRadio) {
+            var selectedAddressId = selectedAddressRadio.closest('.address-card').getAttribute('data-address-id');
+            document.getElementById('selectedAddressId').value = selectedAddressId;
+        }
+
+        // Set the payment method dynamically
+        var selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+        if (selectedPaymentMethod) {
+            document.getElementById('paymentMethod').value = selectedPaymentMethod.value;
+        }
+
+        // Set the other values
+        document.getElementById('totalAmount').value = "<%= subtotal %>";
+        document.getElementById('products').value = "<%= JSON.stringify(userProducts) %>";
+    });
+</script>
+
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <script>
+                    $('#editAddressModal').on('show.bs.modal', function (e) {
+    var button = $(e.relatedTarget); // Button that triggered the modal
+    var addressId = button.data('address-id'); // Get the addressId from data-* attribute
+    var name = button.data('name');
+    var phone = button.data('phone');
+    var address = button.data('address');
+    var street = button.data('street');
+    var postalCode = button.data('postal-code');
+    var state = button.data('state');
+    var country = button.data('country');
+    var district = button.data('district');
+    var addressType = button.data('address-type');
+
+    // Populate the modal with the address data
+    $('#editAddressId').val(addressId); // Set the addressId in a hidden field
+    $('#editName').val(name);
+    $('#editPhone').val(phone);
+    $('#editAddress').val(address);
+    $('#editStreet').val(street);
+    $('#editPostalCode').val(postalCode);
+    $('#editState').val(state);
+    $('#editCountry').val(country);
+    $('#editDistrict').val(district);
+    $('#editAddressType').val(addressType);
+});
+
+
+                </script>
+                
+
+
+
+
+            </body>
+
+
+
+<!-- JS validation for edit address -->
+
+
+
+
+
+
+
+
+
+<!-- JS validation for add address -->
+            <script>
+                const form = document.getElementById('addressForm');
+
+                form.addEventListener('submit', function (event) {
+                    event.preventDefault(); // Prevent default form submission
+                    let isValid = true;
+
+                    // Validate all form fields
+                    const inputs = form.querySelectorAll('.form-control');
+                    inputs.forEach(input => {
+                        const feedback = input.nextElementSibling;
+                        const value = input.value.trim();
+
+                        if (!value) {
+                            input.classList.add('is-invalid');
+                            feedback.textContent = `${input.previousElementSibling.textContent} is required.`;
+                            isValid = false;
+                        } else if (input.name === 'phone') {
+                            // Validate phone number
+                            const phoneRegex = /^[0-9]{10}$/;
+                            if (!phoneRegex.test(value)) {
+                                input.classList.add('is-invalid');
+                                feedback.textContent = 'Phone Number must be exactly 10 digits.';
+                                isValid = false;
+                            } else {
+                                input.classList.remove('is-invalid');
+                                feedback.textContent = '';
+                            }
+                        } else if (input.name === 'pincode') {
+                            // Validate pincode
+                            const pincodeRegex = /^[0-9]{6}$/;
+                            if (!pincodeRegex.test(value)) {
+                                input.classList.add('is-invalid');
+                                feedback.textContent = 'Postal Code must be exactly 6 digits.';
+                                isValid = false;
+                            } else {
+                                input.classList.remove('is-invalid');
+                                feedback.textContent = '';
+                            }
+                        } else {
+                            input.classList.remove('is-invalid');
+                            feedback.textContent = '';
+                        }
+                    });
+
+                    // Allow form submission if valid
+                    if (isValid) {
+                        alert('Form submitted successfully!');
+                        form.submit();
+                    }
+                });
+
+                // Remove error message as user types
+                form.querySelectorAll('.form-control').forEach(input => {
+                    input.addEventListener('input', function () {
+                        if (this.value.trim()) {
+                            this.classList.remove('is-invalid');
+                            this.nextElementSibling.textContent = '';
+                        }
+                    });
+                });
+
+            </script>
+
+
+            </html>

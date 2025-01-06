@@ -204,6 +204,8 @@
           <h5 class="card-tile mb-0">Product information</h5>
         </div>
         <div class="card-body">
+          
+          
           <div class="form-floating form-floating-outline mb-5 mt-5">
             <input 
             type="text" 
@@ -213,30 +215,32 @@
             name="brand" 
             aria-label="Product title" 
             pattern="^[A-Za-z\s]{3,}$"
+            oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '').replace(/\s+/g, ' ');"
+            required
          title="Title must contain only letters and spaces, and must be at least 3 characters long."
-          oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '').replace(/\s+/g, ' ');"
-              required>
+      >
           
           <label for="ecommerce-product-name">Brand</label>
           </div>
+
+          
           <div class="form-floating form-floating-outline mb-5">
-            <input type="text" class="form-control" id="ecommerce-product-name" placeholder="Product Title" name="title" aria-label="Product title"
+            <input type="text" class="form-control" id="ecommerce-product-brand" placeholder="Product Title" name="title" aria-label="Product title"
             pattern="^[A-Za-z\s]{3,}$"
          title="Title must contain only letters and spaces, and must be at least 3 characters long."
-          oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '').replace(/\s+/g, ' ');"
-              required>
+         oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '').replace(/\s+/g, ' ');"
+         required
+         >
             <label for="ecommerce-product-name">Title</label>
           </div>
 
           
          
           <div class="form-floating form-floating-outline mb-5">
-            <input type="text" class="form-control" id="ecommerce-product-name" placeholder="Product Description" name="description" aria-label="Product Description"
-            pattern="^[A-Za-z\s]{15,}$"
-            title="Title must contain only letters and spaces, and must be at least 15 characters long."
-             oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '').replace(/\s+/g, ' ');"
-                 required
-              required>
+            <input type="text" class="form-control" id="ecommerce-product-title" placeholder="Product Description" name="description" aria-label="Product Description"
+          
+            required
+             >
             <label for="ecommerce-product-name">Description</label>
           </div>
           
@@ -387,13 +391,12 @@
          
           <div class="mb-5 col ecommerce-select2-dropdown">
             <select id="vendor" name="category" required class="form-select form-select-sm" data-placeholder="Select Vendor">
-              <option value="">Select Category</option>
-              <option value="Classic">Classic</option>
-              <option value="Modern">Modern</option>
-              <option value="Streetwar">Streetwear</option>
-              <option value="Athleisure">Athleisure</option>
+                <option value="">Select Category</option>
+                <% categories.forEach(function(category) { %>
+                    <option value="<%= category %>"><%= category %></option>
+                <% }); %>
             </select>
-          </div>
+        </div>
 
 
           <!-- Gender -->
@@ -492,6 +495,103 @@ $('#cropperModal').on('hide.bs.modal', function () {
 });
     </script>   
 
+
+
+
+
+<!-- Js form validation -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+      const form = document.querySelector('form');
+      
+      form.addEventListener('submit', function (event) {
+          let isValid = true;
+          const messages = {
+              brand: "Brand must contain only letters and spaces, and be at least 3 characters long.",
+              title: "Title must contain only letters and spaces, and be at least 3 characters long.",
+              description: "Description must contain only letters and spaces, and must be at least 15 characters long.",
+              price: "Price is required and must be a valid number.",
+              disPrice: "Discounted price must be a valid number.",
+              images: "Please upload all four images."
+          };
+          
+          // Get form field values
+          const brand = document.getElementById('ecommerce-product-name').value;
+          const title = document.getElementById('ecommerce-product-brand').value;
+          const description = document.getElementById('ecommerce-product-title').value;
+          const price = document.getElementById('ecommerce-product-price').value;
+          const disPrice = document.getElementById('ecommerce-product-discount-price').value;
+          const images = document.querySelectorAll('input[name="images[]"]');
+  
+          // Clear previous error messages (if any)
+          const errorMessages = document.querySelectorAll('.text-danger');
+          errorMessages.forEach(message => message.style.display = 'none');
+          
+          // Validate Brand
+          const brandPattern = /^[A-Za-z\s]{3,}$/;
+          const brandError = document.getElementById('error-brand');
+          if (!brandPattern.test(brand)) {
+              isValid = false;
+              brandError.textContent = messages.brand;
+              brandError.style.display = 'block';
+          }
+  
+          // Validate Title
+          const titlePattern = /^[A-Za-z\s]{3,}$/;
+          const titleError = document.getElementById('error-title');
+          if (!titlePattern.test(title)) {
+              isValid = false;
+              titleError.textContent = messages.title;
+              titleError.style.display = 'block';
+          }
+  
+          // Validate Description
+          const descriptionPattern = /^[A-Za-z\s]{15,}$/;
+          const descriptionError = document.getElementById('error-description');
+          if (!descriptionPattern.test(description)) {
+              isValid = false;
+              descriptionError.textContent = messages.description;
+              descriptionError.style.display = 'block';
+          }
+  
+          // Validate Price
+          const priceError = document.getElementById('error-price');
+          if (!price || isNaN(price) || price <= 0) {
+              isValid = false;
+              priceError.textContent = messages.price;
+              priceError.style.display = 'block';
+          }
+  
+          // Validate Discounted Price
+          const disPriceError = document.getElementById('error-disPrice');
+          if (!disPrice || isNaN(disPrice) || disPrice < 0) {
+              isValid = false;
+              disPriceError.textContent = messages.disPrice;
+              disPriceError.style.display = 'block';
+          }
+  
+          // Validate Image Uploads
+          let imageCount = 0;
+          const imageError = document.getElementById('imagesErr');
+          images.forEach(image => {
+              if (image.files.length > 0) {
+                  imageCount++;
+              }
+          });
+  
+          if (imageCount < 4) {
+              isValid = false;
+              imageError.style.display = 'block';
+          }
+  
+          // Prevent form submission if validation failed
+          if (!isValid) {
+              event.preventDefault();
+          }
+      });
+  });
+  </script>
+  
 
 
 

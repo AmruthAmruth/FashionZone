@@ -3,6 +3,7 @@ import User from '../../models/userModel.js'
 import {sendOTP}  from '../../config/userOTPverification.js'
 import OTP from '../../models/userOtpVerification.js'
 import mongoose from 'mongoose'
+import Product from '../../models/productModel.js'
 
 
 
@@ -15,11 +16,24 @@ export const getLoginPage=(req,res)=>{
     res.render('user/login',{message:req.flash('message')})
 }
  
-export const getHomePage=(req,res)=>{ 
-  const user=req.session.user || null
-  console.log("USER :",user);
-  
-  res.render('user/home',{user:user})
+export const getHomePage=async(req,res)=>{ 
+  try {
+    const user = req.session.user || null;
+    console.log("USER:", user);
+
+    
+    const allProducts = await Product.find({isActive:true})
+    const womenProducts= await Product.find({ isActive: true, gender: 'women' })
+    const menProducts= await Product.find({ isActive: true, gender: 'men' })
+    const newArrivals=await Product.find({ isActive: true })
+    .sort({ createdAt: -1 })
+    .limit(10); 
+    
+    res.render('user/home', { user, allProducts ,womenProducts,menProducts,newArrivals});
+} catch (error) {
+    console.error('Error fetching products:', error);
+    res.status(500).send("Internal Server Error");
+}
 }
 
 

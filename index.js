@@ -30,7 +30,7 @@ app.use("/static", express.static(path.join(__dirname, "public/assets")));
 app.use("/assets", express.static(path.join(__dirname, "public/admin/assets")));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-
+ 
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

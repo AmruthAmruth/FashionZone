@@ -1,10 +1,12 @@
 import express from 'express'
 import { CreateAccount, forgotOtpPage, getEnterPasswordOTP, getForgotPasswordPage, getHomePage, getLoginPage, getNewPasswordPage, getOtpPage, LoginAccount, Logout, resentOTP, resetPassword, sendPasswordResetOTP, VerifyOTP, verifyResentOTP } from '../controllers/userControllers/authControllers.js'
 import passport from 'passport'
-import { addToCart, cartPriceList, checkoutPage, getCartPage, getNewArrivals, getProduct, getProductbyId, getShopPage, getUserCart, priceHighToLow, priceLowToHigh, removeFromCart, sortByAToZ, sortByZToA, updateCart } from '../controllers/userControllers/productControllers.js'
+import { addToCart, cartPriceList, getCartPage, getFeaturedProducts, getMenProducts, getNewArrivals, getProduct, getProductbyId, getShopPage, getUserCart, getWomenProducts, priceHighToLow, priceLowToHigh, removeFromCart, sortByAToZ, sortByZToA, updateCart } from '../controllers/userControllers/productControllers.js'
 import { isUserAuthenticated } from '../middileware/auth.js'
 import { createAddress, deleteAddress, editAddress, getAddress, getProfilePage, updateName } from '../controllers/userControllers/profileControllers.js'
 import mongoose from 'mongoose'
+import { checkoutAddAddress, checkoutEditAddress, checkoutPage } from '../controllers/userControllers/chekoutControllers.js'
+import { cancelOrder, createOrder, getOrders, orderSummery } from '../controllers/userControllers/orderControllers.js'
 
 const userRouter=express.Router()
 
@@ -65,15 +67,16 @@ userRouter.get('/product',getProduct)
 userRouter.get('/product/:id',getProductbyId)
 
 
-// --------------Product Sorted area---------------------------------------
+// --------------Product Sorted Area---------------------------------------
 
 userRouter.get('/shop/sort/low-to-high',priceLowToHigh)
 userRouter.get('/shop/sort/high-to-low',priceHighToLow)
 userRouter.get('/shop/sort/newarrivals',getNewArrivals)
 userRouter.get('/shop/sort/z-to-a',sortByZToA)
 userRouter.get('/shop/sort/a-to-z',sortByAToZ)
-
-
+userRouter.get('/shop/sort/men',getMenProducts)
+userRouter.get('/shop/sort/women',getWomenProducts)
+userRouter.get('/shop/sort/featured',getFeaturedProducts)
 
 //--------------Cart Section ---------------------------------
 
@@ -86,9 +89,8 @@ userRouter.post('/cart/remove/:productId',removeFromCart)
 
 
 //-------------------User Profile Section----------------------------------------
-userRouter.get('/profile', getAddress, getProfilePage);
 
-
+userRouter.get('/profile', getAddress, getOrders, getProfilePage);
 userRouter.post('/address',createAddress)
 userRouter.post('/profile/delete/:addressId',deleteAddress)
 userRouter.post('/profile/edit',editAddress)
@@ -98,9 +100,17 @@ userRouter.post('/updatename',updateName)
 
 // ---------------Checkout Section------------------------
 
-userRouter.get('/chekout',checkoutPage)
+userRouter.get('/checkout',checkoutPage)
+userRouter.post('/checkoutaddaddress',checkoutAddAddress)
+userRouter.post('/checkouteditaddress',checkoutEditAddress)
 
 
+
+// ---------------------------Order Section----------------------------------------------------------------
+ 
+userRouter.post('/createorder',createOrder)
+userRouter.get('/ordersummery/:orderId',orderSummery)
+userRouter.post('/orders/cancel', cancelOrder)
 
 
 export default userRouter 

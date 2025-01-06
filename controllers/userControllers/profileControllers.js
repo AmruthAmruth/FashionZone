@@ -6,9 +6,15 @@ import User from "../../models/userModel.js";
 
 
 export const getProfilePage = (req, res) => {
-    
-    res.render('user/profile', { user: req.session.user || null, userAddress: req.userAddress || null });
+    console.log('userOrder in profile:', req.userOrder); 
+
+    res.render('user/profile', { 
+        user: req.session.user || null, 
+        userAddress: req.userAddress || null, 
+        userOrder: req.userOrder || null 
+    });
 };
+
 
 
 
@@ -143,7 +149,7 @@ export const deleteAddress=async(req,res)=>{
                 type
             } = req.body;  
     
-            const userId = req.session.userId; // Assuming userId is stored in session
+            const userId = req.session.userId; 
     
             if (!req.session.user) {
                 console.log("Login please");

@@ -1,7 +1,12 @@
 import mongoose from "mongoose";
 import Product from "../../models/productModel.js";
+import Category from "../../models/categoryModel.js";
+
+
 
 export const getAddProductPage = (req, res) => {
+    console.log(req.categoryname); 
+    
     res.render('admin/addproduct', {
         messages: {
             message: req.flash('message'),
@@ -9,12 +14,11 @@ export const getAddProductPage = (req, res) => {
             disPrice: req.flash('disPrice'),
             tags: req.flash('tags'),
             image: req.flash('image'),
-            
-            success:req.flash('success')
+            success: req.flash('success')
         },
+        categories: req.categoryname 
     });
 };
-
 
 
 export const getAllProductPage= async(req,res)=>{
@@ -26,7 +30,6 @@ export const getAllProductPage= async(req,res)=>{
         
     }
 }
-
 
 
 
@@ -79,6 +82,23 @@ export const addProduct = async (req, res) => {
         return res.redirect('/admin/addproduct');
     }
 };
+
+
+export const getCategory = async (req, res, next) => {
+    try {
+        const categories = await Category.find({isListed:true});  
+        console.log(categories);
+
+       
+        req.categoryname = categories.map(cat => cat.category);
+
+        next();
+    } catch (err) {
+        console.log("Error while getting the Category name", err);
+        res.redirect('/admin/addproduct');
+    }
+};
+
 
 
 export const getUpdateProductPage = async (req, res) => {

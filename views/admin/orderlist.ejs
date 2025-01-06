@@ -1,0 +1,108 @@
+
+
+<%- include('../layout/adminheader.ejs') -%>
+
+    </head>
+   <body>
+   
+
+ <!-- Layout wrapper -->
+ <div class="layout-wrapper layout-content-navbar  ">
+    <div class="layout-container">
+  
+ <!-- Menu -->
+<%- include('../partials/adminsidebar.ejs') -%>
+
+
+<div class="layout-page">
+        
+        
+  
+  
+  
+    <!-- Navbar -->
+  
+  <%- include('../partials/adminnavbar.ejs') -%>
+  
+  <!-- / Navbar -->
+
+              <!-- Content wrapper -->
+      <div class="content-wrapper">
+
+        <!-- Content -->
+        
+          <div class="container-xxl flex-grow-1 container-p-y">
+            
+            
+<!-- Order List Widget -->
+
+<h2 class="text-center">Order List</h2>
+
+
+<!-- Order List Table -->
+<div class="card">
+  <div class="card-datatable table-responsive">
+    <table class="datatables-order table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Total Amount</th>
+            <th>Status</th>
+            <th>Payment Method</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% orders.forEach(order => { %>
+            <tr>
+              <td style="max-width: 200px;"><%= order.orderId %></td>
+              <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
+              <td><%= order.user ? order.user.name : 'Unknown' %></td>
+              <td>$<%= order.totalAmount %></td>
+              <td>
+                <% if (order.status === 'Pending') { %>
+                  <span class="badge bg-warning">Pending</span>
+                <% } else if (order.status === 'Cancelled') { %>
+                  <span class="badge bg-danger">Cancelled</span>
+                <% } else { %>
+                  <span class="badge bg-success">Completed</span>
+                <% } %>
+              </td>
+              <td><%= order.paymentMethod %></td>
+              <td>
+                <a href="/admin/orderdetails/<%= order._id %>" class="btn btn-primary btn-sm">View</a>
+                <button class="btn btn-danger btn-sm">Delete</button>
+              </td>
+              
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+      
+  </div>
+</div>
+
+
+          </div>
+          <!-- / Content -->
+
+          
+          
+
+
+</div>
+          
+          <div class="content-backdrop fade"></div>
+        </div>
+        <!-- Content wrapper -->
+
+
+
+</div>
+</div>
+<body>
+    
+</body>
+</html>

@@ -164,6 +164,54 @@ export const sortByZToA = async (req, res) => {
 
 
 
+export const getWomenProducts = async (req, res) => {
+    try {
+        
+        const womenProducts = await Product.find({ isActive: true, gender: 'women' })
+            .sort({ createdAt: -1 });
+
+        res.render('user/shop', { 
+            user: req.session.user || null, 
+            products: womenProducts 
+        });
+    } catch (err) {
+        console.log("Error while fetching women's products", err);
+        res.status(500).send("Error fetching women's products");
+    }
+};
+
+
+
+export const getMenProducts = async (req, res) => {
+    try {
+        const menProducts = await Product.find({ isActive: true, gender: 'men' })
+            .sort({ createdAt: -1 });
+
+        res.render('user/shop', { 
+            user: req.session.user || null, 
+            products: menProducts 
+        });
+    } catch (err) {
+        console.log("Error while fetching men's products", err);
+        res.status(500).send("Error fetching men's products");
+    }
+};
+
+
+export const getFeaturedProducts=async(req,res)=>{
+    try{
+        const featuredProducts=await Product.find({isActive:true})
+        res.render('user/shop',{user:req.session.user || null , products:featuredProducts})
+    }catch(err){
+        console.log("Error while getting featured products",err);
+        
+    }
+}
+
+
+
+
+
 
 // ----------------Cart Section-------------------------------------------------
 
@@ -225,10 +273,9 @@ export const cartPriceList = async (req, res, next) => {
 
         const subtotal = cart.items.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-        // Define shipping costs
+       
         const shippingCosts = { free: 0, standard: 50, express: 100 };
 
-        // Get shipping method from request or default to 'free'
         const selectedShipping = req.body.shipping || 'free';
         const shippingCost = shippingCosts[selectedShipping] || 0;
 
@@ -339,7 +386,7 @@ export const updateCart = async (req, res) => {
         const productId = req.params.productId; 
         const action = req.body.action; 
         
-        // Maximum quantity allowed per person
+        
         const MAX_QUANTITY = 5;
 
         if (!req.session.user) {
@@ -359,10 +406,10 @@ export const updateCart = async (req, res) => {
         if (productIndex > -1) {
             const item = cart.items[productIndex];
             const availableStock = product.stock;
-            const maxAllowedQuantity = Math.min(availableStock, MAX_QUANTITY); // Max between available stock and max quantity per person
+            const maxAllowedQuantity = Math.min(availableStock, MAX_QUANTITY); 
             
             if (action === 'increase') {
-                // Check if the user is trying to exceed the available stock or max allowed quantity
+                
                 if (item.quantity < maxAllowedQuantity) {
                     item.quantity += 1;
                 } else {
@@ -370,7 +417,7 @@ export const updateCart = async (req, res) => {
                     return res.redirect('/cart');
                 }
             } else if (action === 'decrease' && item.quantity > 1) {
-                item.quantity -= 1;  // Decrease quantity by 1, but prevent going below 1
+                item.quantity -= 1;  
             }
 
             await cart.save();
@@ -390,9 +437,3 @@ export const updateCart = async (req, res) => {
 
 
 
-// --------------------Checkout Section ---------------------------------
-
-
-export const checkoutPage=(req,res)=>{
-    res.render('user/chekout',{  user: req.session.user || null})
-}

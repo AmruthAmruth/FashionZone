@@ -112,84 +112,94 @@
 
 
 	                		<aside class="col-lg-3">
+
+
+
+
+
+
 	                			<div class="summary summary-cart">
-	                				<h3 class="summary-title">Cart Total</h3><!-- End .summary-title -->
+    <h3 class="summary-title">Cart Total</h3>
+
+    <form >
+        <table class="table table-summary">
+            <tbody>
+                <!-- Free Shipping -->
+                <tr class="summary-shipping-row">
+                    <td>
+                        <div class="custom-control custom-radio">
+                            <input 
+                                type="radio" 
+                                id="free-shipping" 
+                                name="shipping" 
+                                class="custom-control-input" 
+                                value="free" 
+                                data-cost="0" 
+                                <%= cartPrice.selectedShipping === 'free' ? 'checked' : '' %>
+                            >
+                            <label class="custom-control-label" for="free-shipping">Free Shipping</label>
+                        </div>
+                    </td>
+                    <td>₹0.00</td>
+                </tr>
+                <!-- Standard Shipping -->
+                <tr class="summary-shipping-row">
+                    <td>
+                        <div class="custom-control custom-radio">
+                            <input 
+                                type="radio" 
+                                id="standard-shipping" 
+                                name="shipping" 
+                                class="custom-control-input" 
+                                value="standard" 
+                                data-cost="50" 
+                                <%= cartPrice.selectedShipping === 'standard' ? 'checked' : '' %>
+                            >
+                            <label class="custom-control-label" for="standard-shipping">Standard Shipping</label>
+                        </div>
+                    </td>
+                    <td>₹50.00</td>
+                </tr>
+                <!-- Express Shipping -->
+                <tr class="summary-shipping-row">
+                    <td>
+                        <div class="custom-control custom-radio">
+                            <input 
+                                type="radio" 
+                                id="express-shipping" 
+                                name="shipping" 
+                                class="custom-control-input" 
+                                value="express" 
+                                data-cost="100" 
+                                <%= cartPrice.selectedShipping === 'express' ? 'checked' : '' %>
+                            >
+                            <label class="custom-control-label" for="express-shipping">Express Shipping</label>
+                        </div>
+                    </td>
+                    <td>₹100.00</td>
+                </tr>
+                <!-- Total -->
+                <tr class="summary-total">
+                    <td>Total:</td>
+                    <td>
+                        ₹<span id="total-price"><%= cartPrice.total %></span>
+                        <input type="hidden" name="totalPrice" value="<%= cartPrice.total %>">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+		<button type="" class="btn btn-outline-primary-2 btn-order btn-block">
+			 <a href="/checkout">
+            PROCEED TO CHECKOUT
+		</a>
+        </button>
+    </form>
+                                </div><!-- End .summary -->
 
 
 
 
 
-									<table class="table table-summary">
-    <tbody>
-        <!-- Free Shipping -->
-        <tr class="summary-shipping-row">
-            <td>
-                <div class="custom-control custom-radio">
-                    <input 
-                        type="radio" 
-                        id="free-shipping" 
-                        name="shipping" 
-                        class="custom-control-input" 
-                        value="free" 
-                        data-cost="0" 
-                        <%= cartPrice.selectedShipping === 'free' ? 'checked' : '' %>
-                    >
-                    <label class="custom-control-label" for="free-shipping">Free Shipping</label>
-                </div>
-            </td>
-            <td>₹0.00</td>
-        </tr>
-        <!-- Standard Shipping -->
-        <tr class="summary-shipping-row">
-            <td>
-                <div class="custom-control custom-radio">
-                    <input 
-                        type="radio" 
-                        id="standard-shipping" 
-                        name="shipping" 
-                        class="custom-control-input" 
-                        value="standard" 
-                        data-cost="50" 
-                        <%= cartPrice.selectedShipping === 'standard' ? 'checked' : '' %>
-                    >
-                    <label class="custom-control-label" for="standard-shipping">Standard Shipping</label>
-                </div>
-            </td>
-            <td>₹50.00</td>
-        </tr>
-        <!-- Express Shipping -->
-        <tr class="summary-shipping-row">
-            <td>
-                <div class="custom-control custom-radio">
-                    <input 
-                        type="radio" 
-                        id="express-shipping" 
-                        name="shipping" 
-                        class="custom-control-input" 
-                        value="express" 
-                        data-cost="100" 
-                        <%= cartPrice.selectedShipping === 'express' ? 'checked' : '' %>
-                    >
-                    <label class="custom-control-label" for="express-shipping">Express Shipping</label>
-                </div>
-            </td>
-            <td>₹100.00</td>
-        </tr>
-        <!-- Total -->
-        <tr class="summary-total">
-            <td>Total:</td>
-            <td>₹<span id="total-price"><%= cartPrice.total %></span></td>
-        </tr>
-    </tbody>
-</table>
-									
-
-
-
-
-
-	                				<a href="checkout.html" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
-	                			</div><!-- End .summary -->
 
 		            			<a href="category.html" class="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUE SHOPPING</span><i class="icon-refresh"></i></a>
 	                		</aside><!-- End .col-lg-3 -->
@@ -279,6 +289,33 @@
         </footer><!-- End .footer -->
     </div>
 </body>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.querySelector('.btn-order').addEventListener('click', function(e) {
+        // Get the cart items passed from the server
+        const userCartItems = <%= JSON.stringify(userCart.items) %>;  // Now userCart.items is available
+
+        if (userCartItems.length === 0) {
+            e.preventDefault(); // Prevent navigation to checkout
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Your cart is empty! Please add items to the cart before proceeding to checkout.',
+                confirmButtonText: 'OK'
+            });
+        }
+    });
+</script>
+
+
+
+
+
+
 
 
 <script>

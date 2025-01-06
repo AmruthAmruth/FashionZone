@@ -1,0 +1,202 @@
+
+
+<%- include('../layout/adminheader.ejs') -%>
+
+    </head>
+   <body>
+   
+
+ <!-- Layout wrapper -->
+ <div class="layout-wrapper layout-content-navbar  ">
+    <div class="layout-container">
+  
+ <!-- Menu -->
+<%- include('../partials/adminsidebar.ejs') -%>
+
+
+<div class="layout-page">
+        
+        
+  
+  
+  
+    <!-- Navbar -->
+  
+  <%- include('../partials/adminnavbar.ejs') -%>
+  
+  <!-- / Navbar -->
+
+    
+
+  <div class="container mt-5">
+    <h2>Category Management</h2>
+    <!-- Add Category Button -->
+    <!-- Add Category Button (Triggers Modal) -->
+<button class="btn btn-success mb-3" data-toggle="modal" data-target="#addCategoryModal">Add Category</button>
+
+<!-- Modal for Adding Category -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCategoryModalLabel">Add New Category</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/admin/addcategory" method="POST">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="category">Category Name</label>
+                        <input type="text" name="category" id="category" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea name="description" id="description" class="form-control" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+    
+    <!-- Category Table -->
+    <% if (message) { %>
+        <div class="alert alert-warning" role="alert">
+            <%= message %>
+        </div>
+    <% } %>
+
+
+
+
+   <table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Action</th>
+            <th>Edit</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% categories.forEach((category, index) => { %>
+            <tr>
+                <td><%= index + 1 %></td>
+                <td><%= category.category %></td>
+                <td><%= category.description %></td>
+                <td>
+                    <!-- Form to toggle the 'isListed' field -->
+                    <form action="/admin/togglecategory/<%= category._id %>" method="POST">
+                        <button type="submit" class="btn <%= category.isListed ? 'btn-warning' : 'btn-success' %>">
+                            <%= category.isListed ? 'Hide' : 'Show' %>
+                        </button>
+                    </form>
+                </td>
+                <td>
+                    <!-- Edit button with data-id for triggering modal -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editCategoryModal"
+                            data-id="<%= category._id %>"
+                            data-category="<%= category.category %>"
+                            data-description="<%= category.description %>">
+                        Edit
+                    </button>
+                </td>
+            </tr>
+        <% }) %>
+    </tbody>
+</table>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCategoryModalLabel">Edit Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Form to edit category -->
+                <form id="editCategoryForm" method="POST">
+                    <div class="mb-3">
+                        <label for="categoryName" class="form-label">Category Name</label>
+                        <input type="text" class="form-control" id="categoryName" name="category" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="categoryDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="categoryDescription" name="description" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Event listener for the modal opening
+    $('#editCategoryModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Button that triggered the modal
+        var categoryId = button.data('id'); // Extract category ID from data-id attribute
+        var categoryName = button.data('category'); // Extract category name from data-category attribute
+        var categoryDescription = button.data('description'); // Extract description from data-description attribute
+
+        // Set the values in the modal form
+        var modal = $(this);
+        modal.find('#categoryName').val(categoryName);
+        modal.find('#categoryDescription').val(categoryDescription);
+
+        // Update the form action to include the category ID for saving the changes
+        var actionUrl = '/admin/editcategory/' + categoryId; // Assuming you have an endpoint for this
+        modal.find('#editCategoryForm').attr('action', actionUrl);
+    });
+</script>
+
+
+
+
+</div>
+
+<!-- Bootstrap JS for handling any functionality if needed -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+
+<script>
+    // Event listener for the modal opening
+    $('#editCategoryModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Button that triggered the modal
+        var categoryId = button.data('id'); // Extract category ID from data-id attribute
+        var categoryName = button.data('category'); // Extract category name from data-category attribute
+        var categoryDescription = button.data('description'); // Extract description from data-description attribute
+
+        // Set the values in the modal form
+        var modal = $(this);
+        modal.find('#categoryName').val(categoryName);
+        modal.find('#categoryDescription').val(categoryDescription);
+
+        // Update the form action to include the category ID for saving the changes
+        var actionUrl = '/admin/editcategory/' + categoryId; // Assuming you have an endpoint for this
+        modal.find('#editCategoryForm').attr('action', actionUrl);
+    });
+</script>
+
+
+</div>
+</div>
+</div>
+
+</body>
+</html>
