@@ -109,7 +109,7 @@
                                                 <h3 class="summary-title">Your Order</h3>
                                                 <form method="POST" action="/createorder" id="orderForm">
                                                     <input type="hidden" id="selectedAddressId" name="selectedAddressId">
-                                        
+                                                
                                                     <table class="table table-summary">
                                                         <thead>
                                                             <tr>
@@ -128,37 +128,38 @@
                                                                     <% subtotal += item.price * item.quantity; %>
                                                                 <% }); %>
                                                             <% }); %>
-                                        
+                                                
                                                             <tr class="summary-subtotal">
                                                                 <td>Subtotal:</td>
-                                                                <td>$<%= subtotal %></td>
+                                                                <td id="amount">$<%= subtotal %></td>
                                                             </tr>
-                                        
+                                                
                                                             <tr>
                                                                 <td>Shipping:</td>
                                                                 <td>Free shipping</td>
                                                             </tr>
-                                        
+                                                
                                                             <tr class="summary-total">
                                                                 <td>Total:</td>
                                                                 <td>$<%= subtotal %></td>
                                                             </tr>
                                                         </tbody>
                                                     </table>
-                                        
+                                                
                                                     <input type="hidden" name="totalAmount" value="<%= subtotal %>">
                                                     <input type="hidden" name="products" value="<%= JSON.stringify(userProducts) %>">
+                                                
                                                     <div class="accordion-summary" id="accordion-payment">
                                                         <div class="card mb-2">
                                                             <div class="card-header" id="heading-1">
                                                                 <h2 class="card-title" id="paymentLabel">Payment Methods</h2>
                                                             </div>
                                                         </div>
-                                        
+                                                
                                                         <div class="card mb-1">
                                                             <div class="card-header" id="heading-2">
                                                                 <h2 class="card-title">
-                                                                    <input type="radio" name="paymentMethod" id="payment-method-2" value="Razor pay">
+                                                                    <input type="radio" name="paymentMethod" id="payment-method-2" value="Razor pay" >
                                                                     <label for="payment-method-2" role="button" data-toggle="collapse" href="#collapse-2" aria-expanded="false" aria-controls="collapse-2">Debit Card/Credit Card/UPI</label>
                                                                 </h2>
                                                             </div>
@@ -168,11 +169,11 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                        
+                                                
                                                         <div class="card mb-1">
                                                             <div class="card-header" id="heading-3">
                                                                 <h2 class="card-title">
-                                                                    <input type="radio" name="paymentMethod" id="payment-method-3" value="Cash on Delivery">
+                                                                    <input type="radio" name="paymentMethod" id="payment-method-3" value="Cash on Delivery" >
                                                                     <label for="payment-method-3" role="button" data-toggle="collapse" href="#collapse-3" aria-expanded="false" aria-controls="collapse-3">Cash on Delivery</label>
                                                                 </h2>
                                                             </div>
@@ -182,17 +183,17 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                        
+                                                
                                                         <div class="card">
                                                             <div class="card-header" id="heading-wallet">
                                                                 <h2 class="card-title">
-                                                                    <input type="radio" name="paymentMethod" id="payment-method-wallet" value="Wallet">
+                                                                    <input type="radio" name="paymentMethod" id="payment-method-wallet" value="Wallet" >
                                                                     <label for="payment-method-wallet" role="button" data-toggle="collapse" href="#collapse-wallet" aria-expanded="false" aria-controls="collapse-wallet">Wallet</label>
                                                                 </h2>
                                                             </div>
                                                         </div>
                                                     </div>
-                                        
+                                                
                                                     <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block" id="placeOrderButton">
                                                         <span class="btn-text">Place Order</span>
                                                         <span class="btn-hover-text">Place Order</span>
@@ -420,59 +421,250 @@
                 <%- include('../partials/footer.ejs') -%>
 
 
-                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                <!-- <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
                 <script>
-                    document.getElementById('placeOrderButton').addEventListener('click', function (event) {
-                        event.preventDefault(); // Prevent form submission
+                    // Assuming the amount is dynamically passed
+                    const amount = parseInt(document.getElementById('amount').value) * 100; // Amount in paise
                 
-                        const selectedAddressRadio = document.querySelector('input[name="addressRadioButton"]:checked');
-                        const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
-                
-                        // Validate Address Selection
-                        if (!selectedAddressRadio) {
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'Please select a delivery address.',
-                                icon: 'error',
-                                confirmButtonText: 'OK'
-                            });
-                            return;
+                    var options = {
+                        "key": "rzp_test_vVHTvfU31Svako", // Your Razorpay Key ID
+                        "amount": amount, // Amount in paise
+                        "currency": "INR",
+                        "name": "Acme Corp",
+                        "description": "Test Transaction",
+                        "image": "https://example.com/your_logo",
+                        "order_id": "", // To be fetched dynamically from your backend
+                        "handler": function(response){
+                            alert('Payment successful!');
+                            alert("Payment ID: " + response.razorpay_payment_id);
+                            alert("Order ID: " + response.razorpay_order_id);
+                            alert("Signature: " + response.razorpay_signature);
+                            // Send the payment details to your backend for verification
+                            verifyPayment(response);
+                        },
+                        "prefill": {
+                            "name": "Gaurav Kumar",
+                            "email": "gaurav.kumar@example.com",
+                            "contact": "9000090000"
+                        },
+                        "notes": {
+                            "address": "Razorpay Corporate Office"
+                        },
+                        "theme": {
+                            "color": "#3399cc"
                         }
+                    };
                 
-                        // Validate Payment Method Selection
-                        if (!selectedPaymentMethod) {
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'Please select a payment method.',
-                                icon: 'error',
-                                confirmButtonText: 'OK'
-                            });
-                            return;
-                        }
-                
-                        // Set selected address ID into the hidden input field
-                        document.getElementById('selectedAddressId').value = selectedAddressRadio.value;
-                
-                        // Success Popup
-                        Swal.fire({
-                            title: 'Success!',
-                            text: 'Your order has been placed successfully!',
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                // Submit the form if the user confirms
-                                document.getElementById('orderForm').submit();
-                            }
+                    // Dynamically fetch the order_id from the backend
+                    fetch('/create-order', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ amount: amount })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        options.order_id = data.orderId; // Use the order ID received from the backend
+                        var rzp1 = new Razorpay(options);
+                        document.getElementById('placeOrderButton').addEventListener('click', function(e){
+                            rzp1.open();
+                            e.preventDefault();
                         });
+                    })
+                    .catch(error => {
+                        alert("Error creating Razorpay order.");
                     });
+                
+                    // Payment verification handler
+                    function verifyPayment(response) {
+                        fetch('/verify-payment', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                paymentId: response.razorpay_payment_id,
+                                orderId: response.razorpay_order_id,
+                                signature: response.razorpay_signature
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert("Payment verified successfully.");
+                            } else {
+                                alert("Payment verification failed.");
+                            }
+                        })
+                        .catch(error => {
+                            alert("Error verifying payment.");
+                        });
+                    }
                 </script>
+                 -->
                 
-                
 
 
 
 
+
+
+
+
+
+
+
+
+
+                 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+                 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                 <script>
+                     document.addEventListener("DOMContentLoaded", function () {
+                         const form = document.getElementById("orderForm");
+                         const paymentMethods = document.getElementsByName("paymentMethod");
+                 
+                         form.addEventListener("submit", async function (e) {
+                             e.preventDefault(); // Prevent default form submission
+                 
+                             let selectedPaymentMethod = null;
+                             for (let i = 0; i < paymentMethods.length; i++) {
+                                 if (paymentMethods[i].checked) {
+                                     selectedPaymentMethod = paymentMethods[i].value;
+                                     break;
+                                 }
+                             }
+                 
+                             if (!selectedPaymentMethod) {
+                                 Swal.fire({
+                                     icon: "warning",
+                                     title: "No Payment Method Selected",
+                                     text: "Please select a payment method before placing your order.",
+                                     confirmButtonText: "Okay",
+                                 });
+                                 return;
+                             }
+                 
+                             // Handle Razorpay Payment
+                             if (selectedPaymentMethod === "Razor pay") {
+                                 try {
+                                     const response = await fetch("/razorpaycontroller", {
+                                         method: "POST",
+                                         headers: { "Content-Type": "application/json" },
+                                         body: JSON.stringify({
+                                             totalAmount: document.querySelector("input[name='totalAmount']").value,
+                                             products: document.querySelector("input[name='products']").value,
+                                             selectedAddressId: document.getElementById("selectedAddressId").value,
+                                             paymentMethod: selectedPaymentMethod,
+                                         }),
+                                     });
+                 
+                                     const data = await response.json();
+                 
+                                     if (data.success) {
+                                         const options = {
+                                             key: "rzp_test_eEMIhlHUZ45CcM", // Replace with your Razorpay key ID
+                                             amount: data.amount * 100,
+                                             currency: "INR",
+                                             name: "Fashion Zone",
+                                             description: "Test Transaction",
+                                             image: "https://yourlogo.url", // Optional: Add your logo URL
+                                             order_id: data.orderId,
+                                             handler: function (response) {
+                                                 // Send payment details to the backend for verification
+                                                 fetch("/verifypayment", {
+                                                     method: "POST",
+                                                     headers: { "Content-Type": "application/json" },
+                                                     body: JSON.stringify({
+                                                         orderId: data.orderId,
+                                                         paymentId: response.razorpay_payment_id,
+                                                         signature: response.razorpay_signature,
+                                                     }),
+                                                 })
+                                                 .then((verifyResponse) => verifyResponse.json())
+                                                 .then((verifyData) => {
+                                                     if (verifyData.success) {
+                                                         Swal.fire({
+                                                             icon: "success",
+                                                             title: "Payment Successful",
+                                                             text: "Your payment has been verified.",
+                                                             confirmButtonText: "Okay",
+                                                         }).then(() => {
+                                                             // Redirect to success page or show confirmation
+                                                             window.location.href = `/ordersummery/${data.order}`;
+                                                         });
+                                                     } else {
+                                                         Swal.fire({
+                                                             icon: "error",
+                                                             title: "Payment Verification Failed",
+                                                             text: "Please try again or contact support.",
+                                                             confirmButtonText: "Okay",
+                                                         });
+                                                     }
+                                                 });
+                                             },
+                                             prefill: {
+                                                 name: "Customer Name", // Pre-fill customer details
+                                                 email: "customer@example.com",
+                                                 contact: "1234567890",
+                                             },
+                                             theme: {
+                                                 color: "#3399cc",
+                                             },
+                                         };
+                 
+                                         const razorpay = new Razorpay(options);
+                                         razorpay.open();
+                                     } else {
+                                         Swal.fire({
+                                             icon: "error",
+                                             title: "Order Creation Failed",
+                                             text: data.error || "Unable to create order. Please try again.",
+                                             confirmButtonText: "Okay",
+                                         });
+                                     }
+                                 } catch (error) {
+                                     console.error("Error initiating Razorpay payment:", error);
+                                     Swal.fire({
+                                         icon: "error",
+                                         title: "Payment Initialization Failed",
+                                         text: "An error occurred while starting the payment process. Please try again.",
+                                         confirmButtonText: "Okay",
+                                     });
+                                 }
+                             }
+                             // Handle COD and Wallet
+                             else {
+                                 Swal.fire({
+                                     icon: "info",
+                                     title: "Confirm Order",
+                                     text: `You selected "${selectedPaymentMethod}". Do you want to proceed?`,
+                                     showCancelButton: true,
+                                     confirmButtonText: "Yes, Place Order",
+                                     cancelButtonText: "No, Go Back",
+                                 }).then((result) => {
+                                     if (result.isConfirmed) {
+                                         switch (selectedPaymentMethod) {
+                                             case "Cash on Delivery":
+                                                 form.action = "/codcontroller";
+                                                 break;
+                                             case "Wallet":
+                                                 form.action = "/walletcontroller";
+                                                 break;
+                                             default:
+                                                 Swal.fire({
+                                                     icon: "error",
+                                                     title: "Invalid Payment Method",
+                                                     text: "An unknown error occurred. Please try again.",
+                                                     confirmButtonText: "Okay",
+                                                 });
+                                                 return;
+                                         }
+                                         form.method = "POST"; // Ensure the method is POST
+                                         form.submit();
+                                     }
+                                 });
+                             }
+                         });
+                     });
+                 </script>
+                 
 
 
 

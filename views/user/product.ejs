@@ -169,9 +169,14 @@
                                                 <% } %>
                                             </div>
                                         </form>
-                        
-                                        <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
-                                        <a href="#" class="btn-product btn-compare" title="Compare"><span>Add to Compare</span></a>
+
+                                        <form id="wishlist-form" method="POST" action="/wishlist">
+                                            <input type="hidden" name="productId" value="<%= product._id %>">
+                                            <button type="submit" class="btn-product-icon btn-wishlist btn-expandable">
+                                              <span>Add to Wishlist</span>
+                                            </button>
+                                          </form>
+                                           <a href="#" class="btn-product btn-compare" title="Compare"><span>Add to Compare</span></a>
                                     </div><!-- End .details-action-wrapper -->
                                 </div>
                         
@@ -203,10 +208,14 @@
 
 
 
-
+                    <% if (relatedProducts.length>0) { %>
                     
                     <h2 class="title text-center mb-4 mt-5">You May Also Like</h2><!-- End .title text-center -->
-<div class="owl-carousel  owl-simple carousel-equal-height carousel-with-shadow" data-toggle="owl" 
+                    <% } else { %>
+                        <p></p>
+                    <% } %>
+                    
+                    <div class="owl-carousel  owl-simple carousel-equal-height carousel-with-shadow" data-toggle="owl" 
     data-owl-options='{
         "nav": false, 
         "dots": true,
@@ -244,9 +253,16 @@
                 </a>
 
                 <div class="product-action-vertical">
-                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>Add to Wishlist</span></a>
+                    <form id="wishlist-form" method="POST" action="/wishlist">
+                       
+                        <input type="hidden" name="productId" value="<%= product._id %>">
+                        <button type="submit" class="btn-product-icon btn-wishlist btn-expandable">
+                          <span>Add to Wishlist</span>
+                        </button>
+                      </form>
+                      
                     <a href="/product/<%= product._id %>?quickview=true" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick View</span></a>
-                    <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
+                   
                 </div><!-- End .product-action-vertical -->
 
                 <div class="product-action">
@@ -330,6 +346,65 @@
         });
     });
 </script>
+
+
+
+
+<!-- <script>
+    // Add event listener to the button
+    document.getElementById('add-to-wishlist').addEventListener('click', function(event) {
+      event.preventDefault();
+  
+      // Get userId and productId (you can get these dynamically from your application)
+      const userId = 'USER_ID';  // Replace with actual user ID
+      const productId = 'PRODUCT_ID';  // Replace with actual product ID
+  
+      // Send the data to the server using fetch
+      fetch('/wishlist/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId: productId,
+        }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.message === 'Product added to wishlist') {
+          // Show success SweetAlert popup
+          Swal.fire({
+            title: 'Success!',
+            text: 'Product added to your wishlist!',
+            icon: 'success',
+            confirmButtonText: 'Okay'
+          });
+        } else {
+          // Show error SweetAlert popup
+          Swal.fire({
+            title: 'Error!',
+            text: 'Something went wrong. Please try again.',
+            icon: 'error',
+            confirmButtonText: 'Try Again'
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        // Show error SweetAlert popup in case of a network issue
+        Swal.fire({
+          title: 'Error!',
+          text: 'Error adding to wishlist. Please try again.',
+          icon: 'error',
+          confirmButtonText: 'Try Again'
+        });
+      });
+    });
+  </script> -->
+
+
+
+
 
 
 

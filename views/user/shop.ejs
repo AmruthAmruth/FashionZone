@@ -38,6 +38,19 @@
                             </div><!-- End .toolbox-info -->
                         </div><!-- End .toolbox-left -->
 
+                        <div class="header-search header-search-extended header-search-visible">
+                            <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
+                          
+                            <form action="/shop" method="get" >
+                                <div class="header-search-wrapper search-wrapper-wide">
+                                    <label for="q" class="sr-only">Search</label>
+                                    <input type="text" value="<%= searchQuery ? searchQuery : '' %>"  class="form-control p-5" name="q" id="q" placeholder="Search product ..." required>
+                                    <button class="btn btn-primary p-5" type="submit"><i class="icon-search"></i></button>
+                                </div><!-- End .header-search-wrapper -->
+                            </form>
+                            
+                        </div>
+
                         <div class="toolbox-right">
                             <div class="toolbox-sort">
                                 <label for="sortby">Sort by:</label>
@@ -56,39 +69,38 @@
                     </div><!-- End .toolbox -->
 
                     <div class="products mb-3">
+                       
+                       
+                       
+                       
+                       
+                       
                         <div class="row justify-content-center">
-                           
-
-
-
                             <% if (products && products.length > 0) { %>
-                                <% products.forEach(product => { %>
+                                <% products.forEach((product, index) => { %>
                                     <div class="col-6 col-md-4 col-lg-4">
-                                        <div class="product product-7 text-center">
+                                        <div class="product product-7 text-center <% if (index % 2 === 0) { %> product-style-even <% } else { %> product-style-odd <% } %>">
                                             <figure class="product-media">
                                                 <% if (product.isActive) { %>
                                                     <span class="product-label label-new">New</span>
                                                 <% } %>
                                                 <a href="/product/<%= product._id %>?category=<%= product.category %>">
-
-
                                                     <img src="/<%= product.images[0] %>" alt="<%= product.title %>" class="product-image">
                                                 </a>
                                                 <div class="product-action-vertical">
                                                     <a href="#" class="btn-product-icon btn-wishlist btn-expandable">
                                                         <span>Add to wishlist</span>
                                                     </a>
-                                                    <a href="/product/quickview/<%= product._id %>" class="btn-product-icon btn-quickview" title="Quick view">
+                                                    <a href="/product/<%= product._id %>?category=<%= product.category %>" class="btn-product-icon btn-quickview" title="Quick view">
                                                         <span>Quick view</span>
                                                     </a>
-                                                    <a href="#" class="btn-product-icon btn-compare" title="Compare">
-                                                        <span>Compare</span>
-                                                    </a>
                                                 </div>
-                                                <div class="product-action">
-                                                    <a href="/cart/add/<%= product._id %>" class="btn-product btn-cart">
-                                                        <span>Add to cart</span>
-                                                    </a>
+                                                <div class="product-action d-flex justify-content-center">
+                                                    <form action="/cart/add/<%= product._id %>" method="POST">
+                                                        <button type="submit" class="btn-product btn-cart" style="border: none;">
+                                                            <span>Add to cart</span>
+                                                        </button>
+                                                    </form>
                                                 </div>
                                             </figure>
                                             <div class="product-body">
@@ -125,13 +137,18 @@
                                 <% }); %>
                             <% } else { %>
                                 <div class="col-12">
-                                    <p>No products availab le.</p>
+                                    <p>No products available.</p>
                                 </div>
                             <% } %>
-
-
-
-                        </div><!-- End .row -->
+                        </div>
+                        <!-- End .row -->
+                   
+                   
+                   
+                   
+                   
+                   
+                   
                     </div><!-- End .products -->
 
                     <nav aria-label="Page navigation">

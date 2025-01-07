@@ -1,19 +1,31 @@
 import Product from "../../models/productModel.js";
 import Cart from '../../models/cartModel.js'
 
+
+
 export const getShopPage = async (req, res) => {
     try {
-       
-        const products = await Product.find({ isActive: true });
-      
-       
+        const searchQuery = req.query.q; // Get the search query from the request
+        let products;
+
+        if (searchQuery) {
+            // Search for products matching the query
+            products = await Product.find({ 
+                isActive: true, 
+                title: { $regex: searchQuery, $options: 'i' } // Case-insensitive search
+            });
+        } else {
+            // Fetch all active products if no search query is provided
+            products = await Product.find({ isActive: true });
+        }
+
         res.render('user/shop', { 
             user: req.session.user || null, 
-            products 
+            products, 
+            searchQuery: searchQuery || '' // Pass the search query to the view
         });
     } catch (error) {
         console.error('Error fetching products:', error);
-
         res.status(500).send('An error occurred while fetching products');
     }
 };
@@ -434,6 +446,29 @@ export const updateCart = async (req, res) => {
 
 
 
+export const searchProduct=async(req,res,next)=>{
+    try{
+        const searchQuery = req.query.q; // Get the search term from query string
+        console.log("Search Query:", searchQuery);
 
+        if (!searchQuery) {
+
+            return res.redirect('/shop');
+        }
+
+         req.products = await Product.find({
+            title: { $regex: searchQuery, $options: 'i' } // Case-insensitive match
+        });
+
+
+            res.redirect('/shop')
+
+
+
+    }catch(err){
+        console.log("Error while trying to search products",err);
+        
+    }
+}
 
 

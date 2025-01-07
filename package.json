@@ -29,6 +29,7 @@
     "passport": "^0.7.0",
     "passport-google-oauth2": "^0.2.0",
     "passport-google-oauth20": "^2.0.0",
+    "razorpay": "^2.9.5",
     "uuid": "^11.0.3"
   }
 }

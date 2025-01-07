@@ -4,6 +4,12 @@ import { v4 as uuidv4 } from 'uuid';
 import Address from "../../models/addressModel.js";
 import Product from "../../models/productModel.js";
 import Cart from "../../models/cartModel.js";
+import Razorpay from "razorpay";
+import dotenv from 'dotenv';
+import crypto from 'crypto'
+dotenv.config();
+
+
 
 
 
@@ -12,6 +18,7 @@ export const createOrder = async (req, res) => {
         const { totalAmount, products, paymentMethod, selectedAddressId } = req.body;
         const orderId = uuidv4();
         const parsedProducts = JSON.parse(products);
+       
         const newOrder = new Order({
             selectedAddressId,
             totalAmount,
@@ -75,6 +82,136 @@ export const createOrder = async (req, res) => {
 
 
 
+
+
+const razorpayInstance = new Razorpay({
+    key_id:"rzp_test_eEMIhlHUZ45CcM",
+    key_secret: "JRjeQHH3jzKaEjp1V912XmSA",
+});
+
+
+
+
+export const createRazorpayOrder = async (req, res) => {
+    try {
+        console.log("Create razorpay order will work",req.body);
+        
+        const { totalAmount, products, paymentMethod, selectedAddressId } = req.body;
+        const parsedProducts = JSON.parse(products);
+        // Validate inputs
+        if (!totalAmount || !products || !paymentMethod || !selectedAddressId) {
+            return res.status(400).json({ error: "Missing required fields." });
+        }
+
+        if (totalAmount <= 0) {
+            return res.status(400).json({ error: "Invalid total amount." });
+        }
+
+        // Create the Razorpay order
+        const order = await razorpayInstance.orders.create({
+            amount: totalAmount * 100, // Convert to paise
+            currency: "INR",
+            receipt: `receipt_${Date.now()}`,
+        });
+
+
+        const newOrder = new Order({
+            selectedAddressId,
+            totalAmount: totalAmount.toString(), 
+            user: req.session.user, 
+            products:parsedProducts,
+            paymentMethod,
+            orderId: order.id,
+            paymentStatus: "Pending", // Payment status will be "Pending" initially
+            status: "Pending", // Order status will be "Pending" initially
+        });
+
+        await newOrder.save();
+
+// update the product stock
+        for (let product of parsedProducts) {
+            for (let item of product.items) {
+                const { productId, quantity } = item;
+
+                const productInStock = await Product.findById(productId);
+
+                if (productInStock) {
+                    productInStock.stock -= quantity;
+                    if (productInStock.stock < 0) {
+                        productInStock.stock = 0;
+                    }
+                    await productInStock.save();
+                    console.log(`Updated product stock for ${productInStock.title}, new stock: ${productInStock.stock}`);
+                }
+            }
+        }
+
+// Remove product from the cart
+        const userId = req.session.userId;
+        const cart = await Cart.findOne({ userId });
+
+        if (cart && Array.isArray(cart.items)) {
+            // Flatten ordered product items into a single array of productIds
+            const orderedProductIds = parsedProducts.flatMap(product =>
+                product.items.map(item => item.productId.toString())
+            );
+
+            // Filter cart items to exclude ordered products
+            cart.items = cart.items.filter(cartItem =>
+                !orderedProductIds.includes(cartItem.productId.toString())
+            );
+
+            // Save the updated cart
+            await cart.save();
+            console.log("Products removed from the cart");
+        } else {
+            console.log("Cart is either undefined or does not contain items");
+        }
+
+
+        res.status(200).json({
+            success: true,
+            orderId: order.id,
+            amount: order.amount,
+            order:newOrder._id
+        });
+    } catch (err) {
+        console.log("Error while creating Razorpay order:", err);
+        res.status(500).json({ error: "Error creating Razorpay order. Please try again." });
+    }
+};
+
+export const verifyRazorpayPayment = async (req, res) => {
+    try {
+        console.log("Verify razorpay order is workign now");
+        
+        const { orderId, paymentId, signature } = req.body;
+
+        // Validate inputs
+        if (!orderId || !paymentId || !signature) {
+            return res.status(400).json({ error: "Missing payment verification details." });
+        }
+
+        const expectedSignature = crypto
+            .createHmac("sha256", "JRjeQHH3jzKaEjp1V912XmSA")
+            .update(orderId + "|" + paymentId)
+            .digest("hex");
+
+        if (expectedSignature === signature) {
+            res.status(200).json({ success: true, message: "Payment verified successfully" });
+        } else {
+            res.status(400).json({ success: false, message: "Payment verification failed" });
+        }
+    } catch (err) {
+        console.log("Error during Razorpay payment verification:", err);
+        res.status(500).json({ error: "Error verifying payment. Please try again." });
+    }
+};
+
+
+
+
+
 export const orderSummery=async(req,res)=>{
     try{
 
@@ -112,7 +249,7 @@ export const getOrders = async (req, res, next) => {
         const userId = req.session.userId;
 
         // Fetch the orders for the user
-        const orders = await Order.find({ user: userId });
+        const orders = await Order.find({ user: userId }).sort({createdAt:-1});
 
         console.log('Fetched Orders:', orders);  // Debugging line
         req.userOrder = orders;

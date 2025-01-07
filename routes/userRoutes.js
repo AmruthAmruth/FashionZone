@@ -6,7 +6,8 @@ import { isUserAuthenticated } from '../middileware/auth.js'
 import { createAddress, deleteAddress, editAddress, getAddress, getProfilePage, updateName } from '../controllers/userControllers/profileControllers.js'
 import mongoose from 'mongoose'
 import { checkoutAddAddress, checkoutEditAddress, checkoutPage } from '../controllers/userControllers/chekoutControllers.js'
-import { cancelOrder, createOrder, getOrders, orderSummery } from '../controllers/userControllers/orderControllers.js'
+import { cancelOrder, createOrder, createRazorpayOrder, getOrders, orderSummery, verifyRazorpayPayment } from '../controllers/userControllers/orderControllers.js'
+import { addToWishlist, getWishList, removeProductFromWishlist } from '../controllers/userControllers/wishlistControllers.js'
 
 const userRouter=express.Router()
 
@@ -108,9 +109,19 @@ userRouter.post('/checkouteditaddress',checkoutEditAddress)
 
 // ---------------------------Order Section----------------------------------------------------------------
  
-userRouter.post('/createorder',createOrder)
+userRouter.post('/codcontroller',createOrder)
 userRouter.get('/ordersummery/:orderId',orderSummery)
 userRouter.post('/orders/cancel', cancelOrder)
+userRouter.post('/razorpaycontroller', createRazorpayOrder)
+userRouter.post('/verifypayment', verifyRazorpayPayment)
+
+
+
+// ----------------------Wish list -----------------------------------------------------
+
+userRouter.get('/wishlist',getWishList)
+userRouter.post('/wishlist',addToWishlist)
+userRouter.post('/removewishlist',removeProductFromWishlist)
 
 
 export default userRouter 
