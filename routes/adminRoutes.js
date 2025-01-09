@@ -6,10 +6,10 @@ import { blockAndUnblock, getUserListPage } from '../controllers/adminController
 import { adminAutherization, isAdminAuthenticated } from '../middileware/auth.js'
 import { createCategory, editCategory, getCategoryPage, showAndHideCategory } from '../controllers/adminControllers/categoryController.js'
 import { changeTheOrderStatus, getOrderDetails, getOrderList } from '../controllers/adminControllers/orderController.js'
+import { addOfferForCategory, addOfferForProduct, deleteCategoryOffer, deleteProductOffer, editCategoryOffer, editOfferForProduct, getCategoryOffer, getOfferPage } from '../controllers/adminControllers/offerController.js'
+import { addCoupon, couponSoftDelete, editCoupon, getCoupenspage } from '../controllers/adminControllers/coupenController.js'
 
 const adminRouter=express() 
-
-
 
 
 
@@ -58,5 +58,29 @@ adminRouter.post('/editcategory/:id',editCategory)
 adminRouter.get('/orderlist',getOrderList)
 adminRouter.get('/orderdetails/:id',getOrderDetails)
 adminRouter.post('/changestatus/:id',changeTheOrderStatus)
+
+
+
+// --------------Offer section=------------------------
+
+
+adminRouter.get('/offers',getOfferPage)
+adminRouter.post('/addofferforproduct',addOfferForProduct)
+adminRouter.post('/editofferforproduct',upload.none(),editOfferForProduct)
+adminRouter.post('/deleteproductoffer',deleteProductOffer)
+adminRouter.post('/addofferforcategory', addOfferForCategory)
+adminRouter.get('/categoryoffer',getCategoryOffer)
+adminRouter.post('/editcategoryoffer',editCategoryOffer)
+adminRouter.post('/deletecategoryoffer',deleteCategoryOffer)
+
+
+
+
+// -------------------Coupens management ----------------------------------
+adminRouter.get('/coupones',getCoupenspage)
+adminRouter.post('/addcoupon',addCoupon)
+adminRouter.post('/editcoupon',editCoupon)
+adminRouter.post('/couponsoftdelete',couponSoftDelete)
+
 
 export default adminRouter   

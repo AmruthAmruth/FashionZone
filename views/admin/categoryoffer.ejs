@@ -1,0 +1,285 @@
+<%- include('../layout/adminheader.ejs') -%>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap JS Bundle (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap CSS -->
+
+    </head>
+
+    <body>
+
+
+        <!-- Layout wrapper -->
+        <div class="layout-wrapper layout-content-navbar  ">
+            <div class="layout-container">
+
+                <!-- Menu -->
+                <%- include('../partials/adminsidebar.ejs') -%>
+                    <div class="layout-page">
+
+
+                        <!-- Navbar -->
+                        <%- include('../partials/adminnavbar.ejs') -%>
+                            <!-- / Navbar -->
+                            <!-- Content wrapper -->
+
+                            <div class="content-wrapper mb-5">
+
+
+                                <div class="card mt-3 p-3 m-2">
+                                    <div class="card-widget-separator-wrapper">
+                                        <div class="card-body card-widget-separator">
+                                            <div class="row gy-4 gy-sm-1">
+                                                <div class="col-sm-6 col-lg-12">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h2 class="fw-bold mb-1">Category Offer</h2>
+                                                        <button type="button" class="btn btn-primary"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#addCategoryOfferModal">Add</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                <!-- Add Category Offer Modal -->
+                                <div class="modal fade" id="addCategoryOfferModal" tabindex="-1"
+                                    aria-labelledby="addCategoryOfferModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="addCategoryOfferModalLabel">Add Category
+                                                    Offer</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="categoryOfferForm" action="/admin/addofferforcategory"
+                                                    method="post">
+                                                    <!-- Offer Title -->
+                                                    <div class="mb-3">
+                                                        <label for="categoryOfferTitle" class="form-label">Offer
+                                                            Title</label>
+                                                        <input type="text" class="form-control" name="offerName"
+                                                            id="categoryOfferTitle" placeholder="Enter offer title"
+                                                            required>
+                                                    </div>
+
+                                                    <!-- Description -->
+                                                    <div class="mb-3">
+                                                        <label for="categoryOfferDescription"
+                                                            class="form-label">Description</label>
+                                                        <textarea class="form-control" id="categoryOfferDescription"
+                                                            name="description" rows="3" placeholder="Enter description"
+                                                            required></textarea>
+                                                    </div>
+
+                                                    <!-- Offer Percentage -->
+                                                    <div class="mb-3">
+                                                        <label for="categoryOfferPercentage" class="form-label">Offer
+                                                            Percentage</label>
+                                                        <input type="number" class="form-control" name="discount"
+                                                            id="categoryOfferPercentage"
+                                                            placeholder="Enter discount percentage" required>
+                                                    </div>
+
+                                                    <!-- Categories -->
+                                                    <div class="mb-3">
+                                                        <label for="categorySelection" class="form-label">Select
+                                                            Categories</label>
+                                                        <select id="categorySelection" class="form-select"
+                                                            name="categories" multiple aria-label="Select Categories"
+                                                            style="height: 150px;">
+                                                            <% if (categorylist) { %>
+                                                                <% for (let i=0; i < categorylist.length; i++) { %>
+                                                                    <option value="<%= categorylist[i] %>">
+                                                                        <%= categorylist[i] %>
+                                                                    </option>
+                                                                    <% } %>
+                                                                        <% } else { %>
+                                                                            <option disabled>No categories available
+                                                                            </option>
+                                                                            <% } %>
+                                                        </select>
+                                                    </div>
+
+
+                                                    <!-- Status -->
+                                                    <div class="mb-3">
+                                                        <label for="categoryOfferStatus"
+                                                            class="form-label">Status</label>
+                                                        <select class="form-select" id="categoryOfferStatus"
+                                                            name="status" required>
+                                                            <option value="" disabled selected>Select status</option>
+                                                            <option value="Active">Active</option>
+                                                            <option value="Inactive">Inactive</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="modal-footer mt-5">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-bs-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-primary">Save
+                                                            Offer</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+
+
+                                <!-- Offers Container -->
+                                <!-- Container to display offers -->
+
+
+                                <div class="container mb-5">
+                                    <div id="offers-container" class="row">
+                                        <% categoryOffer.forEach(offer => { %>
+                                            <div class="col-12 col-lg-4 mb-4">
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title mb-4">
+                                                            <%= offer.offerName %>
+                                                        </h5>
+                                                        <p>Description: <%= offer.description %></p>
+                                                        <p>Discount: <%= offer.discount %>%</p>
+                                                        <p>Applied Categories: <br>
+                                                            <% offer.category.forEach((productTitle) => { %>
+                                                                <%= productTitle %> <br>
+                                                            <% }); %>
+                                                        </p>
+                                                        <p>Status: <%= offer.status %></p>
+                                                    </div>
+                                                    <div class="card-footer">
+                                                        <!-- Edit Button -->
+                                                        <button type="button" class="btn btn-primary" 
+                                                            onclick="openEditModal({
+                                                                offerId: '<%= offer._id %>',
+                                                                offerName: '<%= offer.offerName %>',
+                                                                description: '<%= offer.description %>',
+                                                                discount: <%= offer.discount %>,
+                                                                category: <%= JSON.stringify(offer.category) %>,
+                                                                status: '<%= offer.status %>'
+                                                            })">
+                                                            Edit
+                                                        </button>
+                                                        <form action="/admin/deletecategoryoffer" method="POST" class="d-inline">
+                                                            <input type="hidden" name="offerId" value="<%= offer._id %>">
+                                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <% }); %>
+                                    </div>
+                                </div>
+
+
+
+                                <!-- Edit Modal -->
+                                <!-- Modal -->
+                                <!-- Edit Modal (Bootstrap Modal) -->
+                                <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="editModalLabel">Edit Category Offer</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <!-- Form to Edit Offer Details -->
+                                                <form id="editOfferForm" action="/admin/editcategoryoffer" method="post">
+                                                    <input type="hidden" id="offerId" name="offerId"> <!-- Hidden input for offer ID -->
+                                                    
+                                                    <div class="mb-3">
+                                                        <label for="offerName" class="form-label">Offer Name</label>
+                                                        <input type="text" class="form-control" id="offerName" name="offerName">
+                                                    </div>
+                                                
+                                                    <div class="mb-3">
+                                                        <label for="description" class="form-label">Description</label>
+                                                        <input type="text" class="form-control" id="description" name="description">
+                                                    </div>
+                                                
+                                                    <div class="mb-3">
+                                                        <label for="discount" class="form-label">Discount (%)</label>
+                                                        <input type="number" class="form-control" id="discount" name="discount">
+                                                    </div>
+                                                
+                                                    <div class="mb-3">
+                                                        <label for="categories" class="form-label">Categories</label>
+                                                        <select class="form-select" id="categories" name="categories" multiple required>
+                                                            <% categorylist.forEach(category => { %>
+                                                                <option value="<%= category %>">
+                                                                    <%= category %>
+                                                                </option>
+                                                            <% }) %>
+                                                        </select>
+                                                    </div>
+                                                
+                                                    <div class="mb-3">
+                                                        <label for="status" class="form-label">Status</label>
+                                                        <input type="text" class="form-control" id="status" name="status">
+                                                    </div>
+                                                
+                                                    <button type="submit" class="btn btn-primary">Save changes</button>
+                                                </form>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+
+
+
+
+
+                            </div>
+                    </div>
+            </div>
+        </div>
+
+
+        <script>
+            function openEditModal(offer) {
+                console.log('Editing Offer:', offer);  // Check the offer details in the console
+                
+                // Set the values of the fields in the form
+                document.getElementById('offerId').value = offer.offerId;
+                document.getElementById('offerName').value = offer.offerName;
+                document.getElementById('description').value = offer.description;
+                document.getElementById('discount').value = offer.discount;
+                
+                // Handle setting selected categories
+                const categoriesSelect = document.getElementById('categories');
+                const selectedCategories = offer.category;  // Assuming `offer.category` is an array
+                
+                Array.from(categoriesSelect.options).forEach(option => {
+                    option.selected = selectedCategories.includes(option.value);  // Mark options as selected
+                });
+        
+                document.getElementById('status').value = offer.status;
+        
+                // Show the modal (if you're using a modal)
+                var myModal = new bootstrap.Modal(document.getElementById('editModal'));
+                myModal.show();
+            }
+        </script>
+    </body>
+
+    </html>

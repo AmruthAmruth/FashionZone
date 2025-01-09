@@ -96,17 +96,22 @@
 
 	                			<div class="cart-bottom">
 			            			<div class="cart-discount">
-			            				<form action="#">
-			            					<div class="input-group">
-				        						<input type="text" class="form-control" required placeholder="coupon code">
-				        						<div class="input-group-append">
-													<button class="btn btn-outline-primary-2" type="submit"><i class="icon-long-arrow-right"></i></button>
-												</div><!-- .End .input-group-append -->
-			        						</div><!-- End .input-group -->
-			            				</form>
+			            			
+                                        <form id="couponForm" action="/applycouponcode" method="post">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" name="couponcode" id="couponcode" required placeholder="Enter coupon code">
+                                                <input type="hidden" name="totalAmount" value="<%= cartPrice.total %>">
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-primary-2 p-3" id="couponButton" type="submit" data-applied="false">
+                                                        Apply
+                                                    </button>
+                                                </div><!-- .End .input-group-append -->
+                                            </div><!-- End .input-group -->
+                                        </form>
+                                        
+                                        
 			            			</div><!-- End .cart-discount -->
 
-			            			<a href="#" class="btn btn-outline-dark-2"><span>UPDATE CART</span><i class="icon-refresh"></i></a>
 		            			</div><!-- End .cart-bottom -->
 	                		</div><!-- End .col-lg-9 -->
 
@@ -121,63 +126,9 @@
 	                			<div class="summary summary-cart">
     <h3 class="summary-title">Cart Total</h3>
 
-    <form >
+    <form action="/checkoutfromcart" method="post">
         <table class="table table-summary">
             <tbody>
-                <!-- Free Shipping -->
-                <tr class="summary-shipping-row">
-                    <td>
-                        <div class="custom-control custom-radio">
-                            <input 
-                                type="radio" 
-                                id="free-shipping" 
-                                name="shipping" 
-                                class="custom-control-input" 
-                                value="free" 
-                                data-cost="0" 
-                                <%= cartPrice.selectedShipping === 'free' ? 'checked' : '' %>
-                            >
-                            <label class="custom-control-label" for="free-shipping">Free Shipping</label>
-                        </div>
-                    </td>
-                    <td>₹0.00</td>
-                </tr>
-                <!-- Standard Shipping -->
-                <tr class="summary-shipping-row">
-                    <td>
-                        <div class="custom-control custom-radio">
-                            <input 
-                                type="radio" 
-                                id="standard-shipping" 
-                                name="shipping" 
-                                class="custom-control-input" 
-                                value="standard" 
-                                data-cost="50" 
-                                <%= cartPrice.selectedShipping === 'standard' ? 'checked' : '' %>
-                            >
-                            <label class="custom-control-label" for="standard-shipping">Standard Shipping</label>
-                        </div>
-                    </td>
-                    <td>₹50.00</td>
-                </tr>
-                <!-- Express Shipping -->
-                <tr class="summary-shipping-row">
-                    <td>
-                        <div class="custom-control custom-radio">
-                            <input 
-                                type="radio" 
-                                id="express-shipping" 
-                                name="shipping" 
-                                class="custom-control-input" 
-                                value="express" 
-                                data-cost="100" 
-                                <%= cartPrice.selectedShipping === 'express' ? 'checked' : '' %>
-                            >
-                            <label class="custom-control-label" for="express-shipping">Express Shipping</label>
-                        </div>
-                    </td>
-                    <td>₹100.00</td>
-                </tr>
                 <!-- Total -->
                 <tr class="summary-total">
                     <td>Total:</td>
@@ -188,12 +139,11 @@
                 </tr>
             </tbody>
         </table>
-		<button type="" class="btn btn-outline-primary-2 btn-order btn-block">
-			 <a href="/checkout">
+        <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
             PROCEED TO CHECKOUT
-		</a>
         </button>
     </form>
+    
                                 </div><!-- End .summary -->
 
 
@@ -289,6 +239,136 @@
         </footer><!-- End .footer -->
     </div>
 </body>
+
+
+
+<!-- ------------coupeon section script -->
+
+
+<!-- Include SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const couponForm = document.getElementById('couponForm');
+        const couponButton = document.getElementById('couponButton');
+        const couponInput = document.getElementById('couponcode');
+        const totalPriceSpan = document.getElementById('total-price');
+        const totalPriceInput = document.querySelector('input[name="totalPrice"]');
+
+        couponForm.addEventListener('submit', async function (event) {
+            event.preventDefault(); // Prevent the form from submitting the default way
+
+            const couponcode = couponInput.value.trim();
+            const totalAmount = document.querySelector('input[name="totalAmount"]').value;
+
+            if (!couponcode) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Please enter a coupon code.',
+                    confirmButtonText: 'Close',
+                });
+                return;
+            }
+
+            try {
+                let response, data;
+
+                if (couponButton.dataset.applied === 'true') {
+                    // Remove coupon
+                    response = await fetch('/removecoupon', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ couponcode, totalAmount }),
+                    });
+                } else {
+                    // Apply coupon
+                    response = await fetch('/applycouoponcode', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ couponcode, totalAmount }),
+                    });
+                }
+
+                data = await response.json();
+
+                if (response.ok) {
+                    if (couponButton.dataset.applied === 'true') {
+                        // Coupon removed successfully
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Coupon Removed!',
+                            text: `Coupon has been removed. Your total is ₹${data.totalAmount}`,
+                            confirmButtonText: 'Okay',
+                        });
+
+                        // Update total price
+                        totalPriceSpan.textContent = `₹${data.totalAmount}`;
+                        totalPriceInput.value = data.totalAmount;
+
+                        // Reset the form for applying a new coupon
+                        couponInput.disabled = false;
+                        couponButton.textContent = 'Apply';
+                        couponButton.dataset.applied = 'false';
+                    } else {
+                        // Coupon applied successfully
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Coupon Applied!',
+                            text: `You saved ₹${data.discountAmount}! Your total is ₹${data.finalAmount}`,
+                            confirmButtonText: 'Cool',
+                        });
+
+                        // Update total price
+                        const displayedAmount = data.finalAmount || totalAmount;
+                        totalPriceSpan.textContent = `₹${displayedAmount}`;
+                        totalPriceInput.value = displayedAmount;
+
+                        // Disable the input to prevent changes and switch button to "Remove"
+                        couponInput.disabled = true;
+                        couponButton.textContent = 'Remove';
+                        couponButton.dataset.applied = 'true';
+                    }
+                } else {
+                    // Show error popup
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: data.message,
+                        confirmButtonText: 'Try Again',
+                    });
+                }
+            } catch (error) {
+                console.log("Error while processing coupon", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'There was an error processing your request. Please try again later.',
+                    confirmButtonText: 'Close',
+                });
+            }
+        });
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

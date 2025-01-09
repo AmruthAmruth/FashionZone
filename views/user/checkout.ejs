@@ -140,13 +140,13 @@
                                                             </tr>
                                                 
                                                             <tr class="summary-total">
-                                                                <td>Total:</td>
-                                                                <td>$<%= subtotal %></td>
+                                                                <td>Final Price After Discounts: </td>
+                                                                <td>$<%= totalPrice %></td>
                                                             </tr>
                                                         </tbody>
                                                     </table>
                                                 
-                                                    <input type="hidden" name="totalAmount" value="<%= subtotal %>">
+                                                    <input type="hidden" name="totalAmount" value="<%= totalPrice %>">
                                                     <input type="hidden" name="products" value="<%= JSON.stringify(userProducts) %>">
                                                 
                                                     <div class="accordion-summary" id="accordion-payment">

@@ -1,0 +1,547 @@
+<%- include('../layout/adminheader.ejs') -%>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap JS Bundle (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Bootstrap CSS -->
+
+    </head>
+
+    <body>
+
+
+        <!-- Layout wrapper -->
+        <div class="layout-wrapper layout-content-navbar  ">
+            <div class="layout-container">
+
+                <!-- Menu -->
+                <%- include('../partials/adminsidebar.ejs') -%>
+                    <div class="layout-page">
+
+
+                        <!-- Navbar -->
+                        <%- include('../partials/adminnavbar.ejs') -%>
+                            <!-- / Navbar -->
+                            <!-- Content wrapper -->
+
+                            <div class="content-wrapper mb-5">
+
+                                <div class="card mt-3 p-3 m-2">
+                                    <div class="card-widget-separator-wrapper">
+                                        <div class="card-body card-widget-separator">
+                                            <div class="row gy-4 gy-sm-1">
+                                                <div class="col-sm-6 col-lg-12">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h2 class="fw-bold mb-1">Product Offer</h2>
+                                                        <button type="button" class="btn btn-primary"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#addOfferModal">Add</button>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="container mb-5">
+                                    <div id="offers-container" class="row">
+                                        <% offers.forEach(offer=> { %>
+                                            <div class="col-12 col-lg-4 mb-4">
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title mb-4">
+                                                            <%= offer.offerName %>
+                                                        </h5>
+                                                        <p>Description: <%= offer.description %>
+                                                        </p>
+                                                        <p>Discount: <%= offer.discount %>%</p>
+                                                        <p>Applied Products: <br>
+                                                            <% offer.productName.forEach((productTitle, index)=> { %>
+                                                                <%= productTitle %>
+                                                                    <% if (index < offer.productName.length - 1) { %>,
+                                                                        <% } %>
+                                                                            <% }); %>
+                                                        </p>
+                                                        <p>Status: <%= offer.status %>
+                                                        </p>
+                                                    </div>
+                                                    <div class="card-footer">
+                                                        <button type="button"
+                                                            class="btn btn-outline-primary waves-effect m-3 edit-offer-btn"
+                                                            data-bs-toggle="modal" data-bs-target="#editOfferModal"
+                                                            data-offer-id="<%= offer._id %>"
+                                                            data-offer-name="<%= offer.offerName %>"
+                                                            data-description="<%= offer.description %>"
+                                                            data-discount="<%= offer.discount %>"
+                                                            data-products="<%= offer.products.map(p => p.toString()).join(',') %>"
+                                                            data-status="<%= offer.status %>">
+                                                            Edit
+                                                        </button>
+
+                                                        <button type="button" class="btn btn-danger"
+                                                            onclick="deleteOffer('<%= offer._id %>')">Delete</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <% }); %>
+                                    </div>
+                                </div>
+
+
+
+                                <!-- Add Offer Modal -->
+                                <div class="modal fade" id="addOfferModal" tabindex="-1"
+                                    aria-labelledby="addOfferModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="addOfferModalLabel">Add Product Offer</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <!-- Offer Form -->
+                                                <form id="offerForm" action="/admin/addofferforproduct" method="post">
+                                                    <div class="mb-3">
+                                                        <label for="offerTitle" class="form-label">Offer Title</label>
+                                                        <input type="text" class="form-control" name="offerName"
+                                                            id="offerTitle" placeholder="Enter offer title" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="offerDescription"
+                                                            class="form-label">Description</label>
+                                                        <textarea class="form-control" id="offerDescription"
+                                                            name="description" rows="3" placeholder="Enter description"
+                                                            required></textarea>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="offerPercentage" class="form-label">Offer
+                                                            Percentage</label>
+                                                        <input type="number" class="form-control" name="discount"
+                                                            id="offerPercentage" placeholder="Enter discount percentage"
+                                                            required>
+                                                    </div>
+
+
+
+                                                    <!-- Display for the selected products -->
+
+
+                                                    <div class="mb-4">
+                                                        <div class="form-floating form-floating-outline">
+                                                            <!-- Multi-select dropdown for products with increased height -->
+                                                            <select id="ecommerce-applied-products" class="form-select"
+                                                                name="products" multiple aria-label="Applied Products"
+                                                                style="height: 150px;">
+                                                                <% products.forEach(product=> { %>
+                                                                    <option value="<%= product._id %>" class="m-2">
+                                                                        <%= product.title %>
+                                                                    </option>
+                                                                    <% }); %>
+                                                            </select>
+                                                            <label for="ecommerce-applied-products">Applied
+                                                                Products</label>
+                                                        </div>
+                                                    </div>
+
+
+
+                                                    <div class="mb-2">
+                                                        <h6 class="mb-1">Selected Products:</h6>
+                                                        <div id="selected-products" class="d-flex flex-wrap">
+                                                            <!-- Dynamically added selected products will appear here -->
+                                                        </div>
+                                                    </div>
+
+
+
+                                                    <div class="mb-3">
+                                                        <label for="offerStatus" class="form-label">Status</label>
+                                                        <select class="form-select" id="offerStatus" name="status"
+                                                            required>
+                                                            <option value="" disabled selected>Select status</option>
+                                                            <option value="Active">Active</option>
+                                                            <option value="Inactive">Inactive</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="modal-footer mt-5">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-bs-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-primary"
+                                                            id="submitOfferBtn">Save Offer</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                <!-- Edit Offer Modal -->
+                                <div class="modal fade" id="editOfferModal" tabindex="-1"
+                                    aria-labelledby="editOfferModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="editOfferModalLabel">Edit Product Offer</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <form id="editOfferForm">
+                                                <div class="modal-body">
+                                                    <input type="hidden" id="offerId" name="offerId">
+
+                                                    <!-- Offer Name -->
+                                                    <div class="mb-3">
+                                                        <label for="offerName" class="form-label">Offer Name</label>
+                                                        <input type="text" class="form-control" id="offerName"
+                                                            name="offerName" required>
+                                                    </div>
+
+                                                    <!-- Description -->
+                                                    <div class="mb-3">
+                                                        <label for="description" class="form-label">Description</label>
+                                                        <textarea class="form-control" id="description"
+                                                            name="description" required></textarea>
+                                                    </div>
+
+                                                    <!-- Discount -->
+                                                    <div class="mb-3">
+                                                        <label for="discount" class="form-label">Discount (%)</label>
+                                                        <input type="number" class="form-control" id="discount"
+                                                            name="discount" required>
+                                                    </div>
+
+                                                    <!-- Products -->
+                                                    <div class="mb-3">
+                                                        <label for="products" class="form-label">Products</label>
+                                                        <select class="form-select" id="products" name="products"
+                                                            multiple required>
+                                                            <% products.forEach(product=> { %>
+                                                                <option value="<%= product._id %>">
+                                                                    <%= product.title %>
+                                                                </option>
+                                                                <% }) %>
+                                                        </select>
+                                                    </div>
+
+                                                    <!-- Status -->
+                                                    <div class="mb-3">
+                                                        <label for="status" class="form-label">Status</label>
+                                                        <select class="form-select" id="status" name="status" required>
+                                                            <option value="Active">Active</option>
+                                                            <option value="Inactive">Inactive</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                         
+
+
+
+
+
+<script>
+    document.getElementById('editOfferForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    // Collect form data
+    const formData = new FormData(this);
+
+    // Send the form data using fetch
+    fetch('/admin/editofferforproduct', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())  // or response.text() depending on your backend
+    .then(data => {
+        console.log("Form submitted successfully", data);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+});
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+                            </div>
+
+                    </div>
+            </div>
+        </div>
+
+<!-- JavaScript -->
+<script>
+  // Function to open the modal and populate it with offer details
+function openEditModal(offer) {
+    // Fill the modal fields with the offer details
+    document.getElementById('offerName').value = offer.offerName;
+    document.getElementById('description').value = offer.description;
+    document.getElementById('discount').value = offer.discount;
+    document.getElementById('status').value = offer.status;
+
+    // Populate categories in the select element
+    const selectElement = document.getElementById('ecommerce-applied-products');
+    selectElement.innerHTML = ''; // Clear previous options
+    offer.category.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category.id; // Assuming category has id
+        option.text = category.name; // Assuming category has name
+        selectElement.appendChild(option);
+
+        // Automatically select the categories already applied in the offer
+        if (offer.selectedCategories.includes(category.id)) {
+            option.selected = true;
+        }
+    });
+
+    // Update the selected categories display
+    updateSelectedCategories();
+
+    // Show the modal
+    var myModal = new bootstrap.Modal(document.getElementById('editOfferModal'), {
+        keyboard: false
+    });
+    myModal.show();
+}
+
+// Function to update the display of selected categories
+function updateSelectedCategories() {
+    const selectedCategories = document.getElementById('ecommerce-applied-products').selectedOptions;
+    const selectedCategoriesContainer = document.getElementById('selected-products');
+    selectedCategoriesContainer.innerHTML = ''; // Clear previous selections
+
+    // Loop through selected options and add them to the display container
+    Array.from(selectedCategories).forEach(option => {
+        const categoryName = option.text;
+        const categoryId = option.value;
+
+        // Create a tag-like display for each selected category
+        const categoryTag = document.createElement('div');
+        categoryTag.className = 'badge bg-primary m-1 d-flex align-items-center';
+        categoryTag.innerHTML = `${categoryName} <span class="ms-2 cursor-pointer" onclick="removeCategory('${categoryId}')">&times;</span>`;
+
+        // Append the tag to the selected categories container
+        selectedCategoriesContainer.appendChild(categoryTag);
+    });
+}
+
+// Function to remove a selected category when the close button is clicked
+function removeCategory(categoryId) {
+    const selectElement = document.getElementById('ecommerce-applied-products');
+    const option = selectElement.querySelector(`option[value="${categoryId}"]`);
+    if (option) {
+        option.selected = false; // Unselect the option
+    }
+
+    // Update the displayed selected categories
+    updateSelectedCategories();
+}
+
+// Listen to change event to update the selected categories dynamically
+document.getElementById('ecommerce-applied-products').addEventListener('change', updateSelectedCategories);
+
+// Handle form submission to save the edited offer
+document.getElementById('editOfferForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    
+    // Collect form data
+    const updatedOffer = {
+        offerName: document.getElementById('offerName').value,
+        description: document.getElementById('description').value,
+        discount: document.getElementById('discount').value,
+        status: document.getElementById('status').value,
+        category: Array.from(document.getElementById('ecommerce-applied-products').selectedOptions).map(option => option.value)
+    };
+
+    // Here you can send the updated data to your server via an AJAX request or directly submit the form
+    console.log(updatedOffer);
+
+    // Close the modal after saving
+    var myModal = bootstrap.Modal.getInstance(document.getElementById('editOfferModal'));
+    myModal.hide();
+});
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <!-- Add SweetAlert2 CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+
+        <!-- Add SweetAlert2 JS -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+
+
+        <script>
+            // Function to send a request to delete the offer
+            async function deleteOffer(offerId) {
+                try {
+                    const response = await fetch('/admin/deleteproductoffer', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ offerId }),
+                    });
+
+                    const data = await response.json();
+                    if (data.message === 'Offer deleted and products updated successfully!') {
+                        // Success: Show SweetAlert2 success message
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Offer deleted and product prices have been reset.',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            location.reload(); // Reload the page to reflect the changes
+                        });
+                    } else {
+                        // Error: Show SweetAlert2 error message
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Error: ' + data.message,
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                } catch (err) {
+                    console.error('Error:', err);
+                    // Error: Show SweetAlert2 error message for general error
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Error deleting the offer.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            }
+        </script>
+
+
+
+
+
+
+        <!-- Add offer modal script -->
+
+        <script>
+            // Function to update the display of selected products
+            function updateSelectedProducts() {
+                const selectedProducts = document.getElementById('ecommerce-applied-products').selectedOptions;
+                const selectedProductsContainer = document.getElementById('selected-products');
+                selectedProductsContainer.innerHTML = ''; // Clear previous selections
+
+                // Loop through selected options and add them to the display container
+                Array.from(selectedProducts).forEach(option => {
+                    const productName = option.text;
+                    const productId = option.value;
+
+                    // Create a tag-like display for each selected product
+                    const productTag = document.createElement('div');
+                    productTag.className = 'badge bg-primary m-1 d-flex align-items-center';
+                    productTag.innerHTML = `${productName} <span class="ms-2 cursor-pointer" onclick="removeProduct('${productId}')">&times;</span>`;
+
+                    // Append the tag to the selected products container
+                    selectedProductsContainer.appendChild(productTag);
+                });
+            }
+
+            // Function to remove a selected product when the close button is clicked
+            function removeProduct(productId) {
+                const selectElement = document.getElementById('ecommerce-applied-products');
+                const option = selectElement.querySelector(`option[value="${productId}"]`);
+                if (option) {
+                    option.selected = false; // Unselect the option
+                }
+
+                // Update the displayed selected products
+                updateSelectedProducts();
+            }
+
+            // Listen to change event to update the selected products dynamically
+            document.getElementById('ecommerce-applied-products').addEventListener('change', updateSelectedProducts);
+
+            // Initialize the display when the page loads
+            updateSelectedProducts();
+
+        </script>
+
+
+
+
+
+        <!-- Edit the offers -->
+
+
+        <script>
+            document.querySelectorAll('.edit-offer-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const offerId = this.getAttribute('data-offer-id');
+                    const offerName = this.getAttribute('data-offer-name');
+                    const description = this.getAttribute('data-description');
+                    const discount = this.getAttribute('data-discount');
+                    const status = this.getAttribute('data-status');
+                    const productIds = this.getAttribute('data-products').split(',');
+
+                    // Set modal fields
+                    document.getElementById('offerId').value = offerId;
+                    document.getElementById('offerName').value = offerName;
+                    document.getElementById('description').value = description;
+                    document.getElementById('discount').value = discount;
+                    document.getElementById('status').value = status;
+
+                    // Set selected products
+                    const productsSelect = document.getElementById('products');
+                    Array.from(productsSelect.options).forEach(option => {
+                        option.selected = productIds.includes(option.value);
+                    });
+                });
+            });
+
+        </script>
+
+
+    </body>
+
+    </html>

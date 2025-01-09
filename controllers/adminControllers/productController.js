@@ -21,15 +21,34 @@ export const getAddProductPage = (req, res) => {
 };
 
 
-export const getAllProductPage= async(req,res)=>{
-    try{
-        const products = await Product.find();
-        res.render('admin/products',{products,message:req.flash()})
-    }catch(err){
-        console.log(err);
+export const getAllProductPage = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1; 
+        const productsPerPage = 6; 
+
+        const totalProducts = await Product.countDocuments();
+        const totalPages = Math.ceil(totalProducts / productsPerPage); 
+
         
+        const products = await Product.find()
+            .skip((page - 1) * productsPerPage) 
+            .limit(productsPerPage); 
+
+        
+        res.render('admin/products', { 
+            products, 
+            message: req.flash(),
+            currentPage: page, 
+            totalPages,
+            productsPerPage 
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Error fetching products");
     }
-}
+};
+
+
 
 
 

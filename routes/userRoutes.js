@@ -5,8 +5,8 @@ import { addToCart, cartPriceList, getCartPage, getFeaturedProducts, getMenProdu
 import { isUserAuthenticated } from '../middileware/auth.js'
 import { createAddress, deleteAddress, editAddress, getAddress, getProfilePage, updateName } from '../controllers/userControllers/profileControllers.js'
 import mongoose from 'mongoose'
-import { checkoutAddAddress, checkoutEditAddress, checkoutPage } from '../controllers/userControllers/chekoutControllers.js'
-import { cancelOrder, createOrder, createRazorpayOrder, getOrders, orderSummery, verifyRazorpayPayment } from '../controllers/userControllers/orderControllers.js'
+import { checkoutAddAddress, checkoutEditAddress, checkoutPage, proceedToChekout } from '../controllers/userControllers/chekoutControllers.js'
+import { applyCoupon, cancelOrder, createOrder, createRazorpayOrder, getOrders, orderSummery, removeCoupon, verifyRazorpayPayment } from '../controllers/userControllers/orderControllers.js'
 import { addToWishlist, getWishList, removeProductFromWishlist } from '../controllers/userControllers/wishlistControllers.js'
 
 const userRouter=express.Router()
@@ -70,11 +70,11 @@ userRouter.get('/product/:id',getProductbyId)
 
 // --------------Product Sorted Area---------------------------------------
 
-userRouter.get('/shop/sort/low-to-high',priceLowToHigh)
-userRouter.get('/shop/sort/high-to-low',priceHighToLow)
-userRouter.get('/shop/sort/newarrivals',getNewArrivals)
-userRouter.get('/shop/sort/z-to-a',sortByZToA)
-userRouter.get('/shop/sort/a-to-z',sortByAToZ)
+    userRouter.get('/shop/sort/low-to-high',priceLowToHigh)
+    userRouter.get('/shop/sort/high-to-low',priceHighToLow)
+    userRouter.get('/shop/sort/newarrivals',getNewArrivals)
+    userRouter.get('/shop/sort/z-to-a',sortByZToA)
+    userRouter.get('/shop/sort/a-to-z',sortByAToZ)
 userRouter.get('/shop/sort/men',getMenProducts)
 userRouter.get('/shop/sort/women',getWomenProducts)
 userRouter.get('/shop/sort/featured',getFeaturedProducts)
@@ -101,10 +101,9 @@ userRouter.post('/updatename',updateName)
 
 // ---------------Checkout Section------------------------
 
-userRouter.get('/checkout',checkoutPage)
+userRouter.post('/checkoutfromcart',proceedToChekout,checkoutPage)
 userRouter.post('/checkoutaddaddress',checkoutAddAddress)
 userRouter.post('/checkouteditaddress',checkoutEditAddress)
-
 
 
 // ---------------------------Order Section----------------------------------------------------------------
@@ -122,6 +121,15 @@ userRouter.post('/verifypayment', verifyRazorpayPayment)
 userRouter.get('/wishlist',getWishList)
 userRouter.post('/wishlist',addToWishlist)
 userRouter.post('/removewishlist',removeProductFromWishlist)
+
+
+
+
+// -----------------------Coupon management--------------------------------------
+userRouter.post('/applycouoponcode',applyCoupon)
+userRouter.post('/removecoupon',removeCoupon)
+
+
 
 
 export default userRouter 

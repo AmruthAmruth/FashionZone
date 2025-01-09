@@ -14,21 +14,40 @@ export const checkoutPage=async(req,res)=>{
     try{
     
 const user=req.session.user || null
-
+const totalPrice=req.totalAmount
         const userAddress = await Address.find({ userId: req.session.userId });
         const userProducts = await Cart.find({ userId: req.session.userId });
 
-        console.log(JSON.stringify(userProducts, null, 2));
+    //   console.log(JSON.stringify(userProducts, null, 2));
    
       
         
-        res.render('user/checkout', {  user,userAddress: userAddress || [] ,userProducts});
+        res.render('user/checkout', {  user,userAddress: userAddress || [] ,userProducts,totalPrice});
     }catch(err){
         console.log("Error while loading checkoutpage",err);
         
     }
     
 }
+
+
+
+export const proceedToChekout=async(req,res,next)=>{
+    try{
+        const {totalPrice}=req.body
+       console.log("Total amount of the product",totalPrice);
+       
+        req.totalAmount=totalPrice
+   
+     next()
+    }catch(err){
+        console.log("Error while proceed to checkout",err);
+        
+    }
+}
+
+
+
 
 
 // export const proceedToChekout=async(req,res,next)=>{

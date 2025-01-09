@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import Address from "../../models/addressModel.js";
 import Product from "../../models/productModel.js";
 import Cart from "../../models/cartModel.js";
+import Coupon from "../../models/coupenModel.js"
 import Razorpay from "razorpay";
 import dotenv from 'dotenv';
 import crypto from 'crypto'
@@ -302,3 +303,78 @@ export const cancelOrder=async(req,res)=>{
         
     }
 }
+
+
+
+
+
+// -------------Coupen applyed section--------------------------------------------------------
+
+
+export const applyCoupon=async(req,res)=>{
+    try{
+
+        const { couponcode, totalAmount } = req.body;
+       const userId=req.session.userId
+        const coupon = await Coupon.findOne({ couponId: couponcode })
+
+        if (!coupon) {
+            return res.status(400).json({ message: 'Invalid coupon code' });
+        }
+
+        if (!coupon.isActive || new Date(coupon.expiryDate) < new Date()) {
+            return res.status(400).json({ message: 'Coupon is expired or inactive' });
+        }
+        if (coupon.usedUsers.includes(userId)) {
+            return res.status(400).json({ message: 'You have already used this coupon' });
+        }
+        if (totalAmount < coupon.minPurchaseAmount) {
+            return res.status(400).json({ message: `Minimum purchase of ${coupon.minPurchaseAmount} required` });
+        }
+        let discountAmount = coupon.discount;
+        if (coupon.maxAmount && discountAmount > coupon.maxAmount) {
+            discountAmount = coupon.maxAmount;
+        }
+        const finalAmount = totalAmount - discountAmount;
+        coupon.usedUsers.push(userId);
+        await coupon.save();  
+        return res.status(200).json({ message: 'Coupon applied successfully', finalAmount, discountAmount });
+
+    }catch(err){
+        console.log("Error while apply the coupon",err);
+        
+    }
+}
+
+
+export const removeCoupon = async (req, res) => {
+    try {
+        const { couponcode, totalAmount } = req.body;
+        const userId = req.session.userId;
+
+        // Find the coupon
+        const coupon = await Coupon.findOne({ couponId: couponcode });
+
+        if (!coupon) {
+            return res.status(400).json({ message: 'Invalid coupon code' });
+        }
+
+        // Check if the user has used this coupon
+        if (!coupon.usedUsers.includes(userId)) {
+            return res.status(400).json({ message: 'Coupon not applied or already removed' });
+        }
+
+        // Remove the user from the usedUsers list
+        coupon.usedUsers = coupon.usedUsers.filter(user => user !== userId);
+        await coupon.save();
+
+        // Respond with success and optionally reset the amount
+        return res.status(200).json({ 
+            message: 'Coupon removed successfully', 
+            totalAmount: totalAmount // Resetting total amount as coupon discount is removed
+        });
+    } catch (err) {
+        console.error('Error while removing the coupon', err);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};

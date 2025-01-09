@@ -151,24 +151,41 @@
                    
                     </div><!-- End .products -->
 
+                   
+
                     <nav aria-label="Page navigation">
                         <ul class="pagination justify-content-center">
-                            <li class="page-item disabled">
-                                <a class="page-link page-link-prev" href="#" aria-label="Previous" tabindex="-1" aria-disabled="true">
+                            <!-- Previous Page Link -->
+                            <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                                <a class="page-link page-link-prev" href="/shop?page=<%= currentPage - 1 %>&q=<%= searchQuery %>" aria-label="Previous">
                                     <span aria-hidden="true"><i class="icon-long-arrow-left"></i></span>Prev
                                 </a>
                             </li>
-                            <li class="page-item active" aria-current="page"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#">3</a></li>
-                            <li class="page-item-total">of 6</li>
-                            <li class="page-item">
-                                <a class="page-link page-link-next" href="#" aria-label="Next">
+                    
+                            <!-- Page Numbers -->
+                            <% for (let i = 1; i <= totalPages; i++) { %>
+                                <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                    <a class="page-link" href="/shop?page=<%= i %>&q=<%= searchQuery %>"><%= i %></a>
+                                </li>
+                            <% } %>
+                    
+                            <!-- Total Pages -->
+                            <li class="page-item-total">of <%= totalPages %></li>
+                    
+                            <!-- Next Page Link -->
+                            <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                                <a class="page-link page-link-next" href="/shop?page=<%= currentPage + 1 %>&q=<%= searchQuery %>" aria-label="Next">
                                     Next <span aria-hidden="true"><i class="icon-long-arrow-right"></i></span>
                                 </a>
                             </li>
                         </ul>
                     </nav>
+                    
+
+
+
+
+
                 </div><!-- End .col-lg-9 -->
                 <aside class="col-lg-3 order-lg-first">
                     <div class="sidebar sidebar-shop">
@@ -177,27 +194,33 @@
                             <a href="#" class="sidebar-filter-clear">Clean All</a>
                         </div><!-- End .widget widget-clean -->
 
+                        <div class="toolbox-sort">
+                            <div class="select-custom w-100">
+                                <select name="sortby" id="sortby" class="form-control">
+                                    <option value="" selected="selected">All Products</option>
+                                    <option value="Classic">Classic</option>
+                                    <option value="Modern">Modern</option>
+                                    <option value="Streetware">Streetware</option>
+                                </select>
+                            </div>
+                        </div>
+                        
                         <div class="widget widget-collapsible">
                             <h3 class="widget-title">
                                 <a data-toggle="collapse" href="#widget-1" role="button" aria-expanded="true" aria-controls="widget-1">
                                     Sorted On
                                 </a>
                             </h3><!-- End .widget-title -->
-                            <a href="/shop/sort/newarrivals" class="mt-5">New Arrivals</a> <br>
-                            <a href="/shop/sort/featured" class="mt-5">Featured Products</a> <br>
-                            <a href="/shop/sort/low-to-high" class="mt-5"> Price: Low to High</a> <br>
-                            <a href="/shop/sort/high-to-low" class="mt-5"> Price: High to low</a> <br>
-                            <a href="/shop/sort/a-to-z" class="mt-5">Sort A to Z</a>  <br> <!-- Link for A to Z -->
-                            <a href="/shop/sort/z-to-a" class="mt-5">Sort Z to A</a> <br>
-                            <a href="/shop/sort/men" class="mt-5">Men's</a> <br>
-                            <a href="/shop/sort/women" class="mt-5">Women’s </a> <br>
-                          
-
-
-
-                            <!-- End .collapse -->
-                        </div><!-- End .widget -->
-
+                            <a href="/shop/sort/newarrivals" class="mt-5" id="newArrivals">New Arrivals</a> <br>
+                            <a href="/shop/sort/featured" class="mt-5" id="featured">Featured Products</a> <br>
+                            <a href="/shop/sort/low-to-high" class="mt-5" id="lowToHigh">Price: Low to High</a> <br>
+                            <a href="/shop/sort/high-to-low" class="mt-5" id="highToLow">Price: High to Low</a> <br>
+                            <a href="/shop/sort/a-to-z" class="mt-5" id="sortAZ">Sort A to Z</a> <br>
+                            <a href="/shop/sort/z-to-a" class="mt-5" id="sortZA">Sort Z to A</a> <br>
+                            <a href="/shop/sort/men" class="mt-5" id="men">Men's</a> <br>
+                            <a href="/shop/sort/women" class="mt-5" id="women">Women’s</a> <br>
+                            
+                        </div>
                         
 
                     </div><!-- End .sidebar sidebar-shop -->
@@ -206,6 +229,12 @@
         </div><!-- End .container -->
     </div><!-- End .page-content -->
 </main><!-- End .main -->
+
+
+
+
+
+
 
 
 <%- include('../partials/footer.ejs')-%>

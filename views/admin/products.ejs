@@ -72,55 +72,74 @@
         <div class="col-md-4 product_stock"></div>
       </div>
     </div>
-    <div class="card-datatable table-responsive">
-      <table class="datatables-products table">
-        <thead>
-          <tr>
-            <th>No</th>
-            <th>Brand</th>
-            <th>Product</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Discount Price</th>
-            <th>Stock</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% if (products.length > 0) { %>
-              <% products.forEach(product => { %>
-                  <tr>
-                      <td>1</td>
-                      <td><%= product.brand %></td>
-                      <td style="max-width: 200px;"><%= product.title %></td>
-                      <td><%= product.category %></td>
-                      <td><%= product.price %></td>
-                      <td><%= product.disPrice %></td>
-                      <td><%= product.stock %></td>
-                      <td><%= product.isActive ? 'Listed' : 'Unlisted' %></td> <!-- Show Listed or Unlisted -->
-                      
-                      <td>
-                        <a href="/admin/updateproduct/<%= product._id %>">
-                            <button type="button" class="btn btn-warning">Update</button>
-                        </a>
-                        <!-- Toggle Unlist/List button based on product's isActive status -->
-                        <form action="/admin/toggleproduct/<%= product._id %>" method="POST" style="display:inline;">
-                            <button type="submit" class="btn <%= product.isActive ? 'btn-danger' : 'btn-success' %>">
-                                <%= product.isActive ? 'Unlist' : 'List' %>
-                            </button>
-                        </form>
-                      </td>
-                  </tr>
-              <% }); %>
-          <% } else { %>
+  
+    
+
+   <div class="card-datatable table-responsive">
+  <table class="datatables-products table">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Brand</th>
+        <th>Product</th>
+        <th>Category</th>
+        <th>Price</th>
+        <th>Discount Price</th>
+        <th>Stock</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (products.length > 0) { %>
+          <% products.forEach((product, index) => { %>
               <tr>
-                  <td colspan="10">No products found</td>
+                  <td><%= (currentPage - 1) * productsPerPage + index + 1 %></td>
+                  <td><%= product.brand %></td>
+                  <td style="max-width: 200px;"><%= product.title %></td>
+                  <td><%= product.category %></td>
+                  <td><%= product.price %></td>
+                  <td><%= product.disPrice %></td>
+                  <td><%= product.stock %></td>
+                  <td><%= product.isActive ? 'Listed' : 'Unlisted' %></td>
+                  <td>
+                    <a href="/admin/updateproduct/<%= product._id %>">
+                        <button type="button" class="btn btn-warning">Update</button>
+                    </a>
+                    <form action="/admin/toggleproduct/<%= product._id %>" method="POST" style="display:inline;">
+                        <button type="submit" class="btn <%= product.isActive ? 'btn-danger' : 'btn-success' %>">
+                            <%= product.isActive ? 'Unlist' : 'List' %>
+                        </button>
+                    </form>
+                  </td>
               </tr>
-          <% } %>
-        </tbody>
-      </table>
-    </div>
+          <% }); %>
+      <% } else { %>
+          <tr>
+              <td colspan="10">No products found</td>
+          </tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+
+<!-- Pagination Controls -->
+<div class="pagination mx-auto mt-5 mb-5">
+  <% if (currentPage > 1) { %>
+    <a href="?page=<%= currentPage - 1 %>" class="btn btn-primary">Previous</a>
+  <% } %>
+
+  <% for (let i = 1; i <= totalPages; i++) { %>
+    <a href="?page=<%= i %>" class="btn <%= i === currentPage ? 'btn-secondary' : 'btn-light' %>">
+      <%= i %>
+    </a>
+  <% } %>
+
+  <% if (currentPage < totalPages) { %>
+    <a href="?page=<%= currentPage + 1 %>" class="btn btn-primary">Next</a>
+  <% } %>
+</div>
+
   </div>
 
 
