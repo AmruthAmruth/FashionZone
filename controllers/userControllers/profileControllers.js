@@ -1,17 +1,26 @@
 import Address from "../../models/addressModel.js";
 import mongoose from "mongoose";
 import User from "../../models/userModel.js";
+import Wallet from "../../models/walletModel.js";
 
 
 
+export const getProfilePage = async(req, res) => {
+    let wallet = await Wallet.findOne({ user: req.session.user._id }).lean();
 
-export const getProfilePage = (req, res) => {
-    console.log('userOrder in profile:', req.userOrder); 
+    // Sort the transactions array without overwriting the whole wallet object
+    if (wallet && wallet.transaction) {
+        wallet.transaction.sort((a, b) => b.createdAt - a.createdAt);
+    }
+
+    // Ensure wallet and transaction properties are always defined
+    const safeWallet = wallet || { balance: 0, transaction: [] };
 
     res.render('user/profile', { 
         user: req.session.user || null, 
         userAddress: req.userAddress || null, 
-        userOrder: req.userOrder || null 
+        userOrder: req.userOrder || null,
+        wallet: safeWallet
     });
 };
 
@@ -59,7 +68,7 @@ export const getAddress = async (req, res, next) => {
         }
 
         const address = await Address.find({ userId: userId });
-        
+    
         req.userAddress = address;
    
         
@@ -189,7 +198,6 @@ export const deleteAddress=async(req,res)=>{
             return res.status(500).json({ message: 'Server error, please try again later.' });
         }
     };
-
 
 
 

@@ -101,8 +101,8 @@
                         <%= coupon.description %>
                       </h6>
                     </div>
-                    <p class="mb-1">Discount: <%= coupon.discount %>%</p>
-                    <p class="mb-1">Max Discount: Rs <%= coupon.maxAmount %></p>
+                    <p class="mb-1">Discount: <%= coupon.discount %></p>
+               
                     <p class="mb-1">Min Purchase Amount: Rs <%= coupon.minPurchaseAmount %></p>
                     <p class="mb-1">Expiry Date: <%= new Date(coupon.expiryDate).toLocaleDateString('en-IN') %></p>
 
@@ -182,20 +182,14 @@
                           <p class="text-danger" id="editMinPurchaseAmountError"></p>
                         </div>
                       </div>
-                      <div class="col-md-6">
+                      <div class="col-md-12">
                         <div class="form-group">
                           <label for="editExpiryDate">Expiry Date</label>
                           <input type="date" class="form-control" id="editExpiryDate" name="expiryDate">
                           <p class="text-danger" id="editExpiryDateError"></p>
                         </div>
                       </div>
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label for="editMaxAmount">Max Discount Amount</label>
-                          <input type="number" class="form-control" id="editMaxAmount" name="maxAmount" placeholder="Max Amount">
-                          <p class="text-danger" id="editMaxAmountError"></p>
-                        </div>
-                      </div>
+                    
                       <div class="col-md-12">
                         <div class="form-group">
                           <label for="editDescription">Description</label>
@@ -259,28 +253,22 @@
               </div>
               <div class="col-md-6">
                 <div class="form-group">
-                  <label for="maxAmount"><h6>Max Discount Amount</h6></label>
-                  <input type="number" class="form-control" id="maxAmount" name="maxAmount" placeholder="Enter Max Discount Amount">
-                  <p class="text-danger" id="maxAmountError"></p>
+                  <label for="minPurchaseAmount"><h6>Min Purchase Amount</h6></label>
+                  <input type="number" class="form-control" id="minPurchaseAmount" name="minPurchaseAmount" placeholder="Enter Min Purchase Amount">
+                  <p class="text-danger" id="minPurchaseAmountError"></p>
                 </div>
               </div>
             </div>
 
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-12">
                 <div class="form-group">
                   <label for="expiryDate"><h6>Expiry Date</h6></label>
                   <input type="date" class="form-control" id="expiryDate" name="expiryDate" placeholder="Enter Expiry Date">
                   <p class="text-danger" id="expiryDateError"></p>
                 </div>
               </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="minPurchaseAmount"><h6>Min Purchase Amount</h6></label>
-                  <input type="number" class="form-control" id="minPurchaseAmount" name="minPurchaseAmount" placeholder="Enter Min Purchase Amount">
-                  <p class="text-danger" id="minPurchaseAmountError"></p>
-                </div>
-              </div>
+              
             </div>
 
             <div class="col-md-12 mt-3">
@@ -407,7 +395,6 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('editMinPurchaseAmount').value = couponData.minPurchaseAmount;
             document.getElementById('editExpiryDate').value = new Date(couponData.expiryDate).toISOString().split('T')[0];
             document.getElementById('editDescription').value = couponData.description;
-            document.getElementById('editMaxAmount').value = couponData.maxAmount;
             document.getElementById('editCouponIdHidden').value = couponData._id;
             
             // Set the status
@@ -461,11 +448,7 @@ document.addEventListener('DOMContentLoaded', function() {
           showError("editMinPurchaseAmount", "Valid minimum purchase amount is required.");
         }
       
-        const maxAmount = document.getElementById("editMaxAmount");
-        if (!maxAmount.value.trim() || isNaN(parseFloat(maxAmount.value))) {
-          isValid = false;
-          showError("editMaxAmount", "Valid amount is required.");
-        }
+       
   
         const expiryDate = document.getElementById("editExpiryDate");
         if (!expiryDate.value.trim()) {
@@ -579,7 +562,6 @@ document.addEventListener('DOMContentLoaded', function() {
           document.getElementById('couponIdError').textContent = '';
           document.getElementById('discountError').textContent = '';
           document.getElementById('statusError').textContent = '';
-          document.getElementById('maxAmountError').textContent = '';
           document.getElementById('expiryDateError').textContent = '';
           document.getElementById('minPurchaseAmountError').textContent = '';
           document.getElementById('descriptionError').textContent = '';
@@ -588,7 +570,6 @@ document.addEventListener('DOMContentLoaded', function() {
           const couponId = document.getElementById('couponId').value;
           const discount = document.getElementById('discount').value;
           const status = document.getElementById('status').value;
-          const maxAmount = document.getElementById('maxAmount').value;
           const expiryDate = document.getElementById('expiryDate').value;
           const minPurchaseAmount = document.getElementById('minPurchaseAmount').value;
           const description = document.getElementById('description').value;
@@ -613,11 +594,7 @@ document.addEventListener('DOMContentLoaded', function() {
             valid = false;
           }
       
-          // Validate Max Discount Amount
-          if (!maxAmount || maxAmount <= 0) {
-            document.getElementById('maxAmountError').textContent = 'Max Discount Amount should be greater than 0';
-            valid = false;
-          }
+          
       
           // Validate Expiry Date
           const today = new Date().toISOString().split('T')[0];  // Get today's date in YYYY-MM-DD format

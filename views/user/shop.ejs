@@ -51,21 +51,7 @@
                             
                         </div>
 
-                        <div class="toolbox-right">
-                            <div class="toolbox-sort">
-                                <label for="sortby">Sort by:</label>
-
-                                <div class="select-custom">
-                                    <select name="sortby" id="sortby" class="form-control">
-                                      <option value="popularity" selected="selected">Most Popular</option>
-                                      <option value="rating">Most Rated</option>
-                                      <option value="date">Date</option>
-                                    </select>
-                                  </div>
-
-                            </div><!-- End .toolbox-sort -->
-                            
-                        </div><!-- End .toolbox-right -->
+                       
                     </div><!-- End .toolbox -->
 
                     <div class="products mb-3">
@@ -81,17 +67,22 @@
                                     <div class="col-6 col-md-4 col-lg-4">
                                         <div class="product product-7 text-center <% if (index % 2 === 0) { %> product-style-even <% } else { %> product-style-odd <% } %>">
                                             <figure class="product-media">
-                                                <% if (product.isActive) { %>
-                                                    <span class="product-label label-new">New</span>
+                                                <% if (product.stock===0) { %>
+                                                    <span class="product-label label-new bg-danger">Out Of Stock</span>
                                                 <% } %>
                                                 <a href="/product/<%= product._id %>?category=<%= product.category %>">
                                                     <img src="/<%= product.images[0] %>" alt="<%= product.title %>" class="product-image">
                                                 </a>
                                                 <div class="product-action-vertical">
-                                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable">
-                                                        <span>Add to wishlist</span>
-                                                    </a>
-                                                    <a href="/product/<%= product._id %>?category=<%= product.category %>" class="btn-product-icon btn-quickview" title="Quick view">
+                                                    
+                                                    <form id="wishlist-form" method="POST" action="/wishlist">
+                                                        <input type="hidden" name="productId" value="<%= product._id %>">
+                                                        <button type="submit" class="btn-product-icon btn-wishlist btn-expandable" style="border: none; margin-bottom: 10px;">
+                                                          <span>Add to Wishlist</span>
+                                                        </button>
+                                                      </form>
+
+                                                    <a href="/product/<%= product._id %>?category=<%= product.category %>" class="btn-product-icon btn-quickview btn-expandable" title="Quick view">
                                                         <span>Quick view</span>
                                                     </a>
                                                 </div>
@@ -124,13 +115,7 @@
                                                     </div>
                                                     <span class="ratings-text">(5 Reviews)</span>
                                                 </div>
-                                                <div class="product-nav product-nav-thumbs">
-                                                    <% product.images.forEach((image, index) => { %>
-                                                        <a href="#" class="<%= index === 0 ? 'active' : '' %>">
-                                                            <img src="/<%= image %>" alt="<%= product.title %>">
-                                                        </a>
-                                                    <% }); %>
-                                                </div>
+                                              
                                             </div>
                                         </div>
                                     </div>
@@ -189,11 +174,7 @@
                 </div><!-- End .col-lg-9 -->
                 <aside class="col-lg-3 order-lg-first">
                     <div class="sidebar sidebar-shop">
-                        <div class="widget widget-clean">
-                            <label>Filters:</label>
-                            <a href="#" class="sidebar-filter-clear">Clean All</a>
-                        </div><!-- End .widget widget-clean -->
-
+                       
                         <div class="toolbox-sort">
                             <div class="select-custom w-100">
                                 <select name="sortby" id="sortby" class="form-control">

@@ -6,7 +6,7 @@ import { isUserAuthenticated } from '../middileware/auth.js'
 import { createAddress, deleteAddress, editAddress, getAddress, getProfilePage, updateName } from '../controllers/userControllers/profileControllers.js'
 import mongoose from 'mongoose'
 import { checkoutAddAddress, checkoutEditAddress, checkoutPage, proceedToChekout } from '../controllers/userControllers/chekoutControllers.js'
-import { applyCoupon, cancelOrder, createOrder, createRazorpayOrder, getOrders, orderSummery, removeCoupon, verifyRazorpayPayment } from '../controllers/userControllers/orderControllers.js'
+import { applyCoupon, cancelOrder, createOrder, createRazorpayOrder, createWalletcheckout, getOrders, orderSummery, removeCoupon, verifyRazorpayPayment } from '../controllers/userControllers/orderControllers.js'
 import { addToWishlist, getWishList, removeProductFromWishlist } from '../controllers/userControllers/wishlistControllers.js'
 
 const userRouter=express.Router()
@@ -104,7 +104,7 @@ userRouter.post('/updatename',updateName)
 userRouter.post('/checkoutfromcart',proceedToChekout,checkoutPage)
 userRouter.post('/checkoutaddaddress',checkoutAddAddress)
 userRouter.post('/checkouteditaddress',checkoutEditAddress)
-
+userRouter.post('/walletcontroller',createWalletcheckout)
 
 // ---------------------------Order Section----------------------------------------------------------------
  

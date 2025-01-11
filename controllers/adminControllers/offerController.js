@@ -37,98 +37,173 @@ export const addOfferForProduct = async (req, res) => {
     try {
         const { offerName, description, discount, products, status } = req.body;
         console.log(req.body);
+        const productsArray = Array.isArray(products) ? products : [products];
+        
+        if (!Array.isArray(productsArray)) {
+            return res.status(400).json({ message: "'products' should be an array" });
+        }
 
-        if (!offerName || !description || !discount || !products || !status) {
+        if (!offerName || !description || !discount || !productsArray || !status) {
             return res.status(400).json({ message: "All fields are required!" });
         }
+
         if (discount < 0 || discount > 100) {
             return res.status(400).json({ message: "Discount should be between 0 and 100!" });
         }
 
-        const productIds = products.map(productId => new mongoose.Types.ObjectId(productId));
+        const productIds = productsArray.map(productId => new mongoose.Types.ObjectId(productId));
 
         const foundProducts = await Product.find({ '_id': { $in: productIds } });
 
-        // Correctly map product titles to productNames
+        if (foundProducts.length !== productIds.length) {
+            return res.status(400).json({ message: "Some products were not found!" });
+        }
+
         const productName = foundProducts.map(pro => pro.title);
 
-        // Decrease the disPrice by the discount percentage
         foundProducts.forEach(product => {
             product.disPrice = product.price - (product.price * (discount / 100));
         });
 
-        // Save all the modified products
         await Promise.all(foundProducts.map(product => product.save()));
 
-        // Create a new offer with the product names and other details
         const newOffer = new Offer({
             offerName,
             description,
             discount,
-            productName, // Use the correct variable name 'productNames'
+            productName,
             products: productIds,
-            status
+            status: status 
         });
+
         await newOffer.save();
-console.log(newOffer);
+        console.log(newOffer);
 
         console.log("Discount added successfully");
 
-        res.redirect('/admin/offers');
+        return res.redirect('/admin/offers');
 
     } catch (err) {
         console.log("Error during adding offer for products", err);
-        res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Internal server error" });
     }
 }
 
 
-export const editOfferForProduct=async(req,res)=>{
-    try{ 
-        const { offerId, offerName, description, discount, products, status } = req.body;
-        console.log("Is working now",req.body);
-        
-        if (!offerId || !offerName || !description || !discount || !products || !status) {
-            return res.status(400).json({ message: "All fields are required!" });
-        }
-        if (discount < 0 || discount > 100) {
-            return res.status(400).json({ message: "Discount should be between 0 and 100!" });
+export const updateProductOfferStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!id) {
+            return res.status(400).json({ message: "Offer ID is required!" });
         }
 
-        const productIds = products.map(productId => new mongoose.Types.ObjectId(productId));
-
-        const offer = await Offer.findById(offerId);
+        const offer = await Offer.findById(id).populate('products');
         if (!offer) {
             return res.status(404).json({ message: "Offer not found!" });
         }
 
-        const foundProducts = await Product.find({ '_id': { $in: productIds } });
-
-        const productName = foundProducts.map(pro => pro.title);
-
-        foundProducts.forEach(product => {
-            product.disPrice = product.price - (product.price * (discount / 100));
-        });
-
-        await Promise.all(foundProducts.map(product => product.save()));
-
-        offer.offerName = offerName;
-        offer.description = description;
-        offer.discount = discount;
-        offer.productName = productName; // Update product names
-        offer.products = productIds;
-        offer.status = status;
+        // Toggle the status to 'Active' or 'Inactive'
+        offer.status = offer.status === 'Active' ? 'Inactive' : 'Active'; // Ensure correct status value
 
         await offer.save();
 
-        console.log("Offer updated successfully");
-        res.redirect('/admin/offers');
+        // Reset discount prices if the offer is deactivated
+        if (offer.status === 'Inactive' && offer.products) {
+            for (const product of offer.products) {
+                product.disPrice = product.price; // Reset to original price
+                await product.save();
+            }
+        }
 
-    }catch(err){
-        console.log("Error while edit offer for products",err);
-        
+        res.json({ message: 'Offer status updated successfully', status: offer.status });
+    } catch (err) {
+        console.error("Error while updating the status:", err);
+        res.status(500).json({ message: "Internal server error" });
     }
-}
+};
+
+
+
+
+
+
+export const editOfferForProduct = async (req, res) => {
+    try {
+        console.log(req.body);
+        
+        console.log("Request received to edit offer:", req.body);
+
+        const { offerId, offerName, description, discount, products, status } = req.body;
+
+        // Input Validation
+        if (!offerId || !offerName || !description || !discount || !products || !status) {
+            console.log("Validation failed: Missing fields.");
+            return res.status(400).json({ message: "All fields are required!" });
+        }
+        if (!Array.isArray(products) || products.length === 0) {
+            console.log("Validation failed: Products field is not a non-empty array.");
+            return res.status(400).json({ message: "Products field should be a non-empty array!" });
+        }
+        if (discount < 0 || discount > 100) {
+            console.log("Validation failed: Invalid discount value.");
+            return res.status(400).json({ message: "Discount should be between 0 and 100!" });
+        }
+
+        // Convert product IDs to MongoDB ObjectIds
+        const productIds = products.map(productId => new mongoose.Types.ObjectId(productId));
+
+        // Fetch the offer from the database
+        const offer = await Offer.findById(offerId);
+        if (!offer) {
+            console.log("Offer not found for ID:", offerId);
+            return res.status(404).json({ message: "Offer not found!" });
+        }
+
+        // Fetch products based on the provided product IDs
+        const foundProducts = await Product.find({ '_id': { $in: productIds } });
+        console.log("Found products:", foundProducts);
+
+        if (foundProducts.length !== productIds.length) {
+            console.log("Mismatch in product IDs. Some products not found.");
+            return res.status(400).json({ message: "Some products were not found!" });
+        }
+
+        // Update the discount for each product
+        foundProducts.forEach(product => {
+            console.log("Updating discount for product:", product._id);
+            product.disPrice = product.price - (product.price * (discount / 100));
+        });
+
+        // Save the updated products
+        const updatedProducts = await Promise.all(foundProducts.map(product => product.save()));
+
+        // Check if any product was updated
+        if (updatedProducts.length === 0) {
+            console.log("No products updated with the discount.");
+        }
+
+        // Update the offer with the new information
+        offer.offerName = offerName;
+        offer.description = description;
+        offer.discount = discount;
+        offer.productName = foundProducts.map(pro => pro.title);
+        offer.products = productIds;
+        offer.status = status; // Status is already a string, no need to convert
+
+        console.log("Saving updated offer...");
+        await offer.save();
+
+        console.log("Offer updated successfully");
+       res.redirect('/admin/offers')
+
+    } catch (err) {
+        console.error("Error while editing offer for products:", err);
+        return res.status(500).json({ message: "An internal error occurred. Please try again later." });
+    }
+};
+
+
 
 
 export const deleteProductOffer=async(req,res)=>{
@@ -214,8 +289,39 @@ export const addOfferForCategory = async (req, res) => {
 };
 
 
+export const updateCategoryOfferStatus = async (req, res) => {
+    try {
+        const { id, status } = req.body;
 
+        if (!id || !status) {
+            return res.status(400).json({ success: false, message: "Invalid request parameters." });
+        }
 
+        const offer = await Offer.findById(id);
+        if (!offer) {
+            return res.status(404).json({ success: false, message: "Offer not found." });
+        }
+
+        // Update the offer status
+        offer.status = status;
+
+        // If status is 'Inactive', reset product.disPrice to original price
+        if (status === 'Inactive') {
+            const products = await Product.find({ category: { $in: offer.category } });
+            for (let product of products) {
+                product.disPrice = product.price; // Reset discount price
+                await product.save();
+            }
+        }
+
+        await offer.save();
+
+        res.json({ success: true, message: `Offer status updated to ${status}.` });
+    } catch (err) {
+        console.error("Error updating category offer status:", err);
+        res.status(500).json({ success: false, message: "Internal server error." });
+    }
+};
 
 
 

@@ -88,8 +88,8 @@
     <div class="card flex-grow-1">
       <div class="card-header d-flex align-items-center justify-content-between">
         <div>
-          <h5 class="card-title mb-0">Sales Overview</h5>
-          <p class="text-body mb-0">Weekly, Monthly, and Yearly Sales</p>
+          <h5 class="card-title mb-0" id="salesStatusHeading">Sales Overview</h5> <!-- Heading updated dynamically -->
+          <p class="text-body mb-0">Weekly, Monthly, Yearly, and Custom Sales</p>
         </div>
       </div>
       <div class="card-body">
@@ -99,6 +99,8 @@
         <button id="weeklyBtn" class="btn btn-primary">Weekly</button>
         <button id="monthlyBtn" class="btn btn-secondary">Monthly</button>
         <button id="yearlyBtn" class="btn btn-success">Yearly</button>
+    
+       
       </div>
     </div>
   </div>
@@ -276,18 +278,23 @@
   const colors = {
     delivered: '#4CAF50',  // Green
     cancelled: '#F44336',  // Red
-    returned: '#FFC107',   // Yellow
+    pending: '#FFC107',    // Yellow
     primary: '#42A5F5',    // Blue
     hoverPrimary: '#2196F3' // Darker Blue
   };
 
-  // Doughnut Chart Data (static data)
+  // Check if salesChart and salesChart.total exist
+  const totalDelivered = <%= salseChart && salseChart.total ? salseChart.total.deliveredProducts : 0 %>;
+  const totalCancelled = <%= salseChart && salseChart.total ? salseChart.total.cancelledProducts : 0 %>;
+  const totalPending = <%= salseChart && salseChart.total ? salseChart.total.pendingProducts : 0 %>;
+
+  // Doughnut Chart Data (dynamic data)
   const doughnutData = {
-    labels: ['Delivered', 'Cancelled', 'Returned'],
+    labels: ['Delivered', 'Cancelled', 'Pending'],
     datasets: [{
-      data: [150, 120, 80],  // Static data for Delivered, Cancelled, and Returned
-      backgroundColor: [colors.delivered, colors.cancelled, colors.returned],
-      hoverBackgroundColor: [colors.delivered, colors.cancelled, colors.returned],
+      data: [totalDelivered, totalCancelled, totalPending],
+      backgroundColor: [colors.delivered, colors.cancelled, colors.pending],
+      hoverBackgroundColor: [colors.delivered, colors.cancelled, colors.pending],
       borderWidth: 3
     }]
   };
@@ -324,16 +331,16 @@
     options: doughnutOptions
   });
 
-  // Bar Chart Data (static weekly, monthly, and yearly data)
-  const weeklyData = [150];    // Static data for weekly sales
-  const monthlyData = [200];   // Static data for monthly sales
-  const yearlyData = [250];    // Static data for yearly sales
+  // Bar Chart Data (dynamically update the sales data for weekly, monthly, and yearly)
+  const weeklyData = [<%= salseChart && salseChart.weekly ? salseChart.weekly.deliveredProducts : 0 %>, <%= salseChart && salseChart.weekly ? salseChart.weekly.cancelledProducts : 0 %>, <%= salseChart && salseChart.weekly ? salseChart.weekly.pendingProducts : 0 %>];
+  const monthlyData = [<%= salseChart && salseChart.monthly ? salseChart.monthly.deliveredProducts : 0 %>, <%= salseChart && salseChart.monthly ? salseChart.monthly.cancelledProducts : 0 %>, <%= salseChart && salseChart.monthly ? salseChart.monthly.pendingProducts : 0 %>];
+  const yearlyData = [<%= salseChart && salseChart.yearly ? salseChart.yearly.deliveredProducts : 0 %>, <%= salseChart && salseChart.yearly ? salseChart.yearly.cancelledProducts : 0 %>, <%= salseChart && salseChart.yearly ? salseChart.yearly.pendingProducts : 0 %>];
 
   const barData = {
-    labels: ['Weekly', 'Monthly', 'Yearly'],
+    labels: ['Delivered', 'Cancelled', 'Pending'],
     datasets: [{
       label: 'Total Sales',
-      data: weeklyData,
+      data: [totalDelivered, totalCancelled, totalPending], // Using the total data
       backgroundColor: colors.primary,
       hoverBackgroundColor: colors.hoverPrimary,
       borderRadius: 10,
@@ -392,25 +399,72 @@
     options: barOptions
   });
 
-  // Update the Bar Chart Data
-  const updateBarChart = (data) => {
+  // Update the Bar Chart Data dynamically on button click
+  const updateBarChart = (data, period) => {
     salesReportBar.data.datasets[0].data = data;
     salesReportBar.update();
+    // Update the heading based on the period
+    document.getElementById('salesStatusHeading').innerText = `${period} Sales Overview`;
   };
 
   // Add Event Listeners to Buttons
-  document.getElementById('weeklyBtn').addEventListener('click', () => {
-    updateBarChart(weeklyData);
-  });
+  const buttonHandler = (btnId, data, period) => {
+    document.getElementById(btnId).addEventListener('click', () => {
+      updateBarChart(data, period);
+    });
+  };
 
-  document.getElementById('monthlyBtn').addEventListener('click', () => {
-    updateBarChart(monthlyData);
-  });
+  buttonHandler('weeklyBtn', weeklyData, 'Weekly');
+  buttonHandler('monthlyBtn', monthlyData, 'Monthly');
+  buttonHandler('yearlyBtn', yearlyData, 'Yearly');
 
-  document.getElementById('yearlyBtn').addEventListener('click', () => {
-    updateBarChart(yearlyData);
+  // Function to handle custom date range sales report
+  const filterDataByDateRange = (startDate, endDate) => {
+    // Placeholder for your data filtering logic (either fetch from server or filter locally)
+    // You should replace this part with an actual API call to the backend to get filtered data
+    fetch(`/admin/dashboard?startDate=${startDate}&endDate=${endDate}`)
+      .then(response => response.json())
+      .then(filteredData => {
+        // Update the bar chart with filtered data
+        const data = [
+          filteredData.delivered,
+          filteredData.cancelled,
+          filteredData.pending
+        ];
+
+        // Update the chart with the filtered data
+        salesReportBar.data.datasets[0].data = data;
+
+        // Update the heading with the custom date range
+        document.getElementById('salesStatusHeading').innerText = `Sales Report from ${startDate} to ${endDate}`;
+
+        // Update the chart
+        salesReportBar.update();
+      })
+      .catch(error => {
+        console.error('Error fetching sales data:', error);
+      });
+  };
+
+  // Add event listener for custom date range button
+  document.getElementById('customDateBtn').addEventListener('click', () => {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+
+    if (!startDate || !endDate) {
+      alert('Please select both start and end dates.');
+      return;
+    }
+
+    // Filter data based on the selected date range
+    filterDataByDateRange(startDate, endDate);
   });
 </script>
+
+
+
+
+
 
 
 

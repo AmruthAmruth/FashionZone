@@ -34,10 +34,14 @@
                                                 <div class="col-sm-6 col-lg-12">
                                                     <div class="d-flex justify-content-between align-items-center">
                                                         <h2 class="fw-bold mb-1">Product Offer</h2>
-                                                        <button type="button" class="btn btn-primary"
+                                                        <button type="button" class="btn btn-success"
                                                             data-bs-toggle="modal"
-                                                            data-bs-target="#addOfferModal">Add</button>
+                                                            data-bs-target="#addOfferModal">Add Product Offer</button>
 
+                                                            <a href="/admin/categoryoffer">
+                                                            <button type="button" class="btn btn-success"
+                                                            > Category Offer</button>
+                                                        </a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -46,30 +50,30 @@
                                 </div>
 
                                 <div class="container mb-5">
+                                   
+                                   
                                     <div id="offers-container" class="row">
-                                        <% offers.forEach(offer=> { %>
-                                            <div class="col-12 col-lg-4 mb-4">
+                                        <% offers.forEach(offer => { %>
+                                            <div class="col-12 col-lg-4 mb-4" style="width: 480px;">
                                                 <div class="card">
                                                     <div class="card-body">
-                                                        <h5 class="card-title mb-4">
-                                                            <%= offer.offerName %>
-                                                        </h5>
-                                                        <p>Description: <%= offer.description %>
-                                                        </p>
+                                                        <h5 class="card-title mb-4"><%= offer.offerName %></h5>
+                                                        <p>Description: <%= offer.description %></p>
                                                         <p>Discount: <%= offer.discount %>%</p>
-                                                        <p>Applied Products: <br>
-                                                            <% offer.productName.forEach((productTitle, index)=> { %>
-                                                                <%= productTitle %>
-                                                                    <% if (index < offer.productName.length - 1) { %>,
-                                                                        <% } %>
-                                                                            <% }); %>
+                                                        <p>Applied Products: 
+                                                            <% offer.productName.forEach((productTitle, index) => { %>
+                                                                <%= productTitle %><% if (index < offer.productName.length - 1) { %>, <% } %>
+                                                            <% }); %>
                                                         </p>
-                                                        <p>Status: <%= offer.status %>
-                                                        </p>
+                                                        <!-- Status with color based on the offer's status -->
+                                                        <p  class="text-center"
+                                                        style="background-color: <%= offer.status === 'Active' ? 'green' : 'red' %>; color: white; padding: 5px; border-radius: 4px; width: 180px;">
+                                                        Status: <%= offer.status %>
+                                                    </p>
                                                     </div>
                                                     <div class="card-footer">
-                                                        <button type="button"
-                                                            class="btn btn-outline-primary waves-effect m-3 edit-offer-btn"
+                                                        <!-- Edit Button -->
+                                                        <button type="button" class="btn btn-outline-dark border-thick m-3 px-4"
                                                             data-bs-toggle="modal" data-bs-target="#editOfferModal"
                                                             data-offer-id="<%= offer._id %>"
                                                             data-offer-name="<%= offer.offerName %>"
@@ -79,14 +83,22 @@
                                                             data-status="<%= offer.status %>">
                                                             Edit
                                                         </button>
-
-                                                        <button type="button" class="btn btn-danger"
-                                                            onclick="deleteOffer('<%= offer._id %>')">Delete</button>
+                                                        
+                                                        <!-- Delete Button -->
+                                                        <button type="button" class="btn btn-outline-dark border-thick m-3 px-4" onclick="deleteOffer('<%= offer._id %>')">Delete</button>
+                                                        
+                                                        <!-- Status Toggle Button -->
+                                                        <button type="button" class="btn btn-outline-dark border-thick m-3 px-4"
+                                                                onclick="changeOfferStatus('<%= offer._id %>', '<%= offer.status === 'Active' ? 'Inactive' : 'Active' %>')">
+                                                            <%= offer.status === 'Active' ? 'Deactivate' : 'Activate' %>
+                                                        </button>
                                                     </div>
-                                                </div>
+                                                </div> 
                                             </div>
-                                            <% }); %>
+                                        <% }); %>
+                                        
                                     </div>
+                                    
                                 </div>
 
 
@@ -162,7 +174,7 @@
                                                         <select class="form-select" id="offerStatus" name="status"
                                                             required>
                                                             <option value="" disabled selected>Select status</option>
-                                                            <option value="Active">Active</option>
+                                                            <option value='Active' >Active</option>
                                                             <option value="Inactive">Inactive</option>
                                                         </select>
                                                     </div>
@@ -191,44 +203,40 @@
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
                                             </div>
-                                            <form id="editOfferForm">
+                                            <form id="editOfferForm" action="/admin/editofferforproduct" method="post">
                                                 <div class="modal-body">
                                                     <input type="hidden" id="offerId" name="offerId">
-
+                                            
                                                     <!-- Offer Name -->
                                                     <div class="mb-3">
                                                         <label for="offerName" class="form-label">Offer Name</label>
-                                                        <input type="text" class="form-control" id="offerName"
-                                                            name="offerName" required>
+                                                        <input type="text" class="form-control" id="offerName" name="offerName" required>
                                                     </div>
-
+                                            
                                                     <!-- Description -->
                                                     <div class="mb-3">
                                                         <label for="description" class="form-label">Description</label>
-                                                        <textarea class="form-control" id="description"
-                                                            name="description" required></textarea>
+                                                        <textarea class="form-control" id="description" name="description" required></textarea>
                                                     </div>
-
+                                            
                                                     <!-- Discount -->
                                                     <div class="mb-3">
                                                         <label for="discount" class="form-label">Discount (%)</label>
-                                                        <input type="number" class="form-control" id="discount"
-                                                            name="discount" required>
+                                                        <input type="number" class="form-control" id="discount" name="discount" required>
                                                     </div>
-
+                                            
                                                     <!-- Products -->
                                                     <div class="mb-3">
                                                         <label for="products" class="form-label">Products</label>
-                                                        <select class="form-select" id="products" name="products"
-                                                            multiple required>
-                                                            <% products.forEach(product=> { %>
+                                                        <select class="form-select" id="products" name="products" multiple required>
+                                                            <% products.forEach(product => { %>
                                                                 <option value="<%= product._id %>">
                                                                     <%= product.title %>
                                                                 </option>
-                                                                <% }) %>
+                                                            <% }) %>
                                                         </select>
                                                     </div>
-
+                                            
                                                     <!-- Status -->
                                                     <div class="mb-3">
                                                         <label for="status" class="form-label">Status</label>
@@ -239,8 +247,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-bs-dismiss="modal">Close</button>
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                                     <button type="submit" class="btn btn-primary">Save Changes</button>
                                                 </div>
                                             </form>
@@ -253,27 +260,54 @@
 
 
 
+                               
+                              
+
+
+
+
+<!-- Add this in your HTML <head> or <body> -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
 <script>
-    document.getElementById('editOfferForm').addEventListener('submit', function(event) {
-    event.preventDefault();
+   function changeOfferStatus(offerId, currentStatus) {
+    const newStatus = !currentStatus;
 
-    // Collect form data
-    const formData = new FormData(this);
-
-    // Send the form data using fetch
-    fetch('/admin/editofferforproduct', {
+    fetch(`/admin/updateofferstatus/${offerId}`, {
         method: 'POST',
-        body: formData
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
     })
-    .then(response => response.json())  // or response.text() depending on your backend
-    .then(data => {
-        console.log("Form submitted successfully", data);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-});
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.message) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: data.message,
+                    showConfirmButton: false,
+                    timer: 2000, // Auto-close after 2 seconds
+                }).then(() => {
+                    location.reload(); // Reload the page after the popup
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to update offer status.',
+                });
+            }
+        })
+        .catch((error) => {
+            console.error('Error updating offer status:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An error occurred while updating the status.',
+            });
+        });
+}
 
 
 </script>
@@ -295,107 +329,96 @@
             </div>
         </div>
 
-<!-- JavaScript -->
+
+
+
+<!-- edit form action script -->
+
+
+<!-- 
 <script>
-  // Function to open the modal and populate it with offer details
-function openEditModal(offer) {
-    // Fill the modal fields with the offer details
+    // When opening the modal, ensure the form is populated with the current offer data
+    function openEditOfferModal(offer) {
+    document.getElementById('offerId').value = offer._id;
     document.getElementById('offerName').value = offer.offerName;
     document.getElementById('description').value = offer.description;
     document.getElementById('discount').value = offer.discount;
     document.getElementById('status').value = offer.status;
 
-    // Populate categories in the select element
-    const selectElement = document.getElementById('ecommerce-applied-products');
-    selectElement.innerHTML = ''; // Clear previous options
-    offer.category.forEach(category => {
-        const option = document.createElement('option');
-        option.value = category.id; // Assuming category has id
-        option.text = category.name; // Assuming category has name
-        selectElement.appendChild(option);
+    // Set the selected products in the product select dropdown
+    const productsSelect = document.getElementById('products');
+    offer.products.forEach(productId => {
+        const option = productsSelect.querySelector(`option[value="${productId}"]`);
+        if (option) option.selected = true;
+    });
+}
 
-        // Automatically select the categories already applied in the offer
-        if (offer.selectedCategories.includes(category.id)) {
-            option.selected = true;
+    document.getElementById('editOfferForm').addEventListener('submit', async function (event) {
+        event.preventDefault(); // Prevent default form submission
+
+        // Gather form data
+        const offerId = document.getElementById('offerId').value;
+        const offerName = document.getElementById('offerName').value;
+        const description = document.getElementById('description').value;
+        const discount = document.getElementById('discount').value;
+        const status = document.getElementById('status').value;
+        const selectedProducts = Array.from(document.getElementById('products').selectedOptions).map(option => option.value);
+
+        // Create request payload
+        const payload = {
+            offerId,
+            offerName,
+            description,
+            discount,
+            products: selectedProducts,
+            status
+        };
+
+        try {
+            // Call the update controller via a POST request
+            const response = await fetch('/editofferforproduct', { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            // Parse the response
+            const result = await response.json();
+
+            if (response.ok) {
+                // Success: Show a success alert
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Offer Updated',
+                    text: result.message || 'The offer has been successfully updated!',
+                });
+
+                // Close the modal after successful submission
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editOfferModal'));
+                modal.hide();
+
+              
+            } else {
+                // Handle errors
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error Updating Offer',
+                    text: result.error || 'Something went wrong while updating the offer.',
+                });
+            }
+        } catch (error) {
+            
+            Swal.fire({
+                icon: 'error',
+                title: 'Unexpected Error',
+                text: 'An error occurred. Please try again later.',
+            });
+            console.error(error);
         }
     });
-
-    // Update the selected categories display
-    updateSelectedCategories();
-
-    // Show the modal
-    var myModal = new bootstrap.Modal(document.getElementById('editOfferModal'), {
-        keyboard: false
-    });
-    myModal.show();
-}
-
-// Function to update the display of selected categories
-function updateSelectedCategories() {
-    const selectedCategories = document.getElementById('ecommerce-applied-products').selectedOptions;
-    const selectedCategoriesContainer = document.getElementById('selected-products');
-    selectedCategoriesContainer.innerHTML = ''; // Clear previous selections
-
-    // Loop through selected options and add them to the display container
-    Array.from(selectedCategories).forEach(option => {
-        const categoryName = option.text;
-        const categoryId = option.value;
-
-        // Create a tag-like display for each selected category
-        const categoryTag = document.createElement('div');
-        categoryTag.className = 'badge bg-primary m-1 d-flex align-items-center';
-        categoryTag.innerHTML = `${categoryName} <span class="ms-2 cursor-pointer" onclick="removeCategory('${categoryId}')">&times;</span>`;
-
-        // Append the tag to the selected categories container
-        selectedCategoriesContainer.appendChild(categoryTag);
-    });
-}
-
-// Function to remove a selected category when the close button is clicked
-function removeCategory(categoryId) {
-    const selectElement = document.getElementById('ecommerce-applied-products');
-    const option = selectElement.querySelector(`option[value="${categoryId}"]`);
-    if (option) {
-        option.selected = false; // Unselect the option
-    }
-
-    // Update the displayed selected categories
-    updateSelectedCategories();
-}
-
-// Listen to change event to update the selected categories dynamically
-document.getElementById('ecommerce-applied-products').addEventListener('change', updateSelectedCategories);
-
-// Handle form submission to save the edited offer
-document.getElementById('editOfferForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    
-    // Collect form data
-    const updatedOffer = {
-        offerName: document.getElementById('offerName').value,
-        description: document.getElementById('description').value,
-        discount: document.getElementById('discount').value,
-        status: document.getElementById('status').value,
-        category: Array.from(document.getElementById('ecommerce-applied-products').selectedOptions).map(option => option.value)
-    };
-
-    // Here you can send the updated data to your server via an AJAX request or directly submit the form
-    console.log(updatedOffer);
-
-    // Close the modal after saving
-    var myModal = bootstrap.Modal.getInstance(document.getElementById('editOfferModal'));
-    myModal.hide();
-});
-
-</script>
-
-
-
-
-
-
-
-
+</script> -->
 
 
 
@@ -517,29 +540,30 @@ document.getElementById('editOfferForm').addEventListener('submit', function(eve
         <script>
             document.querySelectorAll('.edit-offer-btn').forEach(button => {
                 button.addEventListener('click', function () {
+                    // Retrieve data attributes from the clicked button
                     const offerId = this.getAttribute('data-offer-id');
                     const offerName = this.getAttribute('data-offer-name');
                     const description = this.getAttribute('data-description');
                     const discount = this.getAttribute('data-discount');
                     const status = this.getAttribute('data-status');
-                    const productIds = this.getAttribute('data-products').split(',');
-
-                    // Set modal fields
-                    document.getElementById('offerId').value = offerId;
-                    document.getElementById('offerName').value = offerName;
-                    document.getElementById('description').value = description;
-                    document.getElementById('discount').value = discount;
-                    document.getElementById('status').value = status;
-
-                    // Set selected products
+                    const productIds = this.getAttribute('data-products')?.split(',') || [];
+        
+                    // Update modal fields
+                    document.getElementById('offerId').value = offerId || '';
+                    document.getElementById('offerName').value = offerName || '';
+                    document.getElementById('description').value = description || '';
+                    document.getElementById('discount').value = discount || '';
+                    document.getElementById('status').value = status === 'true' ? 'Active' : 'Inactive';
+        
+                    // Set selected products in the dropdown
                     const productsSelect = document.getElementById('products');
                     Array.from(productsSelect.options).forEach(option => {
                         option.selected = productIds.includes(option.value);
                     });
                 });
             });
-
         </script>
+        
 
 
     </body>

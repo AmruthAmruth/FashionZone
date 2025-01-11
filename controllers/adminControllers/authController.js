@@ -119,9 +119,13 @@ export const AdminLogout=async(req,res)=>{
 
 
 
- 
-export const AdminDashboard= async (req,res)=>{
-        
-  res.render('admin/dashboard')
-}
-
+export const AdminDashboard = async (req, res) => {
+  const salseChart = req.salesChart;  // Ensure this is 'salseChart'
+  console.log(salseChart);  // Check if the data is present
+  
+  if (!salseChart) {
+    return res.status(500).send("Sales chart data is missing.");
+  }
+  // Render the dashboard with salesChart data
+  res.render('admin/dashboard', { salseChart });
+};

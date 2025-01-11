@@ -2,8 +2,6 @@
 
 
 
-// --------------------Checkout Section ---------------------------------
-
 import mongoose from "mongoose";
 import Address from "../../models/addressModel.js";
 import Cart from "../../models/cartModel.js";
@@ -47,23 +45,6 @@ export const proceedToChekout=async(req,res,next)=>{
 }
 
 
-
-
-
-// export const proceedToChekout=async(req,res,next)=>{
-//     try{
-//         const { shipping, totalPrice } = req.body;
-        
-//         const paymentInfo = {
-//             shippingMethod: shipping,
-//             totalAmount: totalPrice,
-//             paymentMethod: 'Cash on Delivery',
-//         };
-//     }catch(err){
-//         console.log("Error while proceed to chekout");
-        
-//     }
-// }
 
 
 

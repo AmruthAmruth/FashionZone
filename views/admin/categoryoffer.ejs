@@ -35,9 +35,9 @@
                                                 <div class="col-sm-6 col-lg-12">
                                                     <div class="d-flex justify-content-between align-items-center">
                                                         <h2 class="fw-bold mb-1">Category Offer</h2>
-                                                        <button type="button" class="btn btn-primary"
+                                                        <button type="button" class="btn btn-success"
                                                             data-bs-toggle="modal"
-                                                            data-bs-target="#addCategoryOfferModal">Add</button>
+                                                            data-bs-target="#addCategoryOfferModal">Add Category Offer</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -144,7 +144,7 @@
                                 <div class="container mb-5">
                                     <div id="offers-container" class="row">
                                         <% categoryOffer.forEach(offer => { %>
-                                            <div class="col-12 col-lg-4 mb-4">
+                                            <div class="col-12 col-lg-4 mb-4 " style="width: 480px;">
                                                 <div class="card">
                                                     <div class="card-body">
                                                         <h5 class="card-title mb-4">
@@ -157,11 +157,15 @@
                                                                 <%= productTitle %> <br>
                                                             <% }); %>
                                                         </p>
-                                                        <p>Status: <%= offer.status %></p>
+                                                        <p  class="text-center"
+                                                        style="background-color: <%= offer.status === 'Active' ? 'green' : 'red' %>; color: white; padding: 5px; border-radius: 4px; width: 180px;">
+                                                        Status: <%= offer.status %>
+                                                    </p>
+                                                    
                                                     </div>
-                                                    <div class="card-footer">
+                                                    <div class="card-footer m-3">
                                                         <!-- Edit Button -->
-                                                        <button type="button" class="btn btn-primary" 
+                                                        <button type="button" class="btn btn-outline-dark border-thick m-3 px-4" 
                                                             onclick="openEditModal({
                                                                 offerId: '<%= offer._id %>',
                                                                 offerName: '<%= offer.offerName %>',
@@ -172,14 +176,28 @@
                                                             })">
                                                             Edit
                                                         </button>
+                                            
+                                                        <!-- Delete Button -->
                                                         <form action="/admin/deletecategoryoffer" method="POST" class="d-inline">
                                                             <input type="hidden" name="offerId" value="<%= offer._id %>">
-                                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                                            <button type="submit" class="btn btn-outline-dark border-thick m-3 px-4">Delete</button>
+                                                        </form>
+                                            
+                                                        <!-- Toggle Status Button -->
+                                                        <form action="/admin/categoryofferstatus" method="POST" class="d-inline">
+                                                           
+                                                            <button 
+    type="button" 
+    class="btn btn-outline-dark border-thick m-3 px-4"
+    onclick="updateOfferStatus('<%= offer._id %>', '<%= offer.status === 'Active' ? 'Inactive' : 'Active' %>')">
+    <%= offer.status === 'Active' ? ' Inactive' : 'Active' %>
+</button>
                                                         </form>
                                                     </div>
                                                 </div>
                                             </div>
-                                        <% }); %>
+                                            <% }); %>
+                                            
                                     </div>
                                 </div>
 
@@ -253,6 +271,61 @@
                     </div>
             </div>
         </div>
+
+
+
+
+        <!-- Status active or inactive -->
+
+
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            function updateOfferStatus(offerId, newStatus) {
+                // Prepare the data to send
+                const data = { id: offerId, status: newStatus };
+        
+                // Make an AJAX POST request
+                fetch('/admin/categoryofferstatus', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    // Display SweetAlert based on the response
+                    Swal.fire({
+                        icon: result.success ? 'success' : 'error',
+                        title: result.success ? 'Success!' : 'Error!',
+                        text: result.message || 'Status updated successfully!'
+                    }).then(() => {
+                        if (result.success) {
+                            // Reload the page to reflect status change
+                            window.location.reload();
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error("Error updating offer status:", error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Something went wrong! Please try again later.'
+                    });
+                });
+            }
+        </script>
+
+
+
+
+
+
+
+
+
+
+
 
 
         <script>

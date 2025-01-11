@@ -5,9 +5,10 @@ import upload from '../middileware/multer.js'
 import { blockAndUnblock, getUserListPage } from '../controllers/adminControllers/userController.js'
 import { adminAutherization, isAdminAuthenticated } from '../middileware/auth.js'
 import { createCategory, editCategory, getCategoryPage, showAndHideCategory } from '../controllers/adminControllers/categoryController.js'
-import { changeTheOrderStatus, getOrderDetails, getOrderList } from '../controllers/adminControllers/orderController.js'
-import { addOfferForCategory, addOfferForProduct, deleteCategoryOffer, deleteProductOffer, editCategoryOffer, editOfferForProduct, getCategoryOffer, getOfferPage } from '../controllers/adminControllers/offerController.js'
+import { changeTheOrderStatus, getOrderDetails, getOrderList, getSalesChartReport } from '../controllers/adminControllers/orderController.js'
+import { addOfferForCategory, addOfferForProduct, deleteCategoryOffer, deleteProductOffer, editCategoryOffer, editOfferForProduct, getCategoryOffer, getOfferPage, updateCategoryOfferStatus, updateProductOfferStatus } from '../controllers/adminControllers/offerController.js'
 import { addCoupon, couponSoftDelete, editCoupon, getCoupenspage } from '../controllers/adminControllers/coupenController.js'
+import { getSalesReportPage } from '../controllers/adminControllers/salesReportController.js'
 
 const adminRouter=express() 
 
@@ -27,7 +28,7 @@ adminRouter.post('/adminlogout',AdminLogout)
 
 // ------------------------ Product Section ------------------------------------------------------
  
-adminRouter.get('/dashboard',adminAutherization,AdminDashboard)
+adminRouter.get('/dashboard',adminAutherization, getSalesChartReport ,AdminDashboard)
 adminRouter.get('/addproduct',adminAutherization,getCategory,getAddProductPage)
 adminRouter.get('/products',adminAutherization,getAllProductPage)
 adminRouter.post('/addproduct',upload.array('images[]',4),addProduct)
@@ -72,7 +73,8 @@ adminRouter.post('/addofferforcategory', addOfferForCategory)
 adminRouter.get('/categoryoffer',getCategoryOffer)
 adminRouter.post('/editcategoryoffer',editCategoryOffer)
 adminRouter.post('/deletecategoryoffer',deleteCategoryOffer)
-
+adminRouter.post('/updateofferstatus/:id', updateProductOfferStatus);
+adminRouter.post('/categoryofferstatus',updateCategoryOfferStatus)
 
 
 
@@ -81,6 +83,15 @@ adminRouter.get('/coupones',getCoupenspage)
 adminRouter.post('/addcoupon',addCoupon)
 adminRouter.post('/editcoupon',editCoupon)
 adminRouter.post('/couponsoftdelete',couponSoftDelete)
+
+
+
+
+// -------------------Salse report management section-------------------------------------------------
+
+adminRouter.get('/salesReport',getSalesReportPage)
+
+
 
 
 export default adminRouter   

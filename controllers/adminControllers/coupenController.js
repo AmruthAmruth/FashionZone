@@ -21,7 +21,6 @@ export const addCoupon = async (req, res) => {
             description,
             expiryDate,
             minPurchaseAmount,
-            maxAmount,
             isActive
         } = req.body;
 
@@ -38,7 +37,6 @@ export const addCoupon = async (req, res) => {
             description,
             expiryDate,
             minPurchaseAmount,
-            maxAmount,
             isActive
         });
 
@@ -62,9 +60,8 @@ export const editCoupon = async (req, res) => {
         description,
         expiryDate,
         minPurchaseAmount,
-        maxAmount,
         status,
-        editCouponIdHidden,  // Make sure this matches the field name in your form
+        editCouponIdHidden,  
       } = req.body;
   
       const coupon = await Coupon.findById(editCouponIdHidden);
@@ -72,19 +69,17 @@ export const editCoupon = async (req, res) => {
         return res.status(404).json({ success: false, message: 'Coupon not found' });
       }
   
-      // Update the coupon details
       coupon.couponId = couponId;
       coupon.discount = discount;
       coupon.description = description;
-      coupon.expiryDate = new Date(expiryDate);  // Ensure valid date format
+      coupon.expiryDate = new Date(expiryDate);  
       coupon.minPurchaseAmount = minPurchaseAmount;
-      coupon.maxAmount = maxAmount;
-      coupon.isActive = status === 'true'; // Convert status to boolean
+      coupon.isActive = status === 'true'; 
   
-      // Save the updated coupon
+     
       await coupon.save();
       
-      // Return success response
+    
       res.json({ success: true, message: 'Coupon updated successfully!' });
     } catch (error) {
       console.error('Error updating coupon:', error);

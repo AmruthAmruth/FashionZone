@@ -8,6 +8,7 @@ import Coupon from "../../models/coupenModel.js"
 import Razorpay from "razorpay";
 import dotenv from 'dotenv';
 import crypto from 'crypto'
+import Wallet from "../../models/walletModel.js";
 dotenv.config();
 
 
@@ -29,11 +30,10 @@ export const createOrder = async (req, res) => {
             user:req.session.user
         });
 
-        // Save the order
+     
         await newOrder.save();
         console.log("Successfully created an order", newOrder);
 
-        // Update the product stock in the Product collection
         for (let product of parsedProducts) {
             for (let item of product.items) {
                 const { productId, quantity } = item;
@@ -51,22 +51,22 @@ export const createOrder = async (req, res) => {
             }
         }
 
-        // Remove ordered products from the user's cart
+       
         const userId = req.session.userId;
         const cart = await Cart.findOne({ userId });
 
         if (cart && Array.isArray(cart.items)) {
-            // Flatten ordered product items into a single array of productIds
+           
             const orderedProductIds = parsedProducts.flatMap(product =>
                 product.items.map(item => item.productId.toString())
             );
 
-            // Filter cart items to exclude ordered products
+         
             cart.items = cart.items.filter(cartItem =>
                 !orderedProductIds.includes(cartItem.productId.toString())
             );
 
-            // Save the updated cart
+         
             await cart.save();
             console.log("Products removed from the cart");
         } else {
@@ -79,8 +79,6 @@ export const createOrder = async (req, res) => {
         res.status(500).send("Error creating order");
     }
 };
-
-
 
 
 
@@ -249,16 +247,16 @@ export const getOrders = async (req, res, next) => {
         }
         const userId = req.session.userId;
 
-        // Fetch the orders for the user
+       
         const orders = await Order.find({ user: userId }).sort({createdAt:-1});
 
-        console.log('Fetched Orders:', orders);  // Debugging line
+       
         req.userOrder = orders;
 
         next();
     } catch (err) {
         console.log("Error while trying to fetch the orders", err);
-        next(err);  // You might want to pass the error to the next middleware
+        next(err);  
     }
 };
 
@@ -266,7 +264,6 @@ export const getOrders = async (req, res, next) => {
 export const cancelOrder=async(req,res)=>{
     try{
         const { orderId } = req.body; 
-
         const updatedOrder = await Order.findByIdAndUpdate(
             orderId,
             { status: 'Cancelled' },  
@@ -276,27 +273,46 @@ export const cancelOrder=async(req,res)=>{
           if (!updatedOrder) {
             return res.status(400).json({ success: false, message: 'Order not found' });
           }
-
+          let productName;
 
           for (const product of updatedOrder.products) {
             for (const item of product.items) {
-              // Find the product in the inventory by its ID and update the quantity
+              
               const productInInventory = await Product.findById(item.productId);
       
               if (productInInventory) {
-                // Increase the quantity of the product by the quantity ordered
+                productName=productInInventory.title
                 productInInventory.stock += item.quantity;
-      
-                // Save the updated product
                 await productInInventory.save();
               }
             }
           }
 
 
+          const totalAmount = updatedOrder.products.reduce((sum, product) => {
+            return sum + product.items.reduce((itemSum, item) => {
+                return itemSum + item.price * item.quantity;
+            }, 0);
+        }, 0);
 
 
-          res.json({ success: true, message: 'Order cancelled successfully' });
+          let userWallet = await Wallet.findOne({ user: req.session.userId });
+        if (!userWallet) {
+            
+            userWallet = new Wallet({ user: req.session.userId, balance: 0, transaction: [] });
+        }
+
+        userWallet.balance += totalAmount;
+        userWallet.transaction.push({
+            amount: totalAmount,
+            transactionId: `TXN${Date.now()}`, 
+            productName: productName,
+            type: 'credit',
+        });
+        await userWallet.save();
+
+
+          res.json({ success: true, message: 'Order cancelled successfully and wallet updated' });
 
     }catch(err){
         console.log("Error while cancel the product",err);
@@ -378,3 +394,144 @@ export const removeCoupon = async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 };
+
+
+
+// --------------wallet payment order section---------------------
+
+
+
+export const createWalletcheckout=async(req,res)=>{
+    try{
+     const {selectedAddressId,totalAmount,products,paymentMethod}=req.body
+    
+     const walletData = await Wallet.findOne({ user: req.session.userId });
+    
+
+
+        if (!walletData) {
+            return res.status(400).json({
+                status: "error",
+                title: "Wallet Not Found",
+                text: "Your wallet could not be located. Please contact support.",
+            });
+        }
+
+
+
+        if (totalAmount <= walletData.balance) {
+            const orderId = uuidv4();
+            const parsedProducts = JSON.parse(products);
+                
+
+                const productTitles = parsedProducts.flatMap(product =>
+                    product.items.map(item => item.title)
+                  );
+                  
+                  
+  
+             const newOrder = new Order({
+            selectedAddressId,
+            totalAmount,
+            products: parsedProducts,
+            paymentMethod,
+            orderId,
+            user:req.session.user
+        });
+
+       
+        await newOrder.save();
+        console.log("Successfully created an order", newOrder);
+
+
+
+        walletData.balance -= totalAmount;
+        walletData.transaction.push({
+            amount: totalAmount,
+            transactionId: `TXN${Date.now()}`, 
+            productName: productTitles,
+            type: 'debit',
+        });
+        await walletData.save();
+
+
+
+
+
+
+
+
+        for (let product of parsedProducts) {
+            for (let item of product.items) {
+                const { productId, quantity } = item;
+
+                const productInStock = await Product.findById(productId);
+
+                if (productInStock) {
+                    productInStock.stock -= quantity;
+                    if (productInStock.stock < 0) {
+                        productInStock.stock = 0;
+                    }
+                    await productInStock.save();
+                    console.log(`Updated product stock for ${productInStock.title}, new stock: ${productInStock.stock}`);
+                }
+            }
+        }
+
+
+
+
+        const userId = req.session.userId;
+        const cart = await Cart.findOne({ userId });
+
+        if (cart && Array.isArray(cart.items)) {
+           
+            const orderedProductIds = parsedProducts.flatMap(product =>
+                product.items.map(item => item.productId.toString())
+            );
+
+         
+            cart.items = cart.items.filter(cartItem =>
+                !orderedProductIds.includes(cartItem.productId.toString())
+            );
+
+         
+            await cart.save();
+            console.log("Products removed from the cart");
+        } else {
+            console.log("Cart is either undefined or does not contain items");
+        }
+
+
+        console.log("Order created successfully.");
+
+
+        res.redirect(`/ordersummery/${newOrder._id}`);
+
+
+
+
+
+
+
+        }else {
+            console.log("Insufficient wallet balance.");
+            return res.status(400).json({
+                status: "warning",
+                title: "Insufficient Balance",
+                text: "You don't have enough balance in your wallet to complete this transaction.",
+            });
+        }
+        
+
+
+
+
+        
+       
+
+    }catch(err){
+        console.log("Error while trying to wallet payment",err);
+        
+    }
+}

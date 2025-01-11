@@ -27,7 +27,8 @@ const offerSchema = new mongoose.Schema({
     ],
     status: {
         type: String,
-        required: true
+        enum: ['Active', 'Inactive'], 
+        required: true,
     },
     createdAt: {
         type: Date,
