@@ -123,7 +123,7 @@
                             <div class="tab-content">
                                 <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel" aria-labelledby="tab-dashboard-link">
                                     <% if (user) { %>
-                                        <p>Welcome back, <%= user%>! Your shopping adventure awaits—explore exclusive deals, manage your orders, and enjoy a personalized experience crafted just for you.</p>
+                                        <p>Welcome back, <%= user.name%>! Your shopping adventure awaits—explore exclusive deals, manage your orders, and enjoy a personalized experience crafted just for you.</p>
                                     <% } else { %>
                                         <p>Welcome to your ultimate shopping destination! Sign in now to explore exclusive deals, track your orders, and enjoy a seamless shopping experience tailored just for you.</p>
                                     <% } %>
@@ -195,63 +195,99 @@
                                         <h2 class=" mb-4">Order History</h2>
                                         
                                         <div class="table-responsive col-md-10">
-                                            <table class="table table-bordered table-striped ">
-                                                <thead>
-                                                    <tr class="text-center">
-                                                        <th>Product Image</th>
-                                                        <th>Product Name</th>
-                                                        <th>Price</th>
-                                                        <th>Quantity</th>
-                                                        <th>Status</th>
-                                                        <th>Action</th>
-                                                    </tr>
-                                                </thead>
-
-                                                <tbody>
-                                                    <% if (userOrder && userOrder.length > 0) { %>
-                                                      <% userOrder.forEach(function(order) { %>
-                                                        <% order.products.forEach(function(product) { %>
-                                                          <% product.items.forEach(function(item) { %>
+                                           
+                                           
+                                            <div class="container mt-4 col-md-12" style="width: 100%;">
+                                                <% if (userOrder && userOrder.length > 0) { %>
+                                                  <% userOrder.forEach(function(order) { %>
+                                                    <div class="card mb-4">
+                                                      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                          <strong>Order ID:</strong> <%= order.orderId %>
+                                                        </div>
+                                                        <div>
+                                                          <strong>Total Amount:</strong> ₹<%= order.totalAmount %>
+                                                        </div>
+                                                        <div>
+                                                          <strong>Status:</strong>
+                                                          <% if (order.status === 'Pending') { %>
+                                                            <span class="badge bg-warning">Pending</span>
+                                                          <% } else if (order.status === 'Delivered') { %>
+                                                            <span class="badge bg-success">Delivered</span>
+                                                          <% } else if (order.status === 'Shipped') { %>
+                                                            <span class="badge bg-primary">Shipped</span>
+                                                          <% } else if (order.status === 'Cancelled') { %>
+                                                            <span class="badge bg-danger">Cancelled</span>
+                                                          <% } else if (order.status === 'Returned') { %>
+                                                            <span class="badge bg-danger">Returned</span>
+                                                          <% } %>
+                                                        </div>
+                                                      </div>
+                                                      <div class="card-body">
+                                                        <table class="table table-bordered table-striped">
+                                                          <thead>
                                                             <tr class="text-center">
-                                                              <td class="d-flex justify-content-center">
-                                                                <img src="<%= item.image %>" alt="<%= item.title %>" class="img-fluid" style="max-width: 80px;">
-                                                              </td>
-                                                              <td><%= item.title %></td>
-                                                              <td>₹<%= item.price %></td>
-                                                              <td><%= item.quantity %></td>
-                                                              <td>
-                                                                <% if (order.status === 'Pending') { %>
-                                                                  <span class="badge bg-warning">Pending</span>
-                                                                <% } else if (order.status === 'Delivered') { %>
-                                                                  <span class="badge bg-success">Delivered</span>
-
-                                                                  <% } else if (order.status === 'Shipped') { %>
-                                                                    <span class="badge bg-warning">Shipped</span>
-                                                                <% } else if (order.status === 'Cancelled') { %>
-                                                                  <span class="badge bg-danger">Cancelled</span>
-                                                                <% } %>
-                                                              </td>
-                                                              <td>
-                                                                <% if (order.status === 'Pending' || order.status === 'Shipped') { %>
-                                                                  <button class="btn btn-danger btn-sm cancel-order" data-order-id="<%= order._id %>">Cancel</button>
-                                                                <% } else { %>
-                                                                  <button class="btn btn-danger btn-sm" disabled>Cancelled</button>
-                                                                <% } %>
-                                                              </td>
+                                                              <th>Product Image</th>
+                                                              <th>Product Name</th>
+                                                              <th>Price</th>
+                                                              <th>Quantity</th>
+                                                              <th>Action</th>
                                                             </tr>
-                                                          <% }); %>
-                                                        <% }); %>
-                                                      <% }); %>
-                                                    <% } else { %>
-                                                      <tr>
-                                                        <td colspan="6" class="text-center">No orders found.</td>
-                                                      </tr>
-                                                    <% } %>
-                                                  </tbody>
+                                                          </thead>
+                                                          <tbody>
+                                                            <% order.products.forEach(function(product) { %>
+                                                              <% product.items.forEach(function(item) { %>
+                                                                <tr class="text-center">
+                                                                  <td class="d-flex justify-content-center">
+                                                                    <img src="<%= item.image %>" alt="<%= item.title %>" class="img-fluid" style="max-width: 80px;">
+                                                                  </td>
+                                                                  <td><%= item.title %></td>
+                                                                  <td>₹<%= item.price %></td>
+                                                                  <td><%= item.quantity %></td>
+                                                                  <td>
+                                                                
+                                                                
+                                                                    <% if (order.status === 'Pending' || order.status === 'Shipped') { %>
+                                                                        <button class="btn btn-danger btn-sm cancel-order" data-order-id="<%= order._id %>">Cancel</button>
+                                                                      <% } else if (order.status === 'Delivered') { %>
+                                                                        <button class="btn btn-warning btn-sm return-order" data-order-id="<%= order._id %>">Return</button>
+                                                                      <% } else { %>
+                                                                        <button class="btn btn-secondary btn-sm" disabled>
+                                                                          <% if (order.status === 'Cancelled') { %>
+                                                                            Cancelled
+                                                                          <% } else if (order.status === 'Returned') { %>
+                                                                            Returned
+                                                                          <% } else { %>
+                                                                            Completed
+                                                                          <% } %>
+                                                                        </button>
+                                                                      <% } %>
+                                                                      
+                                                                      
+                                                                 
+                                                                  </td>
+                                                                </tr>
+                                                              <% }); %>
+                                                            <% }); %>
+                                                          </tbody>
+                                                        </table>
+                                                      </div>
+                                                      <div class="card-footer text-muted">
+                                                        <strong>Payment Method:</strong> <%= order.paymentMethod %> 
+                                                        <span class="ms-3"><strong>Created At:</strong> <%= new Date(order.createdAt).toLocaleString() %></span> <br>
+                                                        <a href="ordersummery/<%= order._id %>""> <button class="btn btn-outline-dark">View Order</button></a>
+                                                      </div>
+                                                    </div>
+                                                  <% }); %>
+                                                <% } else { %>
+                                                  <div class="alert alert-info text-center">No orders found.</div>
+                                                <% } %>
+                                              </div>
+                                             
+                                              
 
 
 
-                                            </table>
 
 
                                         </div>
@@ -303,7 +339,6 @@
                                                     <h5 class="text-muted mb-3">
                                                         Balance Amount: 
                                                         <span class="text-dark">₹<%= (wallet && wallet.balance !== undefined) ? wallet.balance.toFixed(2) : '0.00' %></span>
-
                                                     </h5>
                                         
                                                     <div class="d-flex flex-column gap-3">
@@ -315,7 +350,7 @@
                                                     </div>
                                         
                                                     <!-- Display recent transactions -->
-                                                    <div class="transaction-list mt-4" id="recentTransactions" style="display: block;">
+                                                    <div class="transaction-list mt-4" id="recentTransactions" style="display: none;">
                                                         <h5 class="mb-3">Recent Transactions:</h5>
                                                         <ul class="list-group">
                                                             <% if (wallet?.transaction?.length > 0) { %>
@@ -335,12 +370,35 @@
                                                             <% } else { %>
                                                                 <li class="list-group-item text-center">No transactions found.</li>
                                                             <% } %>
-                                                            
                                                         </ul>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+
+
+
+
+                                        <script>
+                                            document.getElementById('showRecentTransactions').addEventListener('click', function () {
+                                                const transactionList = document.getElementById('recentTransactions');
+                                                const isHidden = transactionList.style.display === 'none';
+                                                
+                                                transactionList.style.display = isHidden ? 'block' : 'none';
+                                                this.textContent = isHidden ? 'Hide Recent Transactions' : 'Show Recent Transactions';
+                                            });
+                                        </script>
+
+
+
+
+
+
+
+
+
+
+
                                         
                                     </div>
                                 
@@ -658,9 +716,40 @@
     <%- include('../partials/footer.ejs')-%>
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+
+<!-- Cancel order -->
 <script>
   // Listen for clicks on the "Cancel" button
   $('.cancel-order').click(function() {
@@ -709,8 +798,56 @@
   });
 </script>
 
+<!-- Retuned order -->
 
-
+<script>
+    // Listen for clicks on the "Return" button
+    $('.return-order').click(function () {
+      var orderId = $(this).data('order-id'); // Get the order ID
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You want to return this order?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, return it!',
+        cancelButtonText: 'No, keep it'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Send AJAX request to update order status to 'Returned'
+          $.ajax({
+            url: '/orders/return', // Server route for returning the order
+            method: 'POST',
+            data: { orderId: orderId },
+            success: function (response) {
+              if (response.success) {
+                Swal.fire(
+                  'Returned!',
+                  'Your return request has been processed.',
+                  'success'
+                );
+                // Update the order status on the page
+                location.reload(); // Reload the page to reflect the updated status
+              } else {
+                Swal.fire(
+                  'Failed!',
+                  'There was an error processing the return.',
+                  'error'
+                );
+              }
+            },
+            error: function () {
+              Swal.fire(
+                'Error!',
+                'Something went wrong.',
+                'error'
+              );
+            }
+          });
+        }
+      });
+    });
+  </script>
+  
 
 
 
@@ -849,10 +986,6 @@
 <!-- Bootstrap JS and Popper (Required for Bootstrap Modal) -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
-
-
-
-
 
 
     <script>

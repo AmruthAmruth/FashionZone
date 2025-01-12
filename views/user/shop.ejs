@@ -175,23 +175,43 @@
                 <aside class="col-lg-3 order-lg-first">
                     <div class="sidebar sidebar-shop">
                        
-                        <div class="toolbox-sort">
-                            <div class="select-custom w-100">
-                                <select name="sortby" id="sortby" class="form-control">
-                                    <option value="" selected="selected">All Products</option>
-                                    <option value="Classic">Classic</option>
-                                    <option value="Modern">Modern</option>
-                                    <option value="Streetware">Streetware</option>
-                                </select>
-                            </div>
-                        </div>
+                       
+
+
+
+                        <form method="GET" action="/shop" style="margin-top: 100px;">
+                            <select name="category"
+                             style="width: 250px; padding: 10px; border: none;background-color: #e9e9e9; border-radius: 20px; color: black;">
+                                <option value="">All Categories</option>
+                                <option value="Classic" <%= category === 'Classic' ? 'selected' : '' %>>Classic</option>
+                                <option value="Modern" <%= category === 'Modern' ? 'selected' : '' %>>Modern</option>
+                                <option value="Streetware" <%= category === 'Streetware' ? 'selected' : '' %>>Streetware</option>
+                            </select>  <br>
+                            <select name="sort"
+                             style="width: 250px; margin-top: 30px; margin-bottom: 30px; padding: 10px; border: none;background-color: #e9e9e9;
+; border-radius: 20px; color: black;">
+                                <option value="">Default</option>
+                                <option value="titleAsc" <%= sortOption === 'titleAsc' ? 'selected' : '' %>>Title: A to Z</option>
+                                <option value="titleDesc" <%= sortOption === 'titleDesc' ? 'selected' : '' %>>Title: Z to A</option>
+                                <option value="priceLowToHigh" <%= sortOption === 'priceLowToHigh' ? 'selected' : '' %>>Price: Low to High</option>
+                                <option value="priceHighToLow" <%= sortOption === 'priceHighToLow' ? 'selected' : '' %>>Price: High to Low</option>
+                                <option value="newArrivals" <%= sortOption === 'newArrivals' ? 'selected' : '' %>>New Arrivals</option>
+                            </select> <br>
+                            <button type="submit"  style="width: 150px; height: 40px; background-color: #e9e9e9; margin-left: 50px; color: black; border: none; border-radius: 15px;">Apply Filters</button>
+                        </form>
                         
-                        <div class="widget widget-collapsible">
+
+
+
+
+
+                        
+                        <!-- <div class="widget widget-collapsible">
                             <h3 class="widget-title">
                                 <a data-toggle="collapse" href="#widget-1" role="button" aria-expanded="true" aria-controls="widget-1">
                                     Sorted On
                                 </a>
-                            </h3><!-- End .widget-title -->
+                            </h3>
                             <a href="/shop/sort/newarrivals" class="mt-5" id="newArrivals">New Arrivals</a> <br>
                             <a href="/shop/sort/featured" class="mt-5" id="featured">Featured Products</a> <br>
                             <a href="/shop/sort/low-to-high" class="mt-5" id="lowToHigh">Price: Low to High</a> <br>
@@ -201,7 +221,7 @@
                             <a href="/shop/sort/men" class="mt-5" id="men">Men's</a> <br>
                             <a href="/shop/sort/women" class="mt-5" id="women">Women’s</a> <br>
                             
-                        </div>
+                        </div> -->
                         
 
                     </div><!-- End .sidebar sidebar-shop -->

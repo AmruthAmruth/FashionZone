@@ -261,6 +261,14 @@ export const getOrders = async (req, res, next) => {
 };
 
 
+
+
+
+
+
+
+
+
 export const cancelOrder=async(req,res)=>{
     try{
         const { orderId } = req.body; 
@@ -319,6 +327,83 @@ export const cancelOrder=async(req,res)=>{
         
     }
 }
+
+
+
+
+
+
+
+
+
+
+export const returnProduct=async(req,res)=>{
+    try{
+             const orderId=req.body.orderId
+                      
+             const updatedOrder = await Order.findByIdAndUpdate(
+                orderId,
+                { status: 'Returned' },  
+                { new: true } 
+              );
+
+                if (!updatedOrder) {
+                    return res.status(400).json({ success: false, message: 'Order not found' });
+                  }
+
+
+                  let productName;
+
+          for (const product of updatedOrder.products) {
+            for (const item of product.items) {
+              
+              const productInInventory = await Product.findById(item.productId);
+      
+              if (productInInventory) {
+                productName=productInInventory.title
+                productInInventory.stock += item.quantity;
+                await productInInventory.save();
+              }
+            }
+          }
+
+
+          const totalAmount = updatedOrder.products.reduce((sum, product) => {
+            return sum + product.items.reduce((itemSum, item) => {
+                return itemSum + item.price * item.quantity;
+            }, 0);
+        }, 0);
+
+
+
+        let userWallet = await Wallet.findOne({ user: req.session.userId });
+        if (!userWallet) {
+            
+            userWallet = new Wallet({ user: req.session.userId, balance: 0, transaction: [] });
+        }
+
+        userWallet.balance += totalAmount;
+        userWallet.transaction.push({
+            amount: totalAmount,
+            transactionId: `TXN${Date.now()}`, 
+            productName: productName,
+            type: 'credit',
+        });
+        await userWallet.save();
+
+
+          res.json({ success: true, message: 'Order retuned successfully and wallet updated' });
+
+
+
+
+
+    }catch(err){
+        console.log("Error while returning the product",err);
+        
+    }
+}
+
 
 
 
@@ -517,7 +602,7 @@ export const createWalletcheckout=async(req,res)=>{
         }else {
             console.log("Insufficient wallet balance.");
             return res.status(400).json({
-                status: "warning",
+                status: "error",
                 title: "Insufficient Balance",
                 text: "You don't have enough balance in your wallet to complete this transaction.",
             });

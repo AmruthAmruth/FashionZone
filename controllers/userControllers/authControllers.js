@@ -4,7 +4,7 @@ import {sendOTP}  from '../../config/userOTPverification.js'
 import OTP from '../../models/userOtpVerification.js'
 import mongoose from 'mongoose'
 import Product from '../../models/productModel.js'
-
+import Wallet from '../../models/walletModel.js'
 
 
 
@@ -52,7 +52,7 @@ export const getOtpPage=(req,res)=>{
 
 export const CreateAccount = async (req, res) => {
   try {
-      const { name, email, password, confirmPassword } = req.body;
+      const { name, email, password, confirmPassword ,referenceCode } = req.body;
 
       if (!name || !email || !password || !confirmPassword) {
           console.log("Invalid Inputs");
@@ -74,12 +74,25 @@ export const CreateAccount = async (req, res) => {
       }
 
       
+      let refCodeOwner;
+      if (referenceCode) {
+          refCodeOwner = await User.findOne({ refCode: referenceCode });
+          if (!refCodeOwner) {
+              req.flash('message', 'Invalid Reference Code');
+              return res.redirect('/login');
+          }
+      }
+
+
+
+
+      
       await sendOTP(email);
       req.flash('message', 'OTP sent to your email. Verify to continue.');
 
       const otpExpiration = Date.now() + 5 * 60 * 1000;
 
-      req.session.tempUser = { name, email, password,otpExpiration }; 
+      req.session.tempUser = { name, email, password,otpExpiration,refCodeOwner }; 
 
       return res.redirect('/verifyotp');
   } catch (err) {
@@ -99,24 +112,60 @@ export const VerifyOTP = async (req, res) => {
       }
 
       const validOTP = await OTP.findOne({ email: tempUser.email, otp });
+
       if (!validOTP) {
           req.flash('message', 'Invalid or expired OTP.');
           return res.redirect('/verifyotp');
       }
 
-   
-      const hashPassword = await bcrypt.hash(tempUser.password, 10);
+      // Check if refCodeOwner exists
+      if (tempUser.refCodeOwner && tempUser.refCodeOwner._id) {
+          let OwnerWallet = await Wallet.findOne({ user: tempUser.refCodeOwner._id });
+          if (!OwnerWallet) {
+              OwnerWallet = new Wallet({ user: tempUser.refCodeOwner._id, balance: 0, transaction: [] });
+          }
+          OwnerWallet.balance += 100;
+          OwnerWallet.transaction.push({
+              amount: 100,
+              transactionId: `TXN${Date.now()}`,
+              productName: "Reward Earned Through Referral",
+              type: 'credit',
+          });
+          await OwnerWallet.save();
+      }
 
+      const hashPassword = await bcrypt.hash(tempUser.password, 10);
+      
+      const refCode = `Ref${Date.now()}`;
       const newUser = new User({
           name: tempUser.name,
           email: tempUser.email,
+          refCode,
           password: hashPassword
       });
 
       await newUser.save();
 
-      req.session.user = newUser
+      if (tempUser.refCodeOwner && tempUser.refCodeOwner._id){
 
+     
+      let userWallet = await Wallet.findOne({ user: newUser._id });
+      if (!userWallet) {
+          userWallet = new Wallet({ user: newUser._id, balance: 0, transaction: [] });
+      }
+
+      userWallet.balance += 50;
+      userWallet.transaction.push({
+          amount: 50,
+          transactionId: `TXN${Date.now()}`, 
+          productName: "Referral Code Incentive", 
+          type: 'credit',
+      });
+      await userWallet.save();
+
+    }
+
+      req.session.user = newUser;
       req.session.tempUser = null; 
       await OTP.deleteMany({ email: tempUser.email }); 
       return res.redirect('/');
@@ -124,6 +173,7 @@ export const VerifyOTP = async (req, res) => {
       console.log("Error Verifying OTP:", err);
   }
 };
+
 
 
 

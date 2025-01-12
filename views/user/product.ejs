@@ -26,10 +26,32 @@
 }
 
 
-.zoomLens {
-  border: 2px solid #000 !important; /* Add a border around the lens */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Add shadow for better visibility */
+/* Ensure the zoomed image container is properly positioned */
+.zoomContainer {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    z-index: 9999;
 }
+
+/* Ensure the lens is correctly positioned */
+.zoomLens {
+    position: absolute !important; /* Semi-transparent lens */
+    border-radius: 50%;  /* Round lens */
+    z-index: 9999;
+    border: 2px solid #fff; /* White border for the lens */
+    cursor: zoom-in;  /* Change cursor on hover */
+    width: 150px;  /* Adjust lens size */
+    height: 150px;  /* Adjust lens size */
+}
+
+/* Adjusting the magnification area (zoom image inside lens) */
+.zoomLens img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;  /* Ensure the image fits the lens */
+}
+
 
 </style>
 
@@ -240,8 +262,8 @@
     <% relatedProducts.forEach(product => { %>
         <div class="product product-7 text-center">
             <figure class="product-media">
-                <% if (product.isNew) { %>
-                    <span class="product-label label-new">New</span>
+                <% if (product.stock==0) { %>
+                    <span class="product-label label-new bg-danger">Out Of Stock</span>
                 <% } %>
                 <a href="/product/<%= product._id %>?category=<%= product.category %>">
                     <img src="/<%= product.images[0] %>" alt="<%= product.title %>" class="product-image">
@@ -442,48 +464,51 @@
 
 <script>
   $(document).ready(function () {
-    // Initialize ElevateZoom on the main image
-    function initializeZoom() {
-      $('#product-zoom').elevateZoom({
-        zoomType: "lens",          // Type of zoom
-        lensShape: "round",        // Shape of the zoom lens
-        lensSize: 250,             // Size of the zoom lens
-        scrollZoom: true,          // Enable scroll zoom
-        easing: true,              // Apply easing effect for transitions
-        responsive: true           // Make it responsive
-      });
+  // Initialize ElevateZoom on the main image
+  function initializeZoom() {
+    $('#product-zoom').elevateZoom({
+      zoomType: "lens",           // Type of zoom (lens zoom)
+      lensShape: "round",         // Shape of the zoom lens (round in this case)
+      lensSize: 150,              // Size of the zoom lens (adjust as necessary)
+      scrollZoom: true,           // Enable scroll zoom
+      responsive: true,           // Make it responsive
+      borderSize: 2,              // Border size for the lens
+      zoomWindowFadeIn: 500,      // Fade-in effect duration for the zoom window
+      zoomWindowFadeOut: 500      // Fade-out effect duration for the zoom window
+    });
+  }
+
+  // Initialize zoom for the main product image
+  initializeZoom();  // Initialize zoom for the first image
+
+  // Event listener for thumbnail click
+  $('.product-gallery-item').on('click', function (e) {
+    e.preventDefault();
+    
+    const newImage = $(this).attr('data-image');            // Get new image path
+    const newZoomImage = $(this).attr('data-zoom-image');   // Get new zoom image path
+
+    // Ensure both image paths are correct
+    if (!newImage || !newZoomImage) {
+      console.error("Invalid image paths:", newImage, newZoomImage);
+      return;
     }
 
-    // Initialize zoom for the main product image
-    initializeZoom();  // Initialize zoom for the first image
+    // Remove previous zoom instance and zoom container
+    $('#product-zoom').removeData('elevateZoom');
+    $('.zoomContainer').remove();  // Remove zoom container
 
-    // Event listener for thumbnail click
-    $('.product-gallery-item').on('click', function (e) {
-      e.preventDefault();
-      
-      const newImage = $(this).attr('data-image');            // Get new image path
-      const newZoomImage = $(this).attr('data-zoom-image');   // Get new zoom image path
+    // Update the main image and zoom image
+    $('#product-zoom')
+      .attr('src', newImage)  // Update the main image source
+      .attr('data-zoom-image', newZoomImage);  // Update the zoom image
 
-      // Ensure both image paths are correct
-      if (!newImage || !newZoomImage) {
-        console.error("Invalid image paths:", newImage, newZoomImage);
-        return;
-      }
-
-      // Remove previous zoom instance and zoom container
-      $('#product-zoom').removeData('elevateZoom');
-      $('.zoomContainer').remove();  // Remove zoom container
-
-      // Update the main image and zoom image
-      $('#product-zoom')
-        .attr('src', newImage)  // Update the main image source
-        .attr('data-zoom-image', newZoomImage);  // Update the zoom image
-
-      // Reinitialize zoom functionality
-      initializeZoom();  // Re-initialize zoom for the new image
-    });
+    // Reinitialize zoom functionality
+    initializeZoom();  // Re-initialize zoom for the new image
   });
-</script>
+});
+  </script>
+  
 
 
 

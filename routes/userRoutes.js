@@ -1,12 +1,12 @@
 import express from 'express'
 import { CreateAccount, forgotOtpPage, getEnterPasswordOTP, getForgotPasswordPage, getHomePage, getLoginPage, getNewPasswordPage, getOtpPage, LoginAccount, Logout, resentOTP, resetPassword, sendPasswordResetOTP, VerifyOTP, verifyResentOTP } from '../controllers/userControllers/authControllers.js'
 import passport from 'passport'
-import { addToCart, cartPriceList, getCartPage, getFeaturedProducts, getMenProducts, getNewArrivals, getProduct, getProductbyId, getShopPage, getUserCart, getWomenProducts, priceHighToLow, priceLowToHigh, removeFromCart, sortByAToZ, sortByZToA, updateCart } from '../controllers/userControllers/productControllers.js'
+import { addToCart, cartPriceList, getCartPage, getFeaturedProducts, getMenProducts, getProduct, getProductbyId, getShopPage, getUserCart, getWomenProducts, removeFromCart, updateCart } from '../controllers/userControllers/productControllers.js'
 import { isUserAuthenticated } from '../middileware/auth.js'
 import { createAddress, deleteAddress, editAddress, getAddress, getProfilePage, updateName } from '../controllers/userControllers/profileControllers.js'
 import mongoose from 'mongoose'
 import { checkoutAddAddress, checkoutEditAddress, checkoutPage, proceedToChekout } from '../controllers/userControllers/chekoutControllers.js'
-import { applyCoupon, cancelOrder, createOrder, createRazorpayOrder, createWalletcheckout, getOrders, orderSummery, removeCoupon, verifyRazorpayPayment } from '../controllers/userControllers/orderControllers.js'
+import { applyCoupon, cancelOrder, createOrder, createRazorpayOrder, createWalletcheckout, getOrders, orderSummery, removeCoupon, returnProduct, verifyRazorpayPayment } from '../controllers/userControllers/orderControllers.js'
 import { addToWishlist, getWishList, removeProductFromWishlist } from '../controllers/userControllers/wishlistControllers.js'
 
 const userRouter=express.Router()
@@ -70,11 +70,6 @@ userRouter.get('/product/:id',getProductbyId)
 
 // --------------Product Sorted Area---------------------------------------
 
-    userRouter.get('/shop/sort/low-to-high',priceLowToHigh)
-    userRouter.get('/shop/sort/high-to-low',priceHighToLow)
-    userRouter.get('/shop/sort/newarrivals',getNewArrivals)
-    userRouter.get('/shop/sort/z-to-a',sortByZToA)
-    userRouter.get('/shop/sort/a-to-z',sortByAToZ)
 userRouter.get('/shop/sort/men',getMenProducts)
 userRouter.get('/shop/sort/women',getWomenProducts)
 userRouter.get('/shop/sort/featured',getFeaturedProducts)
@@ -111,6 +106,7 @@ userRouter.post('/walletcontroller',createWalletcheckout)
 userRouter.post('/codcontroller',createOrder)
 userRouter.get('/ordersummery/:orderId',orderSummery)
 userRouter.post('/orders/cancel', cancelOrder)
+userRouter.post('/orders/return',returnProduct)
 userRouter.post('/razorpaycontroller', createRazorpayOrder)
 userRouter.post('/verifypayment', verifyRazorpayPayment)
 

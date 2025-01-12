@@ -2,41 +2,62 @@ import Product from "../../models/productModel.js";
 import Cart from '../../models/cartModel.js'
 
 
-
 export const getShopPage = async (req, res) => {
     try {
-        const searchQuery = req.query.q; 
+        const searchQuery = req.query.q ? req.query.q.trim() : '';
+        const category = req.query.category || ''; 
+        const sortOption = req.query.sort || '';
         const page = parseInt(req.query.page) || 1; 
         const productsPerPage = 6; 
 
         let query = { isActive: true }; 
 
         if (searchQuery) {
-           
-            query.title = { $regex: searchQuery, $options: 'i' }; 
+            query.title = { $regex: searchQuery, $options: 'i' };
+        }
+
+        if (category) {
+            query.category = category;
+        }
+
+        let sortQuery = {}; 
+        if (sortOption === 'titleAsc') {
+            sortQuery.title = 1; 
+        } else if (sortOption === 'titleDesc') {
+            sortQuery.title = -1; 
+        } else if (sortOption === 'priceLowToHigh') {
+            sortQuery.disPrice = 1; 
+        } else if (sortOption === 'priceHighToLow') {
+            sortQuery.disPrice = -1; 
+        } else if (sortOption === 'newArrivals') {
+            sortQuery.createdAt = -1; 
         }
 
        
         const totalProducts = await Product.countDocuments(query);
-        const totalPages = Math.ceil(totalProducts / productsPerPage); 
+        const totalPages = Math.ceil(totalProducts / productsPerPage);
+
+        const products = await Product.find(query)
+            .sort(sortQuery) 
+            .skip((page - 1) * productsPerPage)
+            .limit(productsPerPage);
 
         
-        const products = await Product.find(query)
-            .skip((page - 1) * productsPerPage) 
-            .limit(productsPerPage); 
-
         res.render('user/shop', {
             user: req.session.user || null,
             products,
-            searchQuery: searchQuery || '', 
-            currentPage: page, 
-            totalPages, 
+            searchQuery,
+            category,
+            sortOption,
+            currentPage: page,
+            totalPages,
         });
     } catch (error) {
         console.error('Error fetching products:', error);
         res.status(500).send('An error occurred while fetching products');
     }
 };
+
 
 
 
@@ -82,249 +103,6 @@ export const getProductbyId = async (req, res) => {
 
 
 // --------------Product sorted area----------------------------------------------
-
-
-export const priceLowToHigh = async (req, res) => {
-    try {
-        console.log("low to high working");
-
-        const searchQuery = req.query.q ? req.query.q.trim() : '';
-        const category = req.query.category;
-        console.log("Selected Category", category);
-
-        const page = parseInt(req.query.page) || 1; 
-        const productsPerPage = 6; 
-        let query = { isActive: true }; 
-
-        if (searchQuery) {
-           
-            query.title = { $regex: searchQuery, $options: 'i' };
-        }
-
-        if (category) {
-           
-            query.category = category;
-        }
-
-        
-        const totalProducts = await Product.countDocuments(query);
-        const totalPages = Math.ceil(totalProducts / productsPerPage); 
-
-       
-        const products = await Product.find(query)
-            .sort({ disPrice: 1 }) 
-            .skip((page - 1) * productsPerPage) 
-            .limit(productsPerPage); 
-
-        res.render('user/shop', {
-            user: req.session.user || null,
-            products,
-            searchQuery: searchQuery || '', 
-            category: category || '',
-            currentPage: page, 
-            totalPages, 
-        });
-    } catch (err) {
-        console.log("Error while sorting:", err.stack); 
-        res.status(500).send("Internal Server Error");
-    }
-};
-
-
-
-
-
-export const priceHighToLow = async (req, res) => {
-    try {
-        console.log("high to low working");
-
-        const searchQuery = req.query.q ? req.query.q.trim() : ''; 
-        const page = parseInt(req.query.page) || 1; 
-        const productsPerPage = 6; 
-
-        let query = { isActive: true };
-
-        if (searchQuery) {
-            query.title = { $regex: searchQuery, $options: 'i' }; 
-        }
-
-        
-        const totalProducts = await Product.countDocuments(query);
-        const totalPages = Math.ceil(totalProducts / productsPerPage);
-
-        const products = await Product.find(query)
-            .sort({ disPrice: -1 })
-            .skip((page - 1) * productsPerPage) 
-            .limit(productsPerPage); 
-
-        res.render('user/shop', { 
-            user: req.session.user || null, 
-            products, 
-            searchQuery, 
-            currentPage: page, 
-            totalPages
-        });
-    } catch (err) {
-        console.log("Error while sorting", err);
-        res.status(500).send("Internal Server Error");
-    } 
-};
-
-
-
-
-export const getNewArrivals = async (req, res) => {
-    try {
-        const searchQuery = req.query.q ? req.query.q.trim() : ''; 
-        const page = parseInt(req.query.page) || 1;  
-        const productsPerPage = 6; 
-        
-        let query = { isActive: true };
-        if (searchQuery) {
-            query.title = { $regex: searchQuery, $options: 'i' };  
-        }
-
-      
-        const totalProducts = await Product.countDocuments(query);
-
-       
-        const totalPages = Math.ceil(totalProducts / productsPerPage);
-
-       
-        const newArrivals = await Product.find(query)
-            .sort({ createdAt: -1 })  
-            .skip((page - 1) * productsPerPage)  
-            .limit(productsPerPage);  
-
-       
-        res.render('user/shop', {
-            user: req.session.user || null,  
-            products: newArrivals, 
-            searchQuery,  
-            currentPage: page, 
-            totalPages  
-        });
-
-    } catch (err) {
-        console.error("Error while fetching new arrivals", err);
-        res.status(500).send("Error fetching new arrivals");
-    }
-};
-
-
-
-
-export const sortProducts = async (req, res) => {
-    try {
-        const searchQuery = req.query.q ? req.query.q.trim() : '';
-        const page = parseInt(req.query.page) || 1; 
-        const productsPerPage = 6; 
-        const sortOrder = req.query.sortOrder || 'asc'; 
-
-        let query = { isActive: true };
-
-        if (searchQuery) {
-            query.title = { $regex: searchQuery, $options: 'i' }; 
-        }
-
-        let sortCondition = {};
-        if (sortOrder === 'asc') {
-            sortCondition = { title: 1 };  
-        } else if (sortOrder === 'desc') {
-            sortCondition = { title: -1 }; 
-        }
-
-        
-        const totalProducts = await Product.countDocuments(query);
-        const totalPages = Math.ceil(totalProducts / productsPerPage); 
-
-        const products = await Product.find(query)
-            .sort(sortCondition)
-            .skip((page - 1) * productsPerPage)
-            .limit(productsPerPage); 
-
-        res.render('user/shop', { 
-            user: req.session.user || null, 
-            products, 
-            searchQuery, 
-            currentPage: page, 
-            totalPages
-        });
-    } catch (err) {
-        console.log("Error while sorting products", err);
-        res.status(500).send("Error sorting products");
-    }
-};
-
-
-
-export const sortByAToZ = async (req, res) => {
-    try {
-        const searchQuery = req.query.q ? req.query.q.trim() : '';
-        const page = parseInt(req.query.page) || 1; 
-        const productsPerPage = 6;
-
-        let query = { isActive: true };
-
-        if (searchQuery) {
-            query.title = { $regex: searchQuery, $options: 'i' }; 
-        }
-
-       
-        const totalProducts = await Product.countDocuments(query);
-        const totalPages = Math.ceil(totalProducts / productsPerPage);
-
-       
-        const products = await Product.find(query)
-            .sort({ title: 1 })
-            .skip((page - 1) * productsPerPage)
-            .limit(productsPerPage); 
-
-        res.render('user/shop', { 
-            user: req.session.user || null, 
-            products, 
-            searchQuery, 
-            currentPage: page, 
-            totalPages
-        });
-    } catch (err) {
-        console.log("Error while sorting A to Z", err);
-        res.status(500).send("Error fetching products");
-    }
-};
-
-export const sortByZToA = async (req, res) => {
-    try {
-        const searchQuery = req.query.q ? req.query.q.trim() : ''; 
-        const page = parseInt(req.query.page) || 1;
-        const productsPerPage = 6; 
-        let query = { isActive: true };
-
-        if (searchQuery) {
-            query.title = { $regex: searchQuery, $options: 'i' }; 
-        }
-
-        const totalProducts = await Product.countDocuments(query);
-        const totalPages = Math.ceil(totalProducts / productsPerPage); 
-
-        const products = await Product.find(query)
-            .sort({ title: -1 })
-            .skip((page - 1) * productsPerPage)
-            .limit(productsPerPage); 
-
-        res.render('user/shop', { 
-            user: req.session.user || null, 
-            products, 
-            searchQuery, 
-            currentPage: page, 
-            totalPages
-        });
-    } catch (err) {
-        console.log("Error while sorting Z to A", err);
-        res.status(500).send("Error fetching products");
-    }
-};
-
 
 
 

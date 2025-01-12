@@ -53,7 +53,8 @@ export const getAllProductPage = async (req, res) => {
 export const addProduct = async (req, res) => {
     try {
         const { brand, title, price, disPrice, color, size, category, stock, isActive, description, gender, tags } = req.body;
-
+   console.log(color);
+   
         if (!brand || !title || !price || !color || !size || !category || !stock || !description || !gender) {
             req.flash('message', 'All fields are required');
             return res.redirect('/admin/addproduct');

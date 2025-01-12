@@ -8,14 +8,14 @@ import Wallet from "../../models/walletModel.js";
 export const getProfilePage = async(req, res) => {
     let wallet = await Wallet.findOne({ user: req.session.user._id }).lean();
 
-    // Sort the transactions array without overwriting the whole wallet object
     if (wallet && wallet.transaction) {
         wallet.transaction.sort((a, b) => b.createdAt - a.createdAt);
     }
 
-    // Ensure wallet and transaction properties are always defined
     const safeWallet = wallet || { balance: 0, transaction: [] };
 
+  
+    
     res.render('user/profile', { 
         user: req.session.user || null, 
         userAddress: req.userAddress || null, 
@@ -141,7 +141,8 @@ export const deleteAddress=async(req,res)=>{
 
 
 
-    export const createAddress = async (req, res) => {
+
+export const createAddress = async (req, res) => {
         try {
             console.log(req.body);
             

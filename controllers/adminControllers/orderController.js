@@ -9,7 +9,7 @@ import moment from 'moment';
 export const getOrderList = async (req, res) => {
     try {
    
-      const orders = await Order.find();
+      const orders = await Order.find().sort({createdAt:-1});
   
       const ordersWithUsers = await Promise.all(
         orders.map(async (order) => {
