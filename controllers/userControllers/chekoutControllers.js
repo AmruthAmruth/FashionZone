@@ -1,7 +1,4 @@
 
-
-
-
 import mongoose from "mongoose";
 import Address from "../../models/addressModel.js";
 import Cart from "../../models/cartModel.js";
@@ -12,15 +9,15 @@ export const checkoutPage=async(req,res)=>{
     try{
     
 const user=req.session.user || null
-const totalPrice=req.totalAmount
         const userAddress = await Address.find({ userId: req.session.userId });
         const userProducts = await Cart.find({ userId: req.session.userId });
 
-    //   console.log(JSON.stringify(userProducts, null, 2));
+      const  cartPrice= req.cartPrice || { subtotal: 0, shippingCost: 0, total: 0, selectedShipping: 'free' }
    
-      
+      console.log("Chekout page load",userProducts ,"Total Amouot",cartPrice);
+      const totalPrice=1000
         
-        res.render('user/checkout', {  user,userAddress: userAddress || [] ,userProducts,totalPrice});
+        res.render('user/checkout', {  user,userAddress: userAddress || [] ,userProducts,totalPrice,cartPrice});
     }catch(err){
         console.log("Error while loading checkoutpage",err);
         
@@ -43,9 +40,6 @@ export const proceedToChekout=async(req,res,next)=>{
         
     }
 }
-
-
-
 
 
     export const checkoutAddAddress = async (req, res) => {
@@ -105,9 +99,7 @@ export const proceedToChekout=async(req,res,next)=>{
         }
     };
 
-
-
-    
+ 
     export const checkoutEditAddress=async(req,res)=>{
         try {
             const { addressId, name, house, landmark, city, state, country, pincode, phone } = req.body;

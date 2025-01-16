@@ -69,8 +69,8 @@ export const getSalesReportPage = async (req, res) => {
       );
   
       const totals = salesData.reduce((acc, item) => {
-        acc.totalDiscount += parseFloat(item.discount); // Sum up the discount
-        acc.totalAmount += parseFloat(item.totalAmount); // Sum up the totalAmount
+        acc.totalDiscount += parseFloat(item.discount); 
+        acc.totalAmount += parseFloat(item.totalAmount); 
         return acc;
       }, { totalDiscount: 0, totalAmount: 0 });
   

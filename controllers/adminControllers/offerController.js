@@ -20,7 +20,7 @@ export const getOfferPage = async (req, res) => {
 
 
 const categoryOffer = await Offer.find({
-    category: { $exists: true, $not: { $size: 0 } } // category is an array and is not empty
+    category: { $exists: true, $not: { $size: 0 } }
 });
 
 
@@ -103,15 +103,12 @@ export const updateProductOfferStatus = async (req, res) => {
             return res.status(404).json({ message: "Offer not found!" });
         }
 
-        // Toggle the status to 'Active' or 'Inactive'
-        offer.status = offer.status === 'Active' ? 'Inactive' : 'Active'; // Ensure correct status value
-
+        offer.status = offer.status === 'Active' ? 'Inactive' : 'Active'; 
         await offer.save();
 
-        // Reset discount prices if the offer is deactivated
         if (offer.status === 'Inactive' && offer.products) {
             for (const product of offer.products) {
-                product.disPrice = product.price; // Reset to original price
+                product.disPrice = product.price; 
                 await product.save();
             }
         }
@@ -136,7 +133,6 @@ export const editOfferForProduct = async (req, res) => {
 
         const { offerId, offerName, description, discount, products, status } = req.body;
 
-        // Input Validation
         if (!offerId || !offerName || !description || !discount || !products || !status) {
             console.log("Validation failed: Missing fields.");
             return res.status(400).json({ message: "All fields are required!" });
@@ -150,17 +146,14 @@ export const editOfferForProduct = async (req, res) => {
             return res.status(400).json({ message: "Discount should be between 0 and 100!" });
         }
 
-        // Convert product IDs to MongoDB ObjectIds
         const productIds = products.map(productId => new mongoose.Types.ObjectId(productId));
 
-        // Fetch the offer from the database
         const offer = await Offer.findById(offerId);
         if (!offer) {
             console.log("Offer not found for ID:", offerId);
             return res.status(404).json({ message: "Offer not found!" });
         }
 
-        // Fetch products based on the provided product IDs
         const foundProducts = await Product.find({ '_id': { $in: productIds } });
         console.log("Found products:", foundProducts);
 
@@ -169,28 +162,23 @@ export const editOfferForProduct = async (req, res) => {
             return res.status(400).json({ message: "Some products were not found!" });
         }
 
-        // Update the discount for each product
         foundProducts.forEach(product => {
             console.log("Updating discount for product:", product._id);
             product.disPrice = product.price - (product.price * (discount / 100));
         });
 
-        // Save the updated products
         const updatedProducts = await Promise.all(foundProducts.map(product => product.save()));
 
-        // Check if any product was updated
         if (updatedProducts.length === 0) {
             console.log("No products updated with the discount.");
         }
 
-        // Update the offer with the new information
         offer.offerName = offerName;
         offer.description = description;
         offer.discount = discount;
         offer.productName = foundProducts.map(pro => pro.title);
         offer.products = productIds;
-        offer.status = status; // Status is already a string, no need to convert
-
+        offer.status = status; 
         console.log("Saving updated offer...");
         await offer.save();
 
@@ -221,14 +209,13 @@ export const deleteProductOffer=async(req,res)=>{
         const products = await Product.find({ '_id': { $in: productIds } });
 
         products.forEach(product => {
-            product.disPrice = product.price; // Reset the discount price to the original price
-            product.save(); // Save the updated product
+            product.disPrice = product.price; 
+            product.save(); 
         });
 
         await Offer.deleteOne({ _id: offerId });
         console.log("Offer deleted successfully");
 
-        // Redirect or send a response
         res.status(200).json({ message: "Offer deleted and products updated successfully!" });
     
 
@@ -255,7 +242,6 @@ export const addOfferForCategory = async (req, res) => {
 
         const categoriesArray = Array.isArray(categories) ? categories : [categories];
 
-        // Find products based on the categories
         const products = (
             await Promise.all(
                 categoriesArray.map((cate) => Product.find({ category: cate, isActive: true }))
@@ -302,14 +288,12 @@ export const updateCategoryOfferStatus = async (req, res) => {
             return res.status(404).json({ success: false, message: "Offer not found." });
         }
 
-        // Update the offer status
         offer.status = status;
 
-        // If status is 'Inactive', reset product.disPrice to original price
         if (status === 'Inactive') {
             const products = await Product.find({ category: { $in: offer.category } });
             for (let product of products) {
-                product.disPrice = product.price; // Reset discount price
+                product.disPrice = product.price; 
                 await product.save();
             }
         }
@@ -332,7 +316,7 @@ export const getCategoryOffer=async(req,res)=>{
     const categorylist= category.map((cat)=>cat.category)
 
     const categoryOffer = await Offer.find({
-        category: { $exists: true, $not: { $size: 0 } } // category is an array and is not empty
+        category: { $exists: true, $not: { $size: 0 } } 
     });
     console.log(categoryOffer);
 
@@ -411,14 +395,13 @@ export const deleteCategoryOffer = async (req, res) => {
         const products = await Product.find({ category: { $in: categories } });
 
         for (const product of products) {
-            product.disPrice = product.price; // Reset discounted price to original
-            await product.save(); // Save each product document
+            product.disPrice = product.price; 
+            await product.save(); 
         }
 
         await Offer.deleteOne({ _id: offerId });
         console.log("Offer deleted successfully");
 
-        // Redirect to the admin offers page
         res.redirect('/admin/categoryoffer');
     } catch (err) {
         console.log("Error while deleting category offer", err);

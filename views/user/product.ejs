@@ -21,40 +21,30 @@
 
 .discounted-price {
     font-size: 25px;
-    color: #008e07;  /* Red color for the discounted price */
+    color: #008e07;  
     font-weight: normal;
 }
 
-
-/* Ensure the zoomed image container is properly positioned */
-.zoomContainer {
-    position: absolute !important;
-    top: 0;
-    left: 0;
-    z-index: 9999;
+.product-main-image {
+    position: relative;
+    width: 455px; /* Image width */
+    height: 455px; /* Image height */
+    overflow: hidden; /* Hide anything outside the container */
 }
 
-/* Ensure the lens is correctly positioned */
-.zoomLens {
-    position: absolute !important; /* Semi-transparent lens */
-    border-radius: 50%;  /* Round lens */
-    z-index: 9999;
-    border: 2px solid #fff; /* White border for the lens */
-    cursor: zoom-in;  /* Change cursor on hover */
-    width: 150px;  /* Adjust lens size */
-    height: 150px;  /* Adjust lens size */
-}
-
-/* Adjusting the magnification area (zoom image inside lens) */
-.zoomLens img {
+#product-zoom {
     width: 100%;
     height: 100%;
-    object-fit: cover;  /* Ensure the image fits the lens */
+    transition: transform 0.1s ease-out; /* Smooth zoom effect */
+    transform-origin: center center; /* Default zoom position */
+}
+
+.product-main-image:hover #product-zoom {
+    cursor: crosshair; /* Crosshair cursor on hover */
 }
 
 
 </style>
-
 
 
 
@@ -100,12 +90,15 @@
                             <div class="col-md-6">
                                 <div class="product-gallery product-gallery-vertical">
                                     <div class="row">
-                                        <figure class="product-main-image cproduct-container">
-                                            <img id="product-zoom" src="/<%=product.images[0] %>" style="width: 450px; height: 455px; object-fit: cover;"  data-zoom-image="/<%=product.images[0] %>" alt="product image">
-                                            <a href="#" id="btn-product-gallery" class="btn-product-gallery">
-                                                <i class="icon-arrows"></i>
-                                            </a>
-                                        </figure><!-- End .product-main-image -->
+                                        <figure class="product-main-image cproduct-container" style="position: relative; overflow: hidden;">
+                                            <img id="product-zoom" 
+                                                 src="/<%=product.images[0] %>" 
+                                                 style="width: 100%; height: 100%;" 
+                                                 alt="product image">
+                                        </figure>
+
+                                    
+                                        <!-- End .product-main-image -->
                         
                                         <div id="product-zoom-gallery" class="product-image-gallery">
                                             <a class="product-gallery-item active" href="#" data-image="/<%=product.images[0]%>" data-zoom-image="/<%=product.images[0] %>">
@@ -340,6 +333,51 @@
         <%- include('../partials/footer.ejs')-%>
   
 
+
+<!-- Image zoom  -->
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const zoomContainer = document.querySelector(".product-main-image");
+        const zoomImage = document.getElementById("product-zoom");
+    
+        zoomContainer.addEventListener("mousemove", function (e) {
+            const rect = zoomContainer.getBoundingClientRect(); // Get the position of the container
+            const x = e.clientX - rect.left; // Mouse X position inside container
+            const y = e.clientY - rect.top; // Mouse Y position inside container
+    
+            // Calculate the percentage of mouse position relative to the image container
+            const xPercent = (x / rect.width) * 100;
+            const yPercent = (y / rect.height) * 100;
+    
+            // Set the transform origin dynamically based on the mouse position
+            zoomImage.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+    
+            // Apply zoom effect
+            zoomImage.style.transform = "scale(2)"; // Apply zoom factor
+        });
+    
+        zoomContainer.addEventListener("mouseleave", function () {
+            zoomImage.style.transform = "scale(1)"; // Reset zoom on mouse leave
+            zoomImage.style.transformOrigin = "center center"; // Reset origin to center
+        });
+    });
+    
+    
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!-- Add to cart Sweet popup -->
 
 
@@ -456,58 +494,6 @@
 
 
 
-<!-- Zooming Script Section -->
-
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.rawgit.com/elevateweb/elevatezoom/master/jquery.elevateZoom.min.js"></script>
-
-<script>
-  $(document).ready(function () {
-  // Initialize ElevateZoom on the main image
-  function initializeZoom() {
-    $('#product-zoom').elevateZoom({
-      zoomType: "lens",           // Type of zoom (lens zoom)
-      lensShape: "round",         // Shape of the zoom lens (round in this case)
-      lensSize: 150,              // Size of the zoom lens (adjust as necessary)
-      scrollZoom: true,           // Enable scroll zoom
-      responsive: true,           // Make it responsive
-      borderSize: 2,              // Border size for the lens
-      zoomWindowFadeIn: 500,      // Fade-in effect duration for the zoom window
-      zoomWindowFadeOut: 500      // Fade-out effect duration for the zoom window
-    });
-  }
-
-  // Initialize zoom for the main product image
-  initializeZoom();  // Initialize zoom for the first image
-
-  // Event listener for thumbnail click
-  $('.product-gallery-item').on('click', function (e) {
-    e.preventDefault();
-    
-    const newImage = $(this).attr('data-image');            // Get new image path
-    const newZoomImage = $(this).attr('data-zoom-image');   // Get new zoom image path
-
-    // Ensure both image paths are correct
-    if (!newImage || !newZoomImage) {
-      console.error("Invalid image paths:", newImage, newZoomImage);
-      return;
-    }
-
-    // Remove previous zoom instance and zoom container
-    $('#product-zoom').removeData('elevateZoom');
-    $('.zoomContainer').remove();  // Remove zoom container
-
-    // Update the main image and zoom image
-    $('#product-zoom')
-      .attr('src', newImage)  // Update the main image source
-      .attr('data-zoom-image', newZoomImage);  // Update the zoom image
-
-    // Reinitialize zoom functionality
-    initializeZoom();  // Re-initialize zoom for the new image
-  });
-});
-  </script>
   
 
 

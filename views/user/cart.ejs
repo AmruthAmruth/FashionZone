@@ -66,11 +66,12 @@
 													<td class="align-middle" style="max-width: 100px;"><%= item.title %></td>
 											
 													<td class="align-middle text-center">
-														<form action="/cart/update/<%= item.productId %>" method="POST">
-															<button type="submit" name="action" value="decrease" class="btn-outline-secondary" style="width: 35px;">-</button>
-															<input type="text" value="<%= item.quantity %>" disabled class="quantity-input mx-2" style="width: 40px; text-align: center;">
-															<button type="submit" name="action" value="increase" class="btn-outline-secondary" style="width: 35px;">+</button>
-														</form>
+														<form id="update-cart-form-<%= item.productId %>" action="/cart/update/<%= item.productId %>" method="POST" data-product-id="<%= item.productId %>">
+                                                            <button type="button" class="btn-outline-secondary update-cart-btn" style="width: 35px;" data-action="decrease">-</button>
+                                                            <input type="text" value="<%= item.quantity %>" disabled class="quantity-input mx-2" style="width: 40px; text-align: center;">
+                                                            <button type="button" class="btn-outline-secondary update-cart-btn" style="width: 35px;" data-action="increase">+</button>
+                                                        </form>
+                                                        
 													</td>
 											
 													<td class="align-middle text-center">₹<%= item.price %></td>
@@ -113,6 +114,17 @@
 			            			</div><!-- End .cart-discount -->
 
 		            			</div><!-- End .cart-bottom -->
+
+
+
+
+                                
+
+
+
+
+
+
 	                		</div><!-- End .col-lg-9 -->
 
 
@@ -125,7 +137,6 @@
 
 	                			<div class="summary summary-cart">
     <h3 class="summary-title">Cart Total</h3>
-
     <form action="/checkoutfromcart" method="post">
         <table class="table table-summary">
             <tbody>
@@ -242,8 +253,10 @@
 
 
 
-<!-- ------------coupeon section script -->
 
+
+
+<!-- ------------coupeon section script -->
 
 <!-- Include SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -308,7 +321,7 @@
                         });
 
                         // Update total price
-                        totalPriceSpan.textContent = `₹${data.totalAmount}`;
+                        totalPriceSpan.textContent = `${data.totalAmount}`;
                         totalPriceInput.value = data.totalAmount;
 
                         // Reset the form for applying a new coupon
@@ -326,7 +339,7 @@
 
                         // Update total price
                         const displayedAmount = data.finalAmount || totalAmount;
-                        totalPriceSpan.textContent = `₹${displayedAmount}`;
+                        totalPriceSpan.textContent = `${displayedAmount}`;
                         totalPriceInput.value = displayedAmount;
 
                         // Disable the input to prevent changes and switch button to "Remove"
@@ -367,6 +380,80 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+<script>
+ document.addEventListener("DOMContentLoaded", function () {
+    // Add event listeners to all the update buttons
+    const updateButtons = document.querySelectorAll('.update-cart-btn');
+    
+    updateButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const action = this.getAttribute('data-action');
+            const form = this.closest('form');
+            const productId = form.getAttribute('data-product-id');
+            
+            // Send an AJAX request to update the cart
+            updateCartQuantity(productId, action);
+        });
+    });
+
+    // Function to handle AJAX cart update
+    function updateCartQuantity(productId, action) {
+        fetch(`/cart/update/${productId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ action: action }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // If successful, update the quantity in the DOM
+                const quantityInput = document.querySelector(`form[data-product-id='${productId}'] .quantity-input`);
+                quantityInput.value = data.newQuantity;  // Update the quantity field
+                
+                // Success sweet alert
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Quantity updated!',
+                    text: `The quantity has been updated to ${data.newQuantity}.`,
+                    confirmButtonText: 'Ok',
+                });
+            } else {
+                // Error sweet alert
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: data.message || 'An error occurred while updating the cart.',
+                    confirmButtonText: 'Ok',
+                });
+            }
+        })
+        .catch(err => {
+            console.error("Error updating cart:", err);
+            // Error sweet alert in case of failure in AJAX request
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'An error occurred while updating the cart.',
+                confirmButtonText: 'Ok',
+            });
+        });
+    }
+});
+
+
+</script>
 
 
 

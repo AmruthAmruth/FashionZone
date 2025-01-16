@@ -66,15 +66,18 @@
                             <!-- Dynamic product details -->
                             <% order.products.forEach(product => { %>
                                 <% product.items.forEach(item => { %>
-                                    <tr>
-                                        <td><img src="/<%= item.image %>" alt="<%= item.title %>" class="variant-image" style="width: 150px; margin: auto;" ></td>
-                                        <td><%= item.title %></td>
-                                        <td><%= item.quantity %></td>
-                                        <td>₹ <%= order.totalAmount %></td>
-                                        <td>₹ <%= (item.quantity * order.totalAmount).toFixed(2) %></td>
-                                    </tr>
+                                  <tr style="<%= item.display ? '' : 'opacity: 0.5;' %>">
+                                    <td>
+                                      <img src="/<%= item.image %>" alt="<%= item.title %>" class="variant-image" style="width: 150px; margin: auto;">
+                                    </td>
+                                    <td><%= item.title %></td>
+                                    <td><%= item.quantity %></td>
+                                    <td>₹ <%= item.price %></td>
+                                    <td>₹ <%= (item.quantity * item.price) %></td>
+                                  </tr>
                                 <% }); %>
-                            <% }); %>
+                              <% }); %>
+                              
                         </tbody>
                     </table>
             
@@ -82,7 +85,7 @@
                         <div class="row">
                             <div class="col-md-12 text-right">
                                 <!-- Grand total calculation -->
-                                <h6>Subtotal: <span>₹ <%= order.totalAmount %></span></h6>
+                                <h6>Final Price after all discount: <span>₹ <%= order.totalAmount %></span></h6>
                                 
                                 <h3 class="mt-4">Grand Total: <span>₹ <%= order.totalAmount %></span></h3>
                             </div>
@@ -92,6 +95,10 @@
                     <div class="text-center mt-4">
                         <a href="/shop" class="btn btn-primary btn-lg mr-2">Continue Shopping</a>
                         <a href="/profile" class="btn btn-secondary btn-lg">View Orders</a>
+                        <div class="text-center mt-4">
+                            <button id="downloadInvoice" class="btn btn-success btn-lg">Download Invoice</button>
+                        </div>
+                        
                     </div>
                 </div>
             </div>
@@ -99,6 +106,63 @@
             
             </div>
         </main>
+        
+<%- include('../partials/footer.ejs')-%>
         </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        
+        <script>
+  document.getElementById('downloadInvoice').addEventListener('click', function () {
+    const orderSummary = document.querySelector('.order-summary-container');
+    const downloadButton = document.querySelector('#downloadInvoice');
+    const buttonsDiv = document.querySelector('.text-center.mt-4'); // Target the div containing all buttons
+
+    // Hide the download button and the buttons container
+    downloadButton.style.display = 'none';
+    buttonsDiv.style.display = 'none';
+
+    // Use html2canvas to capture the content as an image
+    html2canvas(orderSummary, {
+        scale: 2, // Increase scale for better quality
+        useCORS: true, // Enable cross-origin
+    }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const { jsPDF } = window.jspdf; // Access jsPDF from the module
+        const pdf = new jsPDF('p', 'mm', 'a4'); // Portrait, millimeters, A4 size
+
+        // Add the e-commerce name to the top of the PDF
+        pdf.setFontSize(20); // Set font size
+        pdf.setFont('helvetica', 'bold'); // Set font to bold
+        pdf.setTextColor(255, 215, 0); // Set text color to yellow (RGB for gold)
+        pdf.text('FashionZone', pdf.internal.pageSize.getWidth() / 2, 15, { align: 'center' }); // Center the text at the top
+
+        // Calculate dimensions for the PDF content
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+        // Add the image below the name
+        pdf.addImage(imgData, 'PNG', 0, 20, pdfWidth, pdfHeight);
+
+        // Save the PDF
+        pdf.save('OrderSummary.pdf');
+
+        // Show the download button and buttons container again after the PDF is generated
+        downloadButton.style.display = 'inline-block';
+        buttonsDiv.style.display = 'block';
+    }).catch(error => {
+        console.error('Error generating PDF:', error);
+        // Make sure to show the buttons again in case of an error
+        downloadButton.style.display = 'inline-block';
+        buttonsDiv.style.display = 'block';
+    });
+});
+
+
+        </script>
+        
+
+
 </body>
 </html>

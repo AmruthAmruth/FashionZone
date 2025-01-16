@@ -58,6 +58,7 @@ app.use('*', (req, res) => {
   res.status(404).render('partials/error'); 
 });
 
+
 const PORT = process.env.PORT || 7000;
 
 mongoose.connect(process.env.MONGO_URI)

@@ -24,10 +24,11 @@ passport.use(
         if (!user) {
           const initialPassword = Math.random().toString(36).slice(-8); 
           const hashedPassword = await bcrypt.hash(initialPassword, 10);
-
+          const refCode = `Ref${Date.now()}`;
           user = new User({
             name: profile.displayName,
             email: profile.emails[0].value,
+            refCode,
             password: hashedPassword,
           });
 

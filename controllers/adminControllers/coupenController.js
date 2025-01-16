@@ -1,5 +1,7 @@
 
 import Coupon from '../../models/coupenModel.js'
+
+
 export const getCoupenspage=async(req,res)=>{
     try{
 
@@ -12,6 +14,8 @@ res.render('admin/coupens',{coupons})
         
     }
 }
+
+
 export const addCoupon = async (req, res) => {
     try {
         
@@ -111,7 +115,6 @@ export const couponSoftDelete = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        // Return a failure response with the error message
         return res.status(500).json({
             success: false,
             message: 'An error occurred while processing the request.'

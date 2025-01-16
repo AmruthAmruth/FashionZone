@@ -102,8 +102,30 @@
                                             <% } else { %>
                                                 <p>No addresses found.</p>
                                             <% } %>
+
+
+                                            
+                                            <div class="cart-discount">
+                                                <form id="couponForm" action="/applycouponcode" method="post">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" name="couponcode" id="couponcode" required placeholder="Enter coupon code">
+                                                        <input type="hidden" name="totalAmount" value="<%= cartPrice.total %>">
+                                                        <div class="input-group-append">
+                                                            <button class="btn btn-outline-primary-2 p-3" id="couponButton" type="submit" data-applied="false">
+                                                                Apply
+                                                            </button>
+                                                        </div><!-- .End .input-group-append -->
+                                                    </div><!-- End .input-group -->
+                                                </form>
+                                            </div>
+                                            
                                         </div>
                                         
+
+
+
+
+
                                         <aside class="col-lg-3">
                                             <div class="summary">
                                                 <h3 class="summary-title">Your Order</h3>
@@ -123,30 +145,33 @@
                                                                 <% product.items.forEach(item => { %>
                                                                     <tr>
                                                                         <td><a href="#"><%= item.title %></a></td>
-                                                                        <td>$<%= item.price * item.quantity %></td>
+                                                                        <td>₹<%= item.price * item.quantity %></td>
                                                                     </tr>
                                                                     <% subtotal += item.price * item.quantity; %>
                                                                 <% }); %>
                                                             <% }); %>
-                                                
+                                                        
                                                             <tr class="summary-subtotal">
                                                                 <td>Subtotal:</td>
-                                                                <td id="amount">$<%= subtotal %></td>
+                                                                <td id="amount">₹<%= subtotal %></td>
                                                             </tr>
-                                                
+                                                        
                                                             <tr>
                                                                 <td>Shipping:</td>
                                                                 <td>Free shipping</td>
                                                             </tr>
-                                                
+                                                        
                                                             <tr class="summary-total">
-                                                                <td>Final Price After Discounts: </td>
-                                                                <td>$<%= totalPrice %></td>
+                                                                <td>Final Price After Discounts:</td>
+                                                                <td>₹<span id="total-price"><%= cartPrice.total %></span></td>
+                                                                <input type="hidden" name="totalPrice" value="<%= cartPrice.total %>">
                                                             </tr>
                                                         </tbody>
+                                                        
+                                                       
                                                     </table>
                                                 
-                                                    <input type="hidden" name="totalAmount" value="<%= totalPrice %>">
+                                                    <input type="hidden" name="totalPrice" value="<%= cartPrice.total %>">
                                                     <input type="hidden" name="products" value="<%= JSON.stringify(userProducts) %>">
                                                 
                                                     <div class="accordion-summary" id="accordion-payment">
@@ -297,7 +322,6 @@
                                         
 
 
-                                        <!-- edi Address Modal  end-->
 
 
 
@@ -421,88 +445,151 @@
                 <%- include('../partials/footer.ejs') -%>
 
 
-                <!-- <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-                <script>
-                    // Assuming the amount is dynamically passed
-                    const amount = parseInt(document.getElementById('amount').value) * 100; // Amount in paise
+
+
+
+
+
                 
-                    var options = {
-                        "key": "rzp_test_vVHTvfU31Svako", // Your Razorpay Key ID
-                        "amount": amount, // Amount in paise
-                        "currency": "INR",
-                        "name": "Acme Corp",
-                        "description": "Test Transaction",
-                        "image": "https://example.com/your_logo",
-                        "order_id": "", // To be fetched dynamically from your backend
-                        "handler": function(response){
-                            alert('Payment successful!');
-                            alert("Payment ID: " + response.razorpay_payment_id);
-                            alert("Order ID: " + response.razorpay_order_id);
-                            alert("Signature: " + response.razorpay_signature);
-                            // Send the payment details to your backend for verification
-                            verifyPayment(response);
-                        },
-                        "prefill": {
-                            "name": "Gaurav Kumar",
-                            "email": "gaurav.kumar@example.com",
-                            "contact": "9000090000"
-                        },
-                        "notes": {
-                            "address": "Razorpay Corporate Office"
-                        },
-                        "theme": {
-                            "color": "#3399cc"
-                        }
-                    };
-                
-                    // Dynamically fetch the order_id from the backend
-                    fetch('/create-order', {
+<!-- ------------coupeon section script -->
+
+<!-- Include SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const couponForm = document.getElementById('couponForm');
+        const couponButton = document.getElementById('couponButton');
+        const couponInput = document.getElementById('couponcode');
+        const totalPriceSpan = document.getElementById('total-price');
+        const totalPriceInput = document.querySelector('input[name="totalPrice"]');
+     
+        couponForm.addEventListener('submit', async function (event) {
+            event.preventDefault(); // Prevent the form from submitting the default way
+
+            const couponcode = couponInput.value.trim();
+            const totalAmount = document.querySelector('input[name="totalAmount"]').value;
+
+            if (!couponcode) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Please enter a coupon code.',
+                    confirmButtonText: 'Close',
+                });
+                return;
+            }
+
+            try {
+                let response, data;
+
+                if (couponButton.dataset.applied === 'true') {
+                    // Remove coupon
+                    response = await fetch('/removecoupon', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ amount: amount })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        options.order_id = data.orderId; // Use the order ID received from the backend
-                        var rzp1 = new Razorpay(options);
-                        document.getElementById('placeOrderButton').addEventListener('click', function(e){
-                            rzp1.open();
-                            e.preventDefault();
-                        });
-                    })
-                    .catch(error => {
-                        alert("Error creating Razorpay order.");
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ couponcode, totalAmount }),
                     });
-                
-                    // Payment verification handler
-                    function verifyPayment(response) {
-                        fetch('/verify-payment', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                paymentId: response.razorpay_payment_id,
-                                orderId: response.razorpay_order_id,
-                                signature: response.razorpay_signature
-                            })
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.success) {
-                                alert("Payment verified successfully.");
-                            } else {
-                                alert("Payment verification failed.");
-                            }
-                        })
-                        .catch(error => {
-                            alert("Error verifying payment.");
+                } else {
+                    // Apply coupon
+                    response = await fetch('/applycouoponcode', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ couponcode, totalAmount }),
+                    });
+                }
+
+                data = await response.json();
+
+                if (response.ok) {
+                    if (couponButton.dataset.applied === 'true') {
+                        // Coupon removed successfully
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Coupon Removed!',
+                            text: `Coupon has been removed. Your total is ₹${data.totalAmount}`,
+                            confirmButtonText: 'Okay',
                         });
+
+                        // Update total price
+                        totalPriceSpan.textContent = `${data.totalAmount}`;
+                        totalPriceInput.value = data.totalAmount;
+                    
+                        // Reset the form for applying a new coupon
+                        couponInput.disabled = false;
+                        couponButton.textContent = 'Apply';
+                        couponButton.dataset.applied = 'false';
+                    } else {
+                        // Coupon applied successfully
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Coupon Applied!',
+                            text: `You saved ₹${data.discountAmount}! Your total is ₹${data.finalAmount}`,
+                            confirmButtonText: 'Cool',
+                        });
+
+                        // Update total price
+                        const displayedAmount = data.finalAmount || totalAmount;
+                        totalPriceSpan.textContent = `${displayedAmount}`;
+                        totalPriceInput.value = displayedAmount;
+
+                        // Disable the input to prevent changes and switch button to "Remove"
+                        couponInput.disabled = true;
+                        couponButton.textContent = 'Remove';
+                        couponButton.dataset.applied = 'true';
                     }
-                </script>
-                 -->
+                } else {
+                    // Show error popup
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: data.message,
+                        confirmButtonText: 'Try Again',
+                    });
+                }
+            } catch (error) {
+                console.log("Error while processing coupon", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'There was an error processing your request. Please try again later.',
+                    confirmButtonText: 'Close',
+                });
+            }
+        });
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
                 
-
-
-
 
 
 
@@ -516,154 +603,168 @@
                  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
                  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
                  <script>
-                     document.addEventListener("DOMContentLoaded", function () {
-                         const form = document.getElementById("orderForm");
-                         const paymentMethods = document.getElementsByName("paymentMethod");
-                 
-                         form.addEventListener("submit", async function (e) {
-                             e.preventDefault(); // Prevent default form submission
-                 
-                             let selectedPaymentMethod = null;
-                             for (let i = 0; i < paymentMethods.length; i++) {
-                                 if (paymentMethods[i].checked) {
-                                     selectedPaymentMethod = paymentMethods[i].value;
-                                     break;
-                                 }
-                             }
-                 
-                             if (!selectedPaymentMethod) {
-                                 Swal.fire({
-                                     icon: "warning",
-                                     title: "No Payment Method Selected",
-                                     text: "Please select a payment method before placing your order.",
-                                     confirmButtonText: "Okay",
-                                 });
-                                 return;
-                             }
-                 
-                             // Handle Razorpay Payment
-                             if (selectedPaymentMethod === "Razor pay") {
-                                 try {
-                                     const response = await fetch("/razorpaycontroller", {
-                                         method: "POST",
-                                         headers: { "Content-Type": "application/json" },
-                                         body: JSON.stringify({
-                                             totalAmount: document.querySelector("input[name='totalAmount']").value,
-                                             products: document.querySelector("input[name='products']").value,
-                                             selectedAddressId: document.getElementById("selectedAddressId").value,
-                                             paymentMethod: selectedPaymentMethod,
-                                         }),
-                                     });
-                 
-                                     const data = await response.json();
-                 
-                                     if (data.success) {
-                                         const options = {
-                                             key: "rzp_test_eEMIhlHUZ45CcM", // Replace with your Razorpay key ID
-                                             amount: data.amount * 100,
-                                             currency: "INR",
-                                             name: "Fashion Zone",
-                                             description: "Test Transaction",
-                                             image: "https://yourlogo.url", // Optional: Add your logo URL
-                                             order_id: data.orderId,
-                                             handler: function (response) {
-                                                 // Send payment details to the backend for verification
-                                                 fetch("/verifypayment", {
-                                                     method: "POST",
-                                                     headers: { "Content-Type": "application/json" },
-                                                     body: JSON.stringify({
-                                                         orderId: data.orderId,
-                                                         paymentId: response.razorpay_payment_id,
-                                                         signature: response.razorpay_signature,
-                                                     }),
-                                                 })
-                                                 .then((verifyResponse) => verifyResponse.json())
-                                                 .then((verifyData) => {
-                                                     if (verifyData.success) {
-                                                         Swal.fire({
-                                                             icon: "success",
-                                                             title: "Payment Successful",
-                                                             text: "Your payment has been verified.",
-                                                             confirmButtonText: "Okay",
-                                                         }).then(() => {
-                                                             // Redirect to success page or show confirmation
-                                                             window.location.href = `/ordersummery/${data.order}`;
-                                                         });
-                                                     } else {
-                                                         Swal.fire({
-                                                             icon: "error",
-                                                             title: "Payment Verification Failed",
-                                                             text: "Please try again or contact support.",
-                                                             confirmButtonText: "Okay",
-                                                         });
-                                                     }
-                                                 });
-                                             },
-                                             prefill: {
-                                                 name: "Customer Name", // Pre-fill customer details
-                                                 email: "customer@example.com",
-                                                 contact: "1234567890",
-                                             },
-                                             theme: {
-                                                 color: "#3399cc",
-                                             },
-                                         };
-                 
-                                         const razorpay = new Razorpay(options);
-                                         razorpay.open();
-                                     } else {
-                                         Swal.fire({
-                                             icon: "error",
-                                             title: "Order Creation Failed",
-                                             text: data.error || "Unable to create order. Please try again.",
-                                             confirmButtonText: "Okay",
-                                         });
-                                     }
-                                 } catch (error) {
-                                     console.error("Error initiating Razorpay payment:", error);
-                                     Swal.fire({
-                                         icon: "error",
-                                         title: "Payment Initialization Failed",
-                                         text: "An error occurred while starting the payment process. Please try again.",
-                                         confirmButtonText: "Okay",
-                                     });
-                                 }
-                             }
-                             // Handle COD and Wallet
-                             else {
-                                 Swal.fire({
-                                     icon: "info",
-                                     title: "Confirm Order",
-                                     text: `You selected "${selectedPaymentMethod}". Do you want to proceed?`,
-                                     showCancelButton: true,
-                                     confirmButtonText: "Yes, Place Order",
-                                     cancelButtonText: "No, Go Back",
-                                 }).then((result) => {
-                                     if (result.isConfirmed) {
-                                         switch (selectedPaymentMethod) {
-                                             case "Cash on Delivery":
-                                                 form.action = "/codcontroller";
-                                                 break;
-                                             case "Wallet":
-                                                 form.action = "/walletcontroller";
-                                                 break;
-                                             default:
-                                                 Swal.fire({
-                                                     icon: "error",
-                                                     title: "Invalid Payment Method",
-                                                     text: "An unknown error occurred. Please try again.",
-                                                     confirmButtonText: "Okay",
-                                                 });
-                                                 return;
-                                         }
-                                         form.method = "POST";
-                                         form.submit();
-                                         
-                                     }
-                                 });
-                             }
-                         });
-                     });
+                   document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("orderForm");
+    const paymentMethods = document.getElementsByName("paymentMethod");
+
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault(); // Prevent default form submission
+
+        let selectedPaymentMethod = null;
+        for (let i = 0; i < paymentMethods.length; i++) {
+            if (paymentMethods[i].checked) {
+                selectedPaymentMethod = paymentMethods[i].value;
+                break;
+            }
+        }
+
+        if (!selectedPaymentMethod) {
+            Swal.fire({
+                icon: "warning",
+                title: "No Payment Method Selected",
+                text: "Please select a payment method before placing your order.",
+                confirmButtonText: "Okay",
+            });
+            return;
+        }
+
+        // Get total amount
+        const totalAmount = document.querySelector('input[name="totalPrice"]').value;
+       console.log("This is the total Amount",totalAmount);
+       
+
+        // Restrict COD if total amount > 1000
+        if (selectedPaymentMethod === "Cash on Delivery" && totalAmount > 1000) {
+            Swal.fire({
+                icon: "error",
+                title: "Cash on Delivery Not Allowed",
+                text: "Cash on Delivery is not available for orders above ₹1000. Please select a different payment method.",
+                confirmButtonText: "Okay",
+            });
+            return;
+        }
+
+        // Handle Razorpay Payment
+        if (selectedPaymentMethod === "Razor pay") {
+            try {
+                const response = await fetch("/razorpaycontroller", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        totalAmount,
+                        products: document.querySelector("input[name='products']").value,
+                        selectedAddressId: document.getElementById("selectedAddressId").value,
+                        paymentMethod: selectedPaymentMethod,
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const options = {
+                        key: "rzp_test_eEMIhlHUZ45CcM", // Replace with your Razorpay key ID
+                        amount: data.amount * 100,
+                        currency: "INR",
+                        name: "Fashion Zone",
+                        description: "Test Transaction",
+                        image: "https://yourlogo.url", // Optional: Add your logo URL
+                        order_id: data.orderId,
+                        handler: function (response) {
+                            fetch("/verifypayment", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    orderId: data.orderId,
+                                    paymentId: response.razorpay_payment_id,
+                                    signature: response.razorpay_signature,
+                                }),
+                            })
+                                .then((verifyResponse) => verifyResponse.json())
+                                .then((verifyData) => {
+                                    if (verifyData.success) {
+                                        Swal.fire({
+                                            icon: "success",
+                                            title: "Payment Successful",
+                                            text: "Your payment has been verified.",
+                                            confirmButtonText: "Okay",
+                                        }).then(() => {
+                                            window.location.href = `/ordersummery/${data.order}`;
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: "error",
+                                            title: "Payment Verification Failed",
+                                            text: "Please try again or contact support.",
+                                            confirmButtonText: "Okay",
+                                        });
+                                    }
+                                });
+                        },
+                        prefill: {
+                            name: "Customer Name", // Pre-fill customer details
+                            email: "customer@example.com",
+                            contact: "1234567890",
+                        },
+                        theme: {
+                            color: "#3399cc",
+                        },
+                    };
+
+                    const razorpay = new Razorpay(options);
+                    razorpay.open();
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Order Creation Failed",
+                        text: data.error || "Unable to create order. Please try again.",
+                        confirmButtonText: "Okay",
+                    });
+                }
+            } catch (error) {
+                console.error("Error initiating Razorpay payment:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Payment Initialization Failed",
+                    text: "An error occurred while starting the payment process. Please try again.",
+                    confirmButtonText: "Okay",
+                });
+            }
+        }
+        // Handle COD and Wallet
+        else {
+            Swal.fire({
+                icon: "info",
+                title: "Confirm Order",
+                text: `You selected "${selectedPaymentMethod}". Do you want to proceed?`,
+                showCancelButton: true,
+                confirmButtonText: "Yes, Place Order",
+                cancelButtonText: "No, Go Back",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    switch (selectedPaymentMethod) {
+                        case "Cash on Delivery":
+                            form.action = "/codcontroller";
+                            break;
+                        case "Wallet":
+                            form.action = "/walletcontroller";
+                            break;
+                        default:
+                            Swal.fire({
+                                icon: "error",
+                                title: "Invalid Payment Method",
+                                text: "An unknown error occurred. Please try again.",
+                                confirmButtonText: "Okay",
+                            });
+                            return;
+                    }
+                    form.method = "POST";
+                    form.submit();
+                }
+            });
+        }
+    });
+});
+
                  </script>
                  
 

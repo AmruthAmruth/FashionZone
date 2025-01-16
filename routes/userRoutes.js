@@ -6,14 +6,14 @@ import { isUserAuthenticated } from '../middileware/auth.js'
 import { createAddress, deleteAddress, editAddress, getAddress, getProfilePage, updateName } from '../controllers/userControllers/profileControllers.js'
 import mongoose from 'mongoose'
 import { checkoutAddAddress, checkoutEditAddress, checkoutPage, proceedToChekout } from '../controllers/userControllers/chekoutControllers.js'
-import { applyCoupon, cancelOrder, createOrder, createRazorpayOrder, createWalletcheckout, getOrders, orderSummery, removeCoupon, returnProduct, verifyRazorpayPayment } from '../controllers/userControllers/orderControllers.js'
+import { applyCoupon, cancelOrder, cancelProductInOrder, createOrder, createRazorpayOrder, createWalletcheckout, getOrders, orderSummery, removeCoupon, returnProduct, returnProductInOrder, verifyRazorpayPayment } from '../controllers/userControllers/orderControllers.js'
 import { addToWishlist, getWishList, removeProductFromWishlist } from '../controllers/userControllers/wishlistControllers.js'
-
+import multer from 'multer'
 const userRouter=express.Router()
 
 
 
-
+const upload = multer();
 
 
 // ----------------------------------Authentication Section-------------------------------------------
@@ -96,7 +96,7 @@ userRouter.post('/updatename',updateName)
 
 // ---------------Checkout Section------------------------
 
-userRouter.post('/checkoutfromcart',proceedToChekout,checkoutPage)
+userRouter.post('/checkoutfromcart',proceedToChekout,cartPriceList,checkoutPage)
 userRouter.post('/checkoutaddaddress',checkoutAddAddress)
 userRouter.post('/checkouteditaddress',checkoutEditAddress)
 userRouter.post('/walletcontroller',createWalletcheckout)
@@ -109,8 +109,8 @@ userRouter.post('/orders/cancel', cancelOrder)
 userRouter.post('/orders/return',returnProduct)
 userRouter.post('/razorpaycontroller', createRazorpayOrder)
 userRouter.post('/verifypayment', verifyRazorpayPayment)
-
-
+userRouter.post('/ordersummery/cancelproduct', upload.none(),cancelProductInOrder)
+userRouter.post('/ordersummany/returnproduct',upload.none(),returnProductInOrder)
 
 // ----------------------Wish list -----------------------------------------------------
 

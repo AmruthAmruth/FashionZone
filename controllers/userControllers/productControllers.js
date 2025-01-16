@@ -61,7 +61,6 @@ export const getShopPage = async (req, res) => {
 
 
 
-
 export const getProduct=(req,res)=>{
     res.render('user/product')
 }
@@ -219,9 +218,11 @@ export const getFeaturedProducts = async (req, res) => {
 // ----------------Cart Section-------------------------------------------------
 
 export const getCartPage = async (req, res) => {
+    console.log(req.cartPrice);
+    
     res.render('user/cart', { 
         user: req.session.user || null, 
-        userCart: req.userCart || null ,
+        userCart: req.userCart ||  { items: []} ,
         cartPrice: req.cartPrice || { subtotal: 0, shippingCost: 0, total: 0, selectedShipping: 'free' },
         messages: req.flash() 
     });
@@ -300,12 +301,15 @@ export const addToCart = async (req, res) => {
     try {
         const productId = req.params.productId;
         const quantity = parseInt(req.body.quantity) || 1;
+console.log("Is working");
 
         if (!req.session.userId) {
             return res.redirect('/login');
         }
 
         const product = await Product.findById(productId);
+        console.log(product);
+        
         if (!product) {
             req.flash('message', "Product not found");
             return res.redirect('/cart');
@@ -389,11 +393,10 @@ export const updateCart = async (req, res) => {
         const productId = req.params.productId; 
         const action = req.body.action; 
         
-        
         const MAX_QUANTITY = 5;
 
         if (!req.session.user) {
-            return res.redirect('/login'); 
+            return res.status(403).json({ success: false, message: "User not logged in" });
         }
 
         const userId = req.session.userId; 
@@ -401,7 +404,7 @@ export const updateCart = async (req, res) => {
         const product = await Product.findById(productId);
 
         if (!cart) {
-            return res.redirect('/cart');
+            return res.status(400).json({ success: false, message: "Cart not found" });
         }
 
         const productIndex = cart.items.findIndex(item => item.productId.toString() === productId);
@@ -416,20 +419,24 @@ export const updateCart = async (req, res) => {
                 if (item.quantity < maxAllowedQuantity) {
                     item.quantity += 1;
                 } else {
-                    req.flash('error', `You can only add up to ${maxAllowedQuantity} items for this product, based on the available stock.`);
-                    return res.redirect('/cart');
+                    return res.status(400).json({ success: false, message: `You can only add up to ${maxAllowedQuantity} items for this product.` });
                 }
             } else if (action === 'decrease' && item.quantity > 1) {
                 item.quantity -= 1;  
             }
 
             await cart.save();
+            
+            return res.json({
+                success: true,
+                newQuantity: item.quantity,
+            });
         }
 
-        return res.redirect('/cart');
+        return res.status(404).json({ success: false, message: "Product not found in cart" });
     } catch (err) {
         console.error("Error while updating cart:", err);
-        res.status(500).send("Internal Server Error");
+        res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
 
@@ -439,7 +446,7 @@ export const updateCart = async (req, res) => {
 
 export const searchProduct=async(req,res,next)=>{
     try{
-        const searchQuery = req.query.q; // Get the search term from query string
+        const searchQuery = req.query.q; 
         console.log("Search Query:", searchQuery);
 
         if (!searchQuery) {
@@ -448,13 +455,9 @@ export const searchProduct=async(req,res,next)=>{
         }
 
          req.products = await Product.find({
-            title: { $regex: searchQuery, $options: 'i' } // Case-insensitive match
+            title: { $regex: searchQuery, $options: 'i' } 
         });
-
-
             res.redirect('/shop')
-
-
 
     }catch(err){
         console.log("Error while trying to search products",err);

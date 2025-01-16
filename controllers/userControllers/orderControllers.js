@@ -13,8 +13,6 @@ dotenv.config();
 
 
 
-
-
 export const createOrder = async (req, res) => {
     try {
         const { totalAmount, products, paymentMethod, selectedAddressId } = req.body;
@@ -97,7 +95,7 @@ export const createRazorpayOrder = async (req, res) => {
         
         const { totalAmount, products, paymentMethod, selectedAddressId } = req.body;
         const parsedProducts = JSON.parse(products);
-        // Validate inputs
+       
         if (!totalAmount || !products || !paymentMethod || !selectedAddressId) {
             return res.status(400).json({ error: "Missing required fields." });
         }
@@ -106,9 +104,8 @@ export const createRazorpayOrder = async (req, res) => {
             return res.status(400).json({ error: "Invalid total amount." });
         }
 
-        // Create the Razorpay order
         const order = await razorpayInstance.orders.create({
-            amount: totalAmount * 100, // Convert to paise
+            amount: totalAmount * 100, 
             currency: "INR",
             receipt: `receipt_${Date.now()}`,
         });
@@ -121,13 +118,12 @@ export const createRazorpayOrder = async (req, res) => {
             products:parsedProducts,
             paymentMethod,
             orderId: order.id,
-            paymentStatus: "Pending", // Payment status will be "Pending" initially
-            status: "Pending", // Order status will be "Pending" initially
+            paymentStatus: "Pending", 
+            status: "Pending", 
         });
 
         await newOrder.save();
 
-// update the product stock
         for (let product of parsedProducts) {
             for (let item of product.items) {
                 const { productId, quantity } = item;
@@ -145,22 +141,18 @@ export const createRazorpayOrder = async (req, res) => {
             }
         }
 
-// Remove product from the cart
         const userId = req.session.userId;
         const cart = await Cart.findOne({ userId });
 
         if (cart && Array.isArray(cart.items)) {
-            // Flatten ordered product items into a single array of productIds
             const orderedProductIds = parsedProducts.flatMap(product =>
                 product.items.map(item => item.productId.toString())
             );
 
-            // Filter cart items to exclude ordered products
             cart.items = cart.items.filter(cartItem =>
                 !orderedProductIds.includes(cartItem.productId.toString())
             );
 
-            // Save the updated cart
             await cart.save();
             console.log("Products removed from the cart");
         } else {
@@ -186,7 +178,6 @@ export const verifyRazorpayPayment = async (req, res) => {
         
         const { orderId, paymentId, signature } = req.body;
 
-        // Validate inputs
         if (!orderId || !paymentId || !signature) {
             return res.status(400).json({ error: "Missing payment verification details." });
         }
@@ -226,8 +217,9 @@ export const orderSummery=async(req,res)=>{
          const shippedAddress= await Address.findById(addressId)
           
          console.log("Order Summery Page ",orderProducts);
+    
          
-
+ 
          res.render('user/ordersummery', {
             user: req.session.user || null,
             order: orderProducts,
@@ -262,12 +254,7 @@ export const getOrders = async (req, res, next) => {
 
 
 
-
-
-
-
-
-
+// ------------------------------------------Order wise cancelation and return-----------------------------------------------------------
 
 export const cancelOrder=async(req,res)=>{
     try{
@@ -327,16 +314,6 @@ export const cancelOrder=async(req,res)=>{
         
     }
 }
-
-
-
-
-
-
-
-
-
-
 export const returnProduct=async(req,res)=>{
     try{
              const orderId=req.body.orderId
@@ -406,10 +383,130 @@ export const returnProduct=async(req,res)=>{
 
 
 
+//-----------------------Product wise cancelation and return ------------------------------------------------------------
+export const updateOrderAndProduct = async (orderId, productId, action, userId) => {
+    try {
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return { success: false, message: "Order not found." };
+        }
+
+        const orderProduct = order.products[0]?.items.find(item => item.productId === productId);
+        if (!orderProduct) {
+            return { success: false, message: "Product not found in the order." };
+        }
+
+        orderProduct.display = false;
+
+        const product = await Product.findById(orderProduct.productId);
+        if (product) {
+            if (action === 'return') {
+                product.stock += orderProduct.quantity;
+            } else if (action === 'cancel') {
+                product.stock += orderProduct.quantity; // Update stock logic if different for cancel
+            }
+            await product.save();
+        }
+
+        // Update user wallet
+        let userWallet = await Wallet.findOne({ user: userId });
+        if (!userWallet) {
+            userWallet = new Wallet({ user: userId, balance: 0, transaction: [] });
+        }
+
+        const productPrice = orderProduct.price;
+        userWallet.balance += productPrice;
+        userWallet.transaction.push({
+            amount: productPrice,
+            transactionId: `TXN${Date.now()}`,
+            productName: product?.title || "Unknown Product",
+            type: "credit",
+        });
+        await userWallet.save();
+
+        // Update the order
+        const updatedOrder = await Order.findByIdAndUpdate(
+            orderId,
+            { $set: { "products.$[].items.$[item].display": false } },
+            {
+                new: true,
+                arrayFilters: [{ "item.productId": productId }],
+            }
+        );
+
+        const allProductsUpdated = updatedOrder.products.every(product =>
+            product.items.every(item => !item.display)
+        );
+
+        if (allProductsUpdated) {
+            updatedOrder.status = action === 'return' ? 'Returned' : 'Cancelled';
+            await updatedOrder.save();
+        }
+
+        return { success: true, order: updatedOrder, message: `${action} product successfully.` };
+
+    } catch (err) {
+        console.error(`Error while ${action} the product:`, err);
+        return { success: false, message: `An error occurred while ${action} the product.` };
+    }
+};
+
+
+export const cancelProductInOrder = async (req, res) => {
+    try {
+        const { productId, orderId } = req.body;
+
+        if (!productId || !orderId) {
+            return res.status(400).json({ success: false, message: "Order ID and Product ID are required." });
+        }
+
+        const result = await updateOrderAndProduct(orderId, productId, 'cancel', req.session.userId);
+
+        if (!result.success) {
+            return res.status(400).json({ success: false, message: result.message });
+        }
+
+        return res.status(200).json({ success: true, message: result.message, order: result.order });
+
+    } catch (err) {
+        console.error("Error while canceling the product:", err);
+        return res.status(500).json({ success: false, message: "An error occurred while canceling the product." });
+    }
+};
+
+export const returnProductInOrder = async (req, res) => {
+    try {
+        const { productId, orderId } = req.body;
+
+        if (!productId || !orderId) {
+            return res.status(400).json({ success: false, message: "Order ID and Product ID are required." });
+        }
+
+        const result = await updateOrderAndProduct(orderId, productId, 'return', req.session.userId);
+
+        if (!result.success) {
+            return res.status(400).json({ success: false, message: result.message });
+        }
+
+        return res.status(200).json({ success: true, message: result.message, order: result.order });
+
+    } catch (err) {
+        console.error("Error while returning the product:", err);
+        return res.status(500).json({ success: false, message: "An error occurred while returning the product." });
+    }
+};
+
+// ---------------------------------------------------------------------------------------------------
+
+
+
+
+
 
 
 
 // -------------Coupen applyed section--------------------------------------------------------
+
 
 
 export const applyCoupon=async(req,res)=>{
@@ -479,6 +576,7 @@ export const removeCoupon = async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 };
+
 
 
 

@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const OrderSchema = new mongoose.Schema({
   selectedAddressId: { type: String, required: true }, 
   totalAmount: { type: String, required: true },
+  
   user: { type: String, required: true },
   products: [{ 
       userId: { type: String, required: true },
@@ -12,6 +13,7 @@ const OrderSchema = new mongoose.Schema({
           title: { type: String, required: true },
           image: { type: String, required: true },
           price: { type: Number, required: true },
+          display:{type:Boolean,default:true},
       }],
       __v: { type: Number }
   }],

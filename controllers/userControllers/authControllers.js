@@ -118,7 +118,6 @@ export const VerifyOTP = async (req, res) => {
           return res.redirect('/verifyotp');
       }
 
-      // Check if refCodeOwner exists
       if (tempUser.refCodeOwner && tempUser.refCodeOwner._id) {
           let OwnerWallet = await Wallet.findOne({ user: tempUser.refCodeOwner._id });
           if (!OwnerWallet) {
@@ -134,7 +133,7 @@ export const VerifyOTP = async (req, res) => {
           await OwnerWallet.save();
       }
 
-      const hashPassword = await bcrypt.hash(tempUser.password, 10);
+      const hashPassword = await bcrypt.hash(tempUser.password,10);
       
       const refCode = `Ref${Date.now()}`;
       const newUser = new User({
@@ -289,19 +288,17 @@ export const getNewPasswordPage=(req,res)=>{
 
 
 export const forgotOtpPage=(req,res)=>{
- // res.render('user/forgototp',{message:req.flash('message')})
 
  const { resetUser } = req.session;
 
- // Ensure resetUser and otpExpiration exist in the session
  if (!resetUser || !resetUser.otpExpiration) {
      req.flash('message', 'Session expired. Start again.');
-     return res.redirect('/forgotpassword'); // Redirect appropriately
+     return res.redirect('/forgotpassword'); 
  }
 
  res.render('user/forgototp', {
      message: req.flash('message'),
-     otpExpiration: resetUser.otpExpiration, // Pass otpExpiration to the template
+     otpExpiration: resetUser.otpExpiration, 
  });
   
 }
