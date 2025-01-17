@@ -5,7 +5,7 @@ import upload from '../middileware/multer.js'
 import { blockAndUnblock, getUserListPage } from '../controllers/adminControllers/userController.js'
 import { adminAutherization, isAdminAuthenticated } from '../middileware/auth.js'
 import { createCategory, editCategory, getCategoryPage, showAndHideCategory } from '../controllers/adminControllers/categoryController.js'
-import { changeTheOrderStatus, getOrderDetails, getOrderList, getSalesChartReport } from '../controllers/adminControllers/orderController.js'
+import { changeTheOrderStatus, getOrderDetails, getOrderList, getSalesChartReport, mostSoldProductsCatagorysAndBrands } from '../controllers/adminControllers/orderController.js'
 import { addOfferForCategory, addOfferForProduct, deleteCategoryOffer, deleteProductOffer, editCategoryOffer, editOfferForProduct, getCategoryOffer, getOfferPage, updateCategoryOfferStatus, updateProductOfferStatus } from '../controllers/adminControllers/offerController.js'
 import { addCoupon, couponSoftDelete, editCoupon, getCoupenspage } from '../controllers/adminControllers/coupenController.js'
 import { getSalesReportPage } from '../controllers/adminControllers/salesReportController.js'
@@ -28,7 +28,7 @@ adminRouter.post('/adminlogout',AdminLogout)
 
 // ------------------------ Product Section ------------------------------------------------------
  
-adminRouter.get('/dashboard',adminAutherization, getSalesChartReport ,AdminDashboard)
+adminRouter.get('/dashboard',adminAutherization, getSalesChartReport,mostSoldProductsCatagorysAndBrands,AdminDashboard)
 adminRouter.get('/addproduct',adminAutherization,getCategory,getAddProductPage)
 adminRouter.get('/products',adminAutherization,getAllProductPage)
 adminRouter.post('/addproduct',upload.array('images[]',4),addProduct)
@@ -90,6 +90,13 @@ adminRouter.post('/couponsoftdelete',couponSoftDelete)
 // -------------------Salse report management section-------------------------------------------------
 
 adminRouter.get('/salesReport',getSalesReportPage)
+
+
+
+
+
+
+
 
 
 

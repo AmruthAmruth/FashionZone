@@ -1,4 +1,7 @@
 <%- include('../layout/header.ejs') -%>
+<!-- Include SweetAlert2 CSS and JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
 
     </head>
 <body>
@@ -38,15 +41,30 @@
                                 minute: "2-digit" 
                             }) %></p>
                             <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
-                            <p><strong>Status:</strong> <%= order.status %></p>
+                            <p><strong>Payment Status:</strong> <%= order.paymentStatus %></p>
+                            <p><strong>Order Status:</strong> <%= order.status %></p>
+                         
+                            <div class="text-center mt-4">
+                              
+                                <form>
+                                    <input type="hidden" name="totalAmount" value="<%= order.totalAmount %>">
+                                    <input type="hidden" name="paymentMethod" value="<%= order.paymentMethod %>">
+                                    <input type="hidden" name="selectedAddressId" value="<%= shippedAddress._id %>">
+                                    <input type="hidden" name="products" value="<%= order.products %>">
+                                    <button type="submit" id="payNow">Pay Now</button>
+                                </form>
+
+
+
+                            </div>
                         </div>
                         <div class="address-details">
                             <!-- Dynamic shipping address -->
                             <p><strong>Ship to:</strong> <%= shippedAddress.name %></p>
                             <p><strong>Delivery Address:</strong><br>
-                                <%= shippedAddress.street %>, <%= shippedAddress.city %>, <%= shippedAddress.state %> ,<%= shippedAddress.country %>
-                                 <br>Pin code : <%= shippedAddress.pincode %><br>
-                              Phone:  <%= shippedAddress.phone %>
+                                <%= shippedAddress.street %>, <%= shippedAddress.city %>, <%= shippedAddress.state %>, <%= shippedAddress.country %>
+                                <br>Pin code : <%= shippedAddress.pincode %><br>
+                                Phone: <%= shippedAddress.phone %>
                             </p>
                         </div>
                     </div>
@@ -64,20 +82,27 @@
                         </thead>
                         <tbody>
                             <!-- Dynamic product details -->
-                            <% order.products.forEach(product => { %>
-                                <% product.items.forEach(item => { %>
-                                  <tr style="<%= item.display ? '' : 'opacity: 0.5;' %>">
-                                    <td>
-                                      <img src="/<%= item.image %>" alt="<%= item.title %>" class="variant-image" style="width: 150px; margin: auto;">
-                                    </td>
-                                    <td><%= item.title %></td>
-                                    <td><%= item.quantity %></td>
-                                    <td>₹ <%= item.price %></td>
-                                    <td>₹ <%= (item.quantity * item.price) %></td>
-                                  </tr>
+                            <% if (order.products && order.products.length > 0) { %>
+                                <% order.products.forEach(product => { %>
+                                    <% if (product.items && product.items.length > 0) { %>
+                                        <% product.items.forEach(item => { %>
+                                            <tr style="<%= item.display ? '' : 'opacity: 0.5;' %>">
+                                                <td>
+                                                    <img src="/<%= item.image %>" alt="<%= item.title %>" class="variant-image" style="width: 150px; margin: auto;">
+                                                </td>
+                                                <td><%= item.title %></td>
+                                                <td><%= item.quantity %></td>
+                                                <td>₹ <%= item.price %></td>
+                                                <td>₹ <%= (item.quantity * item.price) %></td>
+                                            </tr>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <tr><td colspan="5">No items found for this product.</td></tr>
+                                    <% } %>
                                 <% }); %>
-                              <% }); %>
-                              
+                            <% } else { %>
+                                <tr><td colspan="5">No products found in this order.</td></tr>
+                            <% } %>
                         </tbody>
                     </table>
             
@@ -98,11 +123,127 @@
                         <div class="text-center mt-4">
                             <button id="downloadInvoice" class="btn btn-success btn-lg">Download Invoice</button>
                         </div>
-                        
                     </div>
                 </div>
             </div>
             
+            <!-- Include the Razorpay script -->
+            <!-- Include the Razorpay script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+    // Function to initiate payment
+    document.getElementById('payNow').onclick = async function (e) {
+        e.preventDefault();
+
+
+        // Extract data from the form
+        const totalAmount = document.querySelector("input[name='totalAmount']").value;
+        const products = document.querySelector("input[name='products']").value;
+        const selectedAddressId = document.querySelector("input[name='selectedAddressId']").value;
+        const paymentMethod = document.querySelector("input[name='paymentMethod']").value;
+      
+        try {
+            const response = await fetch("/razorpaycontroller", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    totalAmount,
+                    products,
+                    selectedAddressId,
+                    paymentMethod,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                const options = {
+                    key: "rzp_test_eEMIhlHUZ45CcM", // Replace with your Razorpay key ID
+                    amount: data.amount * 100,
+                    currency: "INR",
+                    name: "Fashion Zone",
+                    description: "Test Transaction",
+                    image: "https://yourlogo.url", // Optional: Add your logo URL
+                    order_id: data.orderId,
+                    handler: function (response) {
+                        fetch("/verifypayment", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                orderId: data.orderId,
+                                paymentId: response.razorpay_payment_id,
+                                signature: response.razorpay_signature,
+                            }),
+                        })
+                            .then((verifyResponse) => verifyResponse.json())
+                            .then((verifyData) => {
+                                if (verifyData.success) {
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: "Payment Successful",
+                                        text: "Your payment has been verified.",
+                                        confirmButtonText: "Okay",
+                                    }).then(() => {
+                                        window.location.href = `/ordersummery/${data.order}`;
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: "error",
+                                        title: "Payment Verification Failed",
+                                        text: "Please try again or contact support.",
+                                        confirmButtonText: "Okay",
+                                    });
+                                }
+                            });
+                    },
+                    prefill: {
+                        name: "Customer Name", // Pre-fill customer details
+                        email: "customer@example.com",
+                        contact: "1234567890",
+                    },
+                    theme: {
+                        color: "#3399cc",
+                    },
+                };
+
+                const razorpay = new Razorpay(options);
+                razorpay.open();
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Order Creation Failed",
+                    text: data.error || "Unable to create order. Please try again.",
+                    confirmButtonText: "Okay",
+                });
+            }
+        } catch (error) {
+            console.error("Error initiating Razorpay payment:", error);
+            Swal.fire({
+                icon: "error",
+                title: "Payment Initialization Failed",
+                text: "An error occurred while starting the payment process. Please try again.",
+                confirmButtonText: "Okay",
+            });
+        }
+    };
+</script>
+ 
+
+
+
+
+              
+
+
+
+
+
+
+
+
+
+
             
             </div>
         </main>

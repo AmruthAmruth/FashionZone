@@ -94,12 +94,13 @@ export const createRazorpayOrder = async (req, res) => {
         console.log("Create razorpay order will work",req.body);
         
         const { totalAmount, products, paymentMethod, selectedAddressId } = req.body;
-        const parsedProducts = JSON.parse(products);
+
+        const parsedProducts = typeof products === "string" ? JSON.parse(products) : products;
        
         if (!totalAmount || !products || !paymentMethod || !selectedAddressId) {
             return res.status(400).json({ error: "Missing required fields." });
         }
-
+ 
         if (totalAmount <= 0) {
             return res.status(400).json({ error: "Invalid total amount." });
         }
@@ -172,12 +173,15 @@ export const createRazorpayOrder = async (req, res) => {
     }
 };
 
+
+
+
 export const verifyRazorpayPayment = async (req, res) => {
     try {
         console.log("Verify razorpay order is workign now");
         
         const { orderId, paymentId, signature } = req.body;
-
+     
         if (!orderId || !paymentId || !signature) {
             return res.status(400).json({ error: "Missing payment verification details." });
         }
@@ -187,9 +191,15 @@ export const verifyRazorpayPayment = async (req, res) => {
             .update(orderId + "|" + paymentId)
             .digest("hex");
 
+            const order= await Order.findOne({orderId})
+
         if (expectedSignature === signature) {
+            order.paymentStatus="Paid"
+          await order.save()
             res.status(200).json({ success: true, message: "Payment verified successfully" });
         } else {
+            order.paymentStatus="Failed"
+           await order.save()
             res.status(400).json({ success: false, message: "Payment verification failed" });
         }
     } catch (err) {
@@ -197,7 +207,6 @@ export const verifyRazorpayPayment = async (req, res) => {
         res.status(500).json({ error: "Error verifying payment. Please try again." });
     }
 };
-
 
 
 

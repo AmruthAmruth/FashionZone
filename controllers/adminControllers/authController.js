@@ -121,11 +121,12 @@ export const AdminLogout=async(req,res)=>{
 
 export const AdminDashboard = async (req, res) => {
   const salseChart = req.salesChart;  
-  console.log(salseChart);  
-  
+  const categoriesDetails= req.categoriesDetails
+ 
+ const mostSoldDetails=req.mostSoldDetails
   if (!salseChart) {
     return res.status(500).send("Sales chart data is missing.");
   }
   
-  res.render('admin/dashboard', { salseChart });
+  res.render('admin/dashboard', { salseChart ,mostSoldDetails,categoriesDetails});
 };

@@ -143,3 +143,81 @@ export const getSalesChartReport = async (req, res, next) => {
     res.status(500).send("Error generating sales chart report");
   }
 };
+
+
+export const mostSoldProductsCatagorysAndBrands = async (req, res, next) => {
+  try {
+    const products = await Order.aggregate([
+      // Unwind the products array
+      { $unwind: "$products" },
+      { $unwind: "$products.items" },
+
+      // Group by productId and calculate total quantity sold
+      {
+        $group: {
+          _id: "$products.items.productId", // Group by productId
+          totalQuantity: { $sum: "$products.items.quantity" }, // Sum the quantity for each productId
+          productDetails: { $first: "$products.items" }, // Get product details
+        },
+      },
+
+      // Cast productId to ObjectId for matching with Product collection
+      {
+        $addFields: {
+          productObjectId: {
+            $toObjectId: "$_id", // Convert productId to ObjectId
+          },
+        },
+      },
+
+      // Join with Product collection to fetch brand and other product details
+      {
+        $lookup: {
+          from: "products", // Collection name for Product
+          localField: "productObjectId", // Field in this collection (converted productId)
+          foreignField: "_id", // Field in Product collection
+          as: "productInfo", // Output array field
+        },
+      },
+
+      // Unwind productInfo to merge the details
+      { $unwind: "$productInfo" },
+
+      // Sort by totalQuantity in descending order
+      { $sort: { totalQuantity: -1 } },
+
+      // Project required fields
+      {
+        $project: {
+          _id: 1,
+          totalQuantity: 1,
+          productDetails: 1,
+          brand: "$productInfo.brand", // Include the brand name
+          category: "$productInfo.category", // Include the category
+          title: "$productInfo.title", // Include the product title
+          price: "$productInfo.price", // Include the price
+        },
+      },
+    ]);
+
+    const categoriesDetails = products.reduce((acc, item) => {
+      const { category, totalQuantity } = item;
+      acc[category] = (acc[category] || 0) + totalQuantity;
+      return acc;
+    }, {});
+    
+    req.categoriesDetails=categoriesDetails
+
+     req.mostSoldDetails=products
+    
+
+    next();
+  } catch (err) {
+    console.error("Error while getting the most sold products", err);
+    res.status(500).json({
+      success: false,
+      message: "Error while retrieving products",
+      error: err.message,
+    });
+  }
+};

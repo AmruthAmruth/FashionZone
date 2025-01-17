@@ -112,7 +112,7 @@
 
 <div class="row mt-4">
   <!-- Top 10 Products Card -->
-  <!-- <div class="col-md-6 col-12">
+  <div class="col-md-6 col-12">
     <div class="card" style="height: 400px;">
       <div class="card-header">
         <h5 class="card-title mb-0">Top 10 Products</h5>
@@ -128,65 +128,22 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>Product A</td>
-                <td>150</td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>Product B</td>
-                <td>120</td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td>Product C</td>
-                <td>100</td>
-              </tr>
-              <tr>
-                <td>4</td>
-                <td>Product D</td>
-                <td>90</td>
-              </tr>
-              <tr>
-                <td>5</td>
-                <td>Product E</td>
-                <td>80</td>
-              </tr>
-              <tr>
-                <td>6</td>
-                <td>Product F</td>
-                <td>70</td>
-              </tr>
-              <tr>
-                <td>7</td>
-                <td>Product G</td>
-                <td>60</td>
-              </tr>
-              <tr>
-                <td>8</td>
-                <td>Product H</td>
-                <td>50</td>
-              </tr>
-              <tr>
-                <td>9</td>
-                <td>Product I</td>
-                <td>40</td>
-              </tr>
-              <tr>
-                <td>10</td>
-                <td>Product J</td>
-                <td>30</td>
-              </tr>
+              <% mostSoldDetails.forEach((product, index) => { %>
+                <tr>
+                  <td><%= index + 1 %></td>
+                  <td><%= product.title %></td>
+                  <td><%= product.totalQuantity %></td>
+                </tr>
+              <% }) %>
             </tbody>
           </table>
         </div>
       </div>
     </div>
-  </div> -->
+  </div>
 
   <!-- Top 10 Categories Card -->
-  <!-- <div class="col-md-6 col-12">
+  <div class="col-md-6 col-12">
     <div class="card" style="height: 400px;">
       <div class="card-header">
         <h5 class="card-title mb-0">Top 10 Categories</h5>
@@ -202,62 +159,20 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>Category A</td>
-                <td>300</td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>Category B</td>
-                <td>250</td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td>Category C</td>
-                <td>220</td>
-              </tr>
-              <tr>
-                <td>4</td>
-                <td>Category D</td>
-                <td>200</td>
-              </tr>
-              <tr>
-                <td>5</td>
-                <td>Category E</td>
-                <td>180</td>
-              </tr>
-              <tr>
-                <td>6</td>
-                <td>Category F</td>
-                <td>160</td>
-              </tr>
-              <tr>
-                <td>7</td>
-                <td>Category G</td>
-                <td>140</td>
-              </tr>
-              <tr>
-                <td>8</td>
-                <td>Category H</td>
-                <td>120</td>
-              </tr>
-              <tr>
-                <td>9</td>
-                <td>Category I</td>
-                <td>100</td>
-              </tr>
-              <tr>
-                <td>10</td>
-                <td>Category J</td>
-                <td>90</td>
-              </tr>
+              <% let counter = 1; %> <!-- Initialize a counter for numbering -->
+              <% for (const [category, quantity] of Object.entries(categoriesDetails)) { %>
+                <tr>
+                  <td><%= counter++ %></td> <!-- Increment and display the counter -->
+                  <td><%= category %></td>
+                  <td><%= quantity %></td>
+                </tr>
+              <% } %>
             </tbody>
           </table>
         </div>
       </div>
     </div>
-  </div> -->
+  </div>
 </div>
 
 
