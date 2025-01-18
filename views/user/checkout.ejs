@@ -62,35 +62,43 @@
                                                     <i class="icon-long-arrow-right"></i>
                                                 </button>
                                             </div>
-                                        
+
                                             <% if (Array.isArray(userAddress)) { %>
                                                 <% userAddress.forEach((address, index)=> { %>
-                                                    <div class="card card-dashboard mb-2 address-card" data-address-id="<%= address._id %>">
-                                                        <div class="card-body d-flex justify-content-between align-items-center p-0 m-1">
+                                                    <div class="card card-dashboard mb-2 address-card"
+                                                        data-address-id="<%= address._id %>">
+                                                        <div
+                                                            class="card-body d-flex justify-content-between align-items-center p-0 m-1">
                                                             <div>
                                                                 <!-- Ensure radio button value is set to address._id -->
-                                                                <input type="radio" class="pl-4 ml-3 mr-1" name="addressRadioButton" 
-                                                                    id="addressRadio<%= index %>" value="<%= address._id %>"
-                                                                    <%= index === 0 ? 'checked' : '' %> 
-                                                                    >
+                                                                <input type="radio" class="pl-4 ml-3 mr-1"
+                                                                    name="addressRadioButton"
+                                                                    id="addressRadio<%= index %>"
+                                                                    value="<%= address._id %>" <%=index===0 ? 'checked'
+                                                                    : '' %>
+                                                                >
                                                                 <p class="pl-5">
-                                                                    <strong><%= address.name %></strong><br>
+                                                                    <strong>
+                                                                        <%= address.name %>
+                                                                    </strong><br>
                                                                     <%= address.type %> <br>
-                                                                    <%= address.phone %><br>
-                                                                    <%= address.city %>, <%= address.district %>, <%= address.state %>, <%= address.country %> <br>
-                                                                    <%= address.house %>, <%= address.pincode %>
+                                                                        <%= address.phone %><br>
+                                                                            <%= address.city %>, <%= address.district %>
+                                                                                    , <%= address.state %>, <%=
+                                                                                            address.country %> <br>
+                                                                                            <%= address.house %>, <%=
+                                                                                                    address.pincode %>
                                                                 </p>
                                                             </div>
-                                                            <a href="#" class="edit-address text-right mr-3" 
-                                                                data-toggle="modal" 
-                                                                data-target="#editAddressModal"
-                                                                data-name="<%= address.name %>" 
+                                                            <a href="#" class="edit-address text-right mr-3"
+                                                                data-toggle="modal" data-target="#editAddressModal"
+                                                                data-name="<%= address.name %>"
                                                                 data-phone="<%= address.phone %>"
                                                                 data-address="<%= address.house %>"
                                                                 data-street="<%= address.city %>"
                                                                 data-postal-code="<%= address.pincode %>"
                                                                 data-state="<%= address.state %>"
-                                                                data-country="<%= address.country %>" 
+                                                                data-country="<%= address.country %>"
                                                                 data-district="<%= address.district %>"
                                                                 data-address-type="<%= address.type %>"
                                                                 data-address-id="<%= address._id %>">
@@ -98,29 +106,37 @@
                                                             </a>
                                                         </div>
                                                     </div>
-                                                <% }); %>
-                                            <% } else { %>
-                                                <p>No addresses found.</p>
-                                            <% } %>
+                                                    <% }); %>
+                                                        <% } else { %>
+                                                            <p>No addresses found.</p>
+                                                            <% } %>
 
 
-                                            
-                                            <div class="cart-discount">
-                                                <form id="couponForm" action="/applycouponcode" method="post">
-                                                    <div class="input-group">
-                                                        <input type="text" class="form-control" name="couponcode" id="couponcode" required placeholder="Enter coupon code">
-                                                        <input type="hidden" name="totalAmount" value="<%= cartPrice.total %>">
-                                                        <div class="input-group-append">
-                                                            <button class="btn btn-outline-primary-2 p-3" id="couponButton" type="submit" data-applied="false">
-                                                                Apply
-                                                            </button>
-                                                        </div><!-- .End .input-group-append -->
-                                                    </div><!-- End .input-group -->
-                                                </form>
-                                            </div>
-                                            
+
+                                                                <div class="cart-discount">
+                                                                    <form id="couponForm" action="/applycouponcode"
+                                                                        method="post">
+                                                                        <div class="input-group">
+                                                                            <input type="text" class="form-control"
+                                                                                name="couponcode" id="couponcode"
+                                                                                required
+                                                                                placeholder="Enter coupon code">
+                                                                            <input type="hidden" name="totalAmount"
+                                                                                value="<%= cartPrice.total %>">
+                                                                            <div class="input-group-append">
+                                                                                <button
+                                                                                    class="btn btn-outline-primary-2 p-3"
+                                                                                    id="couponButton" type="submit"
+                                                                                    data-applied="false">
+                                                                                    Apply
+                                                                                </button>
+                                                                            </div><!-- .End .input-group-append -->
+                                                                        </div><!-- End .input-group -->
+                                                                    </form>
+                                                                </div>
+
                                         </div>
-                                        
+
 
 
 
@@ -130,8 +146,9 @@
                                             <div class="summary">
                                                 <h3 class="summary-title">Your Order</h3>
                                                 <form method="POST" action="/createorder" id="orderForm">
-                                                    <input type="hidden" id="selectedAddressId" name="selectedAddressId">
-                                                
+                                                    <input type="hidden" id="selectedAddressId"
+                                                        name="selectedAddressId">
+
                                                     <table class="table table-summary">
                                                         <thead>
                                                             <tr>
@@ -140,275 +157,357 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <% let subtotal = 0; %>
-                                                            <% userProducts.forEach(product => { %>
-                                                                <% product.items.forEach(item => { %>
-                                                                    <tr>
-                                                                        <td><a href="#"><%= item.title %></a></td>
-                                                                        <td>₹<%= item.price * item.quantity %></td>
-                                                                    </tr>
-                                                                    <% subtotal += item.price * item.quantity; %>
-                                                                <% }); %>
-                                                            <% }); %>
-                                                        
-                                                            <tr class="summary-subtotal">
-                                                                <td>Subtotal:</td>
-                                                                <td id="amount">₹<%= subtotal %></td>
-                                                            </tr>
-                                                        
-                                                            <tr>
-                                                                <td>Shipping:</td>
-                                                                <td>Free shipping</td>
-                                                            </tr>
-                                                        
-                                                            <tr class="summary-total">
-                                                                <td>Final Price After Discounts:</td>
-                                                                <td>₹<span id="total-price"><%= cartPrice.total %></span></td>
-                                                                <input type="hidden" name="totalPrice" value="<%= cartPrice.total %>">
-                                                            </tr>
+                                                            <% let subtotal=0; %>
+                                                                <% userProducts.forEach(product=> { %>
+                                                                    <% product.items.forEach(item=> { %>
+                                                                        <tr>
+                                                                            <td><a href="#">
+                                                                                    <%= item.title %>
+                                                                                </a></td>
+                                                                            <td>₹<%= item.price * item.quantity %>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <% subtotal +=item.price * item.quantity; %>
+                                                                            <% }); %>
+                                                                                <% }); %>
+
+                                                                                    <tr class="summary-subtotal">
+                                                                                        <td>Subtotal:</td>
+                                                                                        <td id="amount">₹<%= subtotal %>
+                                                                                        </td>
+                                                                                    </tr>
+
+                                                                                    <tr>
+                                                                                        <td>Shipping:</td>
+                                                                                        <td>Free shipping</td>
+                                                                                    </tr>
+
+                                                                                    <tr class="summary-total">
+                                                                                        <td>Final Price After Discounts:
+                                                                                        </td>
+                                                                                        <td>₹<span id="total-price">
+                                                                                                <%= cartPrice.total %>
+                                                                                            </span></td>
+                                                                                        <input type="hidden"
+                                                                                            name="totalPrice"
+                                                                                            value="<%= cartPrice.total %>">
+                                                                                    </tr>
                                                         </tbody>
-                                                        
-                                                       
+
+
                                                     </table>
-                                                
-                                                    <input type="hidden" name="totalPrice" value="<%= cartPrice.total %>">
-                                                    <input type="hidden" name="products" value="<%= JSON.stringify(userProducts) %>">
-                                                
+
+                                                    <input type="hidden" name="totalPrice"
+                                                        value="<%= cartPrice.total %>">
+                                                    <input type="hidden" name="products"
+                                                        value="<%= JSON.stringify(userProducts) %>">
+
                                                     <div class="accordion-summary" id="accordion-payment">
                                                         <div class="card mb-2">
                                                             <div class="card-header" id="heading-1">
-                                                                <h2 class="card-title" id="paymentLabel">Payment Methods</h2>
+                                                                <h2 class="card-title" id="paymentLabel">Payment Methods
+                                                                </h2>
                                                             </div>
                                                         </div>
-                                                
+
                                                         <div class="card mb-1">
                                                             <div class="card-header" id="heading-2">
                                                                 <h2 class="card-title">
-                                                                    <input type="radio" name="paymentMethod" id="payment-method-2" value="Razor pay" >
-                                                                    <label for="payment-method-2" role="button" data-toggle="collapse" href="#collapse-2" aria-expanded="false" aria-controls="collapse-2">Debit Card/Credit Card/UPI</label>
+                                                                    <input type="radio" name="paymentMethod"
+                                                                        id="payment-method-2" value="Razor pay">
+                                                                    <label for="payment-method-2" role="button"
+                                                                        data-toggle="collapse" href="#collapse-2"
+                                                                        aria-expanded="false"
+                                                                        aria-controls="collapse-2">Debit Card/Credit
+                                                                        Card/UPI</label>
                                                                 </h2>
                                                             </div>
-                                                            <div id="collapse-2" class="collapse" aria-labelledby="heading-2" data-parent="#accordion-payment">
+                                                            <div id="collapse-2" class="collapse"
+                                                                aria-labelledby="heading-2"
+                                                                data-parent="#accordion-payment">
                                                                 <div class="card-body">
                                                                     Online Payment
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                
+
                                                         <div class="card mb-1">
                                                             <div class="card-header" id="heading-3">
                                                                 <h2 class="card-title">
-                                                                    <input type="radio" name="paymentMethod" id="payment-method-3" value="Cash on Delivery" >
-                                                                    <label for="payment-method-3" role="button" data-toggle="collapse" href="#collapse-3" aria-expanded="false" aria-controls="collapse-3">Cash on Delivery</label>
+                                                                    <input type="radio" name="paymentMethod"
+                                                                        id="payment-method-3" value="Cash on Delivery">
+                                                                    <label for="payment-method-3" role="button"
+                                                                        data-toggle="collapse" href="#collapse-3"
+                                                                        aria-expanded="false"
+                                                                        aria-controls="collapse-3">Cash on
+                                                                        Delivery</label>
                                                                 </h2>
                                                             </div>
-                                                            <div id="collapse-3" class="collapse" aria-labelledby="heading-3" data-parent="#accordion-payment">
+                                                            <div id="collapse-3" class="collapse"
+                                                                aria-labelledby="heading-3"
+                                                                data-parent="#accordion-payment">
                                                                 <div class="card-body">
-                                                                    A method of collecting payment that requires customers to pay for goods at the time of delivery.
+                                                                    A method of collecting payment that requires
+                                                                    customers to pay for goods at the time of delivery.
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                
+
                                                         <div class="card">
                                                             <div class="card-header" id="heading-wallet">
                                                                 <h2 class="card-title">
-                                                                    <input type="radio" name="paymentMethod" id="payment-method-wallet" value="Wallet" >
-                                                                    <label for="payment-method-wallet" role="button" data-toggle="collapse" href="#collapse-wallet" aria-expanded="false" aria-controls="collapse-wallet">Wallet</label>
+                                                                    <input type="radio" name="paymentMethod"
+                                                                        id="payment-method-wallet" value="Wallet">
+                                                                    <label for="payment-method-wallet" role="button"
+                                                                        data-toggle="collapse" href="#collapse-wallet"
+                                                                        aria-expanded="false"
+                                                                        aria-controls="collapse-wallet">Wallet</label>
                                                                 </h2>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                
-                                                    <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block" id="placeOrderButton">
+
+                                                    <button type="submit"
+                                                        class="btn btn-outline-primary-2 btn-order btn-block"
+                                                        id="placeOrderButton">
                                                         <span class="btn-text">Place Order</span>
                                                         <span class="btn-hover-text">Place Order</span>
                                                     </button>
                                                 </form>
                                             </div>
                                         </aside>
-                                        
-
-                                    
-
-
-                                     
-<!-- Modal for Editing Address -->
-<div class="modal fade" id="editAddressModal" tabindex="-1" role="dialog" aria-labelledby="editAddressModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title text-center w-100" id="editAddressModalLabel">Edit Address</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body p-5">
-              
-              
-                <form id="editAddressForm" action="/checkouteditaddress" method="POST">
-                    <!-- Hidden input field for Address ID -->
-                    <input type="hidden" id="editAddressId" name="addressId">
-                
-                    <!-- Full Name -->
-                    <div class="form-group">
-                        <label for="editName">Full Name</label>
-                        <input type="text" class="form-control" id="editName" name="name" required>
-                    </div>
-                
-                    <!-- Phone Number -->
-                    <div class="form-group">
-                        <label for="editPhone">Phone Number</label>
-                        <input type="text" class="form-control" id="editPhone" name="phone" required>
-                    </div>
-                
-                    <!-- Address -->
-                    <div class="form-group">
-                        <label for="editAddress">Address</label>
-                        <input type="text" class="form-control" id="editAddress" name="house" required>
-                    </div>
-                
-                    <!-- Street -->
-                    <div class="form-group">
-                        <label for="editStreet">Street</label>
-                        <input type="text" class="form-control" id="editStreet" name="street" required>
-                    </div>
-                
-                    <!-- Postal Code -->
-                    <div class="form-group">
-                        <label for="editPostalCode">Postal Code</label>
-                        <input type="text" class="form-control" id="editPostalCode" name="postalCode" required>
-                    </div>
-                
-                    <!-- State -->
-                    <div class="form-group">
-                        <label for="editState">State</label>
-                        <input type="text" class="form-control" id="editState" name="state" required>
-                    </div>
-                
-                    <!-- Country -->
-                    <div class="form-group">
-                        <label for="editCountry">Country</label>
-                        <input type="text" class="form-control" id="editCountry" name="country" required>
-                    </div>
-                
-                    <!-- District -->
-                    <div class="form-group">
-                        <label for="editDistrict">District</label>
-                        <input type="text" class="form-control" id="editDistrict" name="district" required>
-                    </div>
-                
-                    <!-- Address Type -->
-                    <div class="form-group">
-                        <label for="editAddressType">Address Type</label>
-                        <input type="text" class="form-control" id="editAddressType" name="addressType" required>
-                    </div>
-                
-                    <div class="text-center mt-4">
-                        <button type="submit" class="btn btn-outline-primary w-100">Save Address</button>
-                    </div>
-                </form>
-                
 
 
 
-                
-            </div>
-        </div>
-    </div>
-</div>
 
 
 
-                                        
+                                        <!-- Modal for Editing Address -->
+                                        <div class="modal fade" id="editAddressModal" tabindex="-1" role="dialog"
+                                            aria-labelledby="editAddressModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-primary text-white">
+                                                        <h5 class="modal-title text-center w-100"
+                                                            id="editAddressModalLabel">Edit Address</h5>
+                                                        <button type="button" class="close text-white"
+                                                            data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body p-5">
+
+
+                                                        <form id="editAddressForm" action="/checkouteditaddress"
+                                                            method="POST">
+                                                            <!-- Hidden input field for Address ID -->
+                                                            <input type="hidden" id="editAddressId" name="addressId">
+
+                                                            <!-- Full Name -->
+                                                            <div class="form-group">
+                                                                <label for="editName">Full Name</label>
+                                                                <input type="text" class="form-control" id="editName"
+                                                                    name="name" required>
+                                                            </div>
+
+                                                            <!-- Phone Number -->
+                                                            <div class="form-group">
+                                                                <label for="editPhone">Phone Number</label>
+                                                                <input type="text" class="form-control" id="editPhone"
+                                                                    name="phone" required>
+                                                            </div>
+
+                                                            <!-- Address -->
+                                                            <div class="form-group">
+                                                                <label for="editAddress">Address</label>
+                                                                <input type="text" class="form-control" id="editAddress"
+                                                                    name="house" required>
+                                                            </div>
+
+                                                            <!-- Street -->
+                                                            <div class="form-group">
+                                                                <label for="editStreet">Street</label>
+                                                                <input type="text" class="form-control" id="editStreet"
+                                                                    name="street" required>
+                                                            </div>
+
+                                                            <!-- Postal Code -->
+                                                            <div class="form-group">
+                                                                <label for="editPostalCode">Postal Code</label>
+                                                                <input type="text" class="form-control"
+                                                                    id="editPostalCode" name="postalCode" required>
+                                                            </div>
+
+                                                            <!-- State -->
+                                                            <div class="form-group">
+                                                                <label for="editState">State</label>
+                                                                <input type="text" class="form-control" id="editState"
+                                                                    name="state" required>
+                                                            </div>
+
+                                                            <!-- Country -->
+                                                            <div class="form-group">
+                                                                <label for="editCountry">Country</label>
+                                                                <input type="text" class="form-control" id="editCountry"
+                                                                    name="country" required>
+                                                            </div>
+
+                                                            <!-- District -->
+                                                            <div class="form-group">
+                                                                <label for="editDistrict">District</label>
+                                                                <input type="text" class="form-control"
+                                                                    id="editDistrict" name="district" required>
+                                                            </div>
+
+                                                            <!-- Address Type -->
+                                                            <div class="form-group">
+                                                                <label for="editAddressType">Address Type</label>
+                                                                <input type="text" class="form-control"
+                                                                    id="editAddressType" name="addressType" required>
+                                                            </div>
+
+                                                            <div class="text-center mt-4">
+                                                                <button type="submit"
+                                                                    class="btn btn-outline-primary w-100">Save
+                                                                    Address</button>
+                                                            </div>
+                                                        </form>
+
+
+
+
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+
 
 
 
 
 
                                         <!-- Add Address Modal -->
-                                        <div class="modal fade" id="addAddressModal" tabindex="-1" role="dialog" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+                                        <div class="modal fade" id="addAddressModal" tabindex="-1" role="dialog"
+                                            aria-labelledby="addAddressModalLabel" aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header bg-primary text-white">
-                                                        <h5 class="modal-title text-center w-100" id="addAddressModalLabel">Add Address</h5>
-                                                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                                        <h5 class="modal-title text-center w-100"
+                                                            id="addAddressModalLabel">Add Address</h5>
+                                                        <button type="button" class="close text-white"
+                                                            data-dismiss="modal" aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
                                                     <div class="modal-body p-5">
-                                                        <form action="/checkoutaddaddress" method="post" id="addressForm" novalidate>
+                                                        <form action="/checkoutaddaddress" method="post"
+                                                            id="addressForm" novalidate>
                                                             <div class="row">
                                                                 <div class="col-sm-6 mb-3">
                                                                     <label for="name">Full Name</label>
-                                                                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter your full name" required>
-                                                                    <div class="invalid-feedback">Full Name is required.</div>
+                                                                    <input type="text" class="form-control" id="name"
+                                                                        name="name" placeholder="Enter your full name"
+                                                                        required>
+                                                                    <div class="invalid-feedback">Full Name is required.
+                                                                    </div>
                                                                 </div>
                                                                 <div class="col-sm-6 mb-3">
                                                                     <label for="phone">Phone Number</label>
-                                                                    <input type="number" class="form-control" id="phone" name="phone" placeholder="Enter your phone number" required>
-                                                                    <div class="invalid-feedback">Phone Number is required.</div>
+                                                                    <input type="number" class="form-control" id="phone"
+                                                                        name="phone"
+                                                                        placeholder="Enter your phone number" required>
+                                                                    <div class="invalid-feedback">Phone Number is
+                                                                        required.</div>
                                                                 </div>
                                                             </div>
-                                        
+
                                                             <div class="row">
                                                                 <div class="col-sm-6 mb-3">
                                                                     <label for="country">Country</label>
-                                                                    <input type="text" class="form-control" id="country" name="country" placeholder="Enter your country" required>
-                                                                    <div class="invalid-feedback">Country is required.</div>
+                                                                    <input type="text" class="form-control" id="country"
+                                                                        name="country" placeholder="Enter your country"
+                                                                        required>
+                                                                    <div class="invalid-feedback">Country is required.
+                                                                    </div>
                                                                 </div>
                                                                 <div class="col-sm-6 mb-3">
                                                                     <label for="state">State</label>
-                                                                    <input type="text" class="form-control" id="state" name="state" placeholder="Enter your state" required>
-                                                                    <div class="invalid-feedback">State is required.</div>
+                                                                    <input type="text" class="form-control" id="state"
+                                                                        name="state" placeholder="Enter your state"
+                                                                        required>
+                                                                    <div class="invalid-feedback">State is required.
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                        
+
                                                             <div class="row">
                                                                 <div class="col-sm-6 mb-3">
                                                                     <label for="district">District</label>
-                                                                    <input type="text" class="form-control" id="district" name="district" placeholder="Enter your district" required>
-                                                                    <div class="invalid-feedback">District is required.</div>
+                                                                    <input type="text" class="form-control"
+                                                                        id="district" name="district"
+                                                                        placeholder="Enter your district" required>
+                                                                    <div class="invalid-feedback">District is required.
+                                                                    </div>
                                                                 </div>
                                                                 <div class="col-sm-6 mb-3">
                                                                     <label for="city">City</label>
-                                                                    <input type="text" class="form-control" id="city" name="city" placeholder="Enter your city" required>
-                                                                    <div class="invalid-feedback">City is required.</div>
+                                                                    <input type="text" class="form-control" id="city"
+                                                                        name="city" placeholder="Enter your city"
+                                                                        required>
+                                                                    <div class="invalid-feedback">City is required.
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                        
+
                                                             <div class="row">
                                                                 <div class="col-sm-6 mb-3">
                                                                     <label for="landmark">Landmark</label>
-                                                                    <input type="text" class="form-control" id="landmark" name="landmark" placeholder="Enter a landmark" required>
-                                                                    <div class="invalid-feedback">Landmark is required.</div>
+                                                                    <input type="text" class="form-control"
+                                                                        id="landmark" name="landmark"
+                                                                        placeholder="Enter a landmark" required>
+                                                                    <div class="invalid-feedback">Landmark is required.
+                                                                    </div>
                                                                 </div>
                                                                 <div class="col-sm-6 mb-3">
                                                                     <label for="house">House/Building</label>
-                                                                    <input type="text" class="form-control" id="house" name="house" placeholder="Enter house/building" required>
-                                                                    <div class="invalid-feedback">House/Building is required.</div>
+                                                                    <input type="text" class="form-control" id="house"
+                                                                        name="house" placeholder="Enter house/building"
+                                                                        required>
+                                                                    <div class="invalid-feedback">House/Building is
+                                                                        required.</div>
                                                                 </div>
                                                             </div>
-                                        
+
                                                             <div class="row">
                                                                 <div class="col-sm-6 mb-3">
                                                                     <label for="pincode">Postal Code</label>
-                                                                    <input type="number" class="form-control" id="pincode" name="pincode" placeholder="Enter postal code" required>
-                                                                    <div class="invalid-feedback">Postal Code is required.</div>
+                                                                    <input type="number" class="form-control"
+                                                                        id="pincode" name="pincode"
+                                                                        placeholder="Enter postal code" required>
+                                                                    <div class="invalid-feedback">Postal Code is
+                                                                        required.</div>
                                                                 </div>
                                                                 <div class="col-sm-6 mb-3">
                                                                     <label for="address-type">Address Type</label>
-                                                                    <select id="address-type" class="form-control" name="type" required>
+                                                                    <select id="address-type" class="form-control"
+                                                                        name="type" required>
                                                                         <option value="">Select Address Type</option>
                                                                         <option value="HOME">Home</option>
                                                                         <option value="WORK">Work</option>
                                                                         <option value="Other">Other</option>
                                                                     </select>
-                                                                    <div class="invalid-feedback">Address Type is required.</div>
+                                                                    <div class="invalid-feedback">Address Type is
+                                                                        required.</div>
                                                                 </div>
                                                             </div>
-                                        
+
                                                             <div class="text-center mt-4">
-                                                                <button type="submit" class="btn btn-outline-primary w-100">
+                                                                <button type="submit"
+                                                                    class="btn btn-outline-primary w-100">
                                                                     <span>SAVE ADDRESS</span>
                                                                     <i class="icon-long-arrow-right"></i>
                                                                 </button>
@@ -418,7 +517,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
 
                                         <!-----Add Address modal End------>
 
@@ -450,439 +549,439 @@
 
 
 
-                
-<!-- ------------coupeon section script -->
 
-<!-- Include SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                    <!-- ------------coupeon section script -->
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const couponForm = document.getElementById('couponForm');
-        const couponButton = document.getElementById('couponButton');
-        const couponInput = document.getElementById('couponcode');
-        const totalPriceSpan = document.getElementById('total-price');
-        const totalPriceInput = document.querySelector('input[name="totalPrice"]');
-     
-        couponForm.addEventListener('submit', async function (event) {
-            event.preventDefault(); // Prevent the form from submitting the default way
+                    <!-- Include SweetAlert2 -->
+                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-            const couponcode = couponInput.value.trim();
-            const totalAmount = document.querySelector('input[name="totalAmount"]').value;
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const couponForm = document.getElementById('couponForm');
+                            const couponButton = document.getElementById('couponButton');
+                            const couponInput = document.getElementById('couponcode');
+                            const totalPriceSpan = document.getElementById('total-price');
+                            const totalPriceInput = document.querySelector('input[name="totalPrice"]');
 
-            if (!couponcode) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Please enter a coupon code.',
-                    confirmButtonText: 'Close',
-                });
-                return;
-            }
+                            couponForm.addEventListener('submit', async function (event) {
+                                event.preventDefault(); // Prevent the form from submitting the default way
 
-            try {
-                let response, data;
+                                const couponcode = couponInput.value.trim();
+                                const totalAmount = document.querySelector('input[name="totalAmount"]').value;
 
-                if (couponButton.dataset.applied === 'true') {
-                    // Remove coupon
-                    response = await fetch('/removecoupon', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ couponcode, totalAmount }),
-                    });
-                } else {
-                    // Apply coupon
-                    response = await fetch('/applycouoponcode', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ couponcode, totalAmount }),
-                    });
-                }
+                                if (!couponcode) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: 'Please enter a coupon code.',
+                                        confirmButtonText: 'Close',
+                                    });
+                                    return;
+                                }
 
-                data = await response.json();
+                                try {
+                                    let response, data;
 
-                if (response.ok) {
-                    if (couponButton.dataset.applied === 'true') {
-                        // Coupon removed successfully
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Coupon Removed!',
-                            text: `Coupon has been removed. Your total is ₹${data.totalAmount}`,
-                            confirmButtonText: 'Okay',
+                                    if (couponButton.dataset.applied === 'true') {
+                                        // Remove coupon
+                                        response = await fetch('/removecoupon', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                            },
+                                            body: JSON.stringify({ couponcode, totalAmount }),
+                                        });
+                                    } else {
+                                        // Apply coupon
+                                        response = await fetch('/applycouoponcode', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                            },
+                                            body: JSON.stringify({ couponcode, totalAmount }),
+                                        });
+                                    }
+
+                                    data = await response.json();
+
+                                    if (response.ok) {
+                                        if (couponButton.dataset.applied === 'true') {
+                                            // Coupon removed successfully
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Coupon Removed!',
+                                                text: `Coupon has been removed. Your total is ₹${data.totalAmount}`,
+                                                confirmButtonText: 'Okay',
+                                            });
+
+                                            // Update total price
+                                            totalPriceSpan.textContent = `${data.totalAmount}`;
+                                            totalPriceInput.value = data.totalAmount;
+
+                                            // Reset the form for applying a new coupon
+                                            couponInput.disabled = false;
+                                            couponButton.textContent = 'Apply';
+                                            couponButton.dataset.applied = 'false';
+                                        } else {
+                                            // Coupon applied successfully
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Coupon Applied!',
+                                                text: `You saved ₹${data.discountAmount}! Your total is ₹${data.finalAmount}`,
+                                                confirmButtonText: 'Cool',
+                                            });
+
+                                            // Update total price
+                                            const displayedAmount = data.finalAmount || totalAmount;
+                                            totalPriceSpan.textContent = `${displayedAmount}`;
+                                            totalPriceInput.value = displayedAmount;
+
+                                            // Disable the input to prevent changes and switch button to "Remove"
+                                            couponInput.disabled = true;
+                                            couponButton.textContent = 'Remove';
+                                            couponButton.dataset.applied = 'true';
+                                        }
+                                    } else {
+                                        // Show error popup
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Oops...',
+                                            text: data.message,
+                                            confirmButtonText: 'Try Again',
+                                        });
+                                    }
+                                } catch (error) {
+                                    console.log("Error while processing coupon", error);
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Oops...',
+                                        text: 'There was an error processing your request. Please try again later.',
+                                        confirmButtonText: 'Close',
+                                    });
+                                }
+                            });
+                        });
+                    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            const form = document.getElementById("orderForm");
+                            const paymentMethods = document.getElementsByName("paymentMethod");
+
+                            form.addEventListener("submit", async function (e) {
+                                e.preventDefault(); // Prevent default form submission
+
+                                let selectedPaymentMethod = null;
+                                for (let i = 0; i < paymentMethods.length; i++) {
+                                    if (paymentMethods[i].checked) {
+                                        selectedPaymentMethod = paymentMethods[i].value;
+                                        break;
+                                    }
+                                }
+
+                                if (!selectedPaymentMethod) {
+                                    Swal.fire({
+                                        icon: "warning",
+                                        title: "No Payment Method Selected",
+                                        text: "Please select a payment method before placing your order.",
+                                        confirmButtonText: "Okay",
+                                    });
+                                    return;
+                                }
+
+                                // Get total amount
+                                const totalAmount = document.querySelector('input[name="totalPrice"]').value;
+                                console.log("This is the total Amount", totalAmount);
+
+
+                                // Restrict COD if total amount > 1000
+                                if (selectedPaymentMethod === "Cash on Delivery" && totalAmount > 1000) {
+                                    Swal.fire({
+                                        icon: "error",
+                                        title: "Cash on Delivery Not Allowed",
+                                        text: "Cash on Delivery is not available for orders above ₹1000. Please select a different payment method.",
+                                        confirmButtonText: "Okay",
+                                    });
+                                    return;
+                                }
+
+                                // Handle Razorpay Payment
+                                if (selectedPaymentMethod === "Razor pay") {
+                                    try {
+                                        const response = await fetch("/razorpaycontroller", {
+                                            method: "POST",
+                                            headers: { "Content-Type": "application/json" },
+                                            body: JSON.stringify({
+                                                totalAmount,
+                                                products: document.querySelector("input[name='products']").value,
+                                                selectedAddressId: document.getElementById("selectedAddressId").value,
+                                                paymentMethod: selectedPaymentMethod,
+                                            }),
+                                        });
+
+                                        const data = await response.json();
+
+                                        if (data.success) {
+                                            const options = {
+                                                key: "rzp_test_eEMIhlHUZ45CcM", // Replace with your Razorpay key ID
+                                                amount: data.amount * 100,
+                                                currency: "INR",
+                                                name: "Fashion Zone",
+                                                description: "Test Transaction",
+                                                image: "https://yourlogo.url", // Optional: Add your logo URL
+                                                order_id: data.orderId,
+                                                handler: function (response) {
+                                                    fetch("/verifypayment", {
+                                                        method: "POST",
+                                                        headers: { "Content-Type": "application/json" },
+                                                        body: JSON.stringify({
+                                                            orderId: data.orderId,
+                                                            paymentId: response.razorpay_payment_id,
+                                                            signature: response.razorpay_signature,
+                                                        }),
+                                                    })
+                                                        .then((verifyResponse) => verifyResponse.json())
+                                                        .then((verifyData) => {
+                                                            if (verifyData.success) {
+                                                                Swal.fire({
+                                                                    icon: "success",
+                                                                    title: "Payment Successful",
+                                                                    text: "Your payment has been verified.",
+                                                                    confirmButtonText: "Okay",
+                                                                }).then(() => {
+                                                                    window.location.href = `/ordersummery/${data.order}`;
+                                                                });
+                                                            } else {
+                                                                Swal.fire({
+                                                                    icon: "error",
+                                                                    title: "Payment Verification Failed",
+                                                                    text: "Please try again or contact support.",
+                                                                    confirmButtonText: "Okay",
+                                                                });
+                                                            }
+                                                        });
+                                                },
+                                                prefill: {
+                                                    name: "Customer Name", // Pre-fill customer details
+                                                    email: "customer@example.com",
+                                                    contact: "1234567890",
+                                                },
+                                                theme: {
+                                                    color: "#3399cc",
+                                                },
+                                            };
+
+                                            const razorpay = new Razorpay(options);
+                                            razorpay.open();
+                                        } else {
+                                            Swal.fire({
+                                                icon: "error",
+                                                title: "Order Creation Failed",
+                                                text: data.error || "Unable to create order. Please try again.",
+                                                confirmButtonText: "Okay",
+                                            });
+                                        }
+                                    } catch (error) {
+                                        console.error("Error initiating Razorpay payment:", error);
+                                        Swal.fire({
+                                            icon: "error",
+                                            title: "Payment Initialization Failed",
+                                            text: "An error occurred while starting the payment process. Please try again.",
+                                            confirmButtonText: "Okay",
+                                        });
+                                    }
+                                }
+                                // Handle COD and Wallet
+                                else {
+                                    Swal.fire({
+                                        icon: "info",
+                                        title: "Confirm Order",
+                                        text: `You selected "${selectedPaymentMethod}". Do you want to proceed?`,
+                                        showCancelButton: true,
+                                        confirmButtonText: "Yes, Place Order",
+                                        cancelButtonText: "No, Go Back",
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            switch (selectedPaymentMethod) {
+                                                case "Cash on Delivery":
+                                                    const totalAmountInput = document.createElement("input");
+                                                    totalAmountInput.type = "hidden";
+                                                    totalAmountInput.name = "totalAmount";
+                                                    totalAmountInput.value = totalAmount;
+
+                                                    form.appendChild(totalAmountInput);
+                                                    form.action = "/codcontroller";
+                                                    break;
+                                                case "Wallet":
+                                                    const walletInput = document.createElement("input");
+                                                    walletInput.type = "hidden";
+                                                    walletInput.name = "totalAmount";
+                                                    walletInput.value = totalAmount;
+                                                    form.appendChild(walletInput);
+                                                    form.action = "/walletcontroller";
+                                                    break;
+                                                default:
+                                                    Swal.fire({
+                                                        icon: "error",
+                                                        title: "Invalid Payment Method",
+                                                        text: "An unknown error occurred. Please try again.",
+                                                        confirmButtonText: "Okay",
+                                                    });
+                                                    return;
+                                            }
+                                            form.method = "POST";
+                                            form.submit();
+                                        }
+                                    });
+                                }
+                            });
                         });
 
-                        // Update total price
-                        totalPriceSpan.textContent = `${data.totalAmount}`;
-                        totalPriceInput.value = data.totalAmount;
-                    
-                        // Reset the form for applying a new coupon
-                        couponInput.disabled = false;
-                        couponButton.textContent = 'Apply';
-                        couponButton.dataset.applied = 'false';
-                    } else {
-                        // Coupon applied successfully
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Coupon Applied!',
-                            text: `You saved ₹${data.discountAmount}! Your total is ₹${data.finalAmount}`,
-                            confirmButtonText: 'Cool',
+                    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <!-- SweetAlert2 CDN -->
+                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                    <script>
+                        // Set the hidden fields dynamically before form submission
+                        document.getElementById('orderForm').addEventListener('submit', function (e) {
+                            // Get the selected address
+                            var selectedAddressRadio = document.querySelector('input[name="addressRadioButton"]:checked');
+                            if (selectedAddressRadio) {
+                                var selectedAddressId = selectedAddressRadio.closest('.address-card').getAttribute('data-address-id');
+                                document.getElementById('selectedAddressId').value = selectedAddressId;
+                            }
+
+                            // Set the payment method dynamically
+                            var selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+                            if (selectedPaymentMethod) {
+                                document.getElementById('paymentMethod').value = selectedPaymentMethod.value;
+                            }
+
+                            // Set the other values
+                            document.getElementById('totalAmount').value = "<%= subtotal %>";
+                            document.getElementById('products').value = "<%= JSON.stringify(userProducts) %>";
+                        });
+                    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <script>
+                        $('#editAddressModal').on('show.bs.modal', function (e) {
+                            var button = $(e.relatedTarget); // Button that triggered the modal
+                            var addressId = button.data('address-id'); // Get the addressId from data-* attribute
+                            var name = button.data('name');
+                            var phone = button.data('phone');
+                            var address = button.data('address');
+                            var street = button.data('street');
+                            var postalCode = button.data('postal-code');
+                            var state = button.data('state');
+                            var country = button.data('country');
+                            var district = button.data('district');
+                            var addressType = button.data('address-type');
+
+                            // Populate the modal with the address data
+                            $('#editAddressId').val(addressId); // Set the addressId in a hidden field
+                            $('#editName').val(name);
+                            $('#editPhone').val(phone);
+                            $('#editAddress').val(address);
+                            $('#editStreet').val(street);
+                            $('#editPostalCode').val(postalCode);
+                            $('#editState').val(state);
+                            $('#editCountry').val(country);
+                            $('#editDistrict').val(district);
+                            $('#editAddressType').val(addressType);
                         });
 
-                        // Update total price
-                        const displayedAmount = data.finalAmount || totalAmount;
-                        totalPriceSpan.textContent = `${displayedAmount}`;
-                        totalPriceInput.value = displayedAmount;
 
-                        // Disable the input to prevent changes and switch button to "Remove"
-                        couponInput.disabled = true;
-                        couponButton.textContent = 'Remove';
-                        couponButton.dataset.applied = 'true';
-                    }
-                } else {
-                    // Show error popup
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: data.message,
-                        confirmButtonText: 'Try Again',
-                    });
-                }
-            } catch (error) {
-                console.log("Error while processing coupon", error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'There was an error processing your request. Please try again later.',
-                    confirmButtonText: 'Close',
-                });
-            }
-        });
-    });
-</script>
+                    </script>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-                
-
-
-
-
-
-
-
-
-
-
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-const form = document.getElementById("orderForm");
-const paymentMethods = document.getElementsByName("paymentMethod");
-
-form.addEventListener("submit", async function (e) {
-e.preventDefault(); // Prevent default form submission
-
-let selectedPaymentMethod = null;
-for (let i = 0; i < paymentMethods.length; i++) {
-if (paymentMethods[i].checked) {
-selectedPaymentMethod = paymentMethods[i].value;
-break;
-}
-}
-
-if (!selectedPaymentMethod) {
-Swal.fire({
-icon: "warning",
-title: "No Payment Method Selected",
-text: "Please select a payment method before placing your order.",
-confirmButtonText: "Okay",
-});
-return;
-}
-
-// Get total amount
-const totalAmount = document.querySelector('input[name="totalPrice"]').value;
-console.log("This is the total Amount",totalAmount);
-
-
-// Restrict COD if total amount > 1000
-if (selectedPaymentMethod === "Cash on Delivery" && totalAmount > 1000) {
-Swal.fire({
-icon: "error",
-title: "Cash on Delivery Not Allowed",
-text: "Cash on Delivery is not available for orders above ₹1000. Please select a different payment method.",
-confirmButtonText: "Okay",
-});
-return;
-}
-
-// Handle Razorpay Payment
-if (selectedPaymentMethod === "Razor pay") {
-try {
-const response = await fetch("/razorpaycontroller", {
-   method: "POST",
-   headers: { "Content-Type": "application/json" },
-   body: JSON.stringify({
-       totalAmount,
-       products: document.querySelector("input[name='products']").value,
-       selectedAddressId: document.getElementById("selectedAddressId").value,
-       paymentMethod: selectedPaymentMethod,
-   }),
-});
-
-const data = await response.json();
-
-if (data.success) {
-   const options = {
-       key: "rzp_test_eEMIhlHUZ45CcM", // Replace with your Razorpay key ID
-       amount: data.amount * 100,
-       currency: "INR",
-       name: "Fashion Zone",
-       description: "Test Transaction",
-       image: "https://yourlogo.url", // Optional: Add your logo URL
-       order_id: data.orderId,
-       handler: function (response) {
-           fetch("/verifypayment", {
-               method: "POST",
-               headers: { "Content-Type": "application/json" },
-               body: JSON.stringify({
-                   orderId: data.orderId,
-                   paymentId: response.razorpay_payment_id,
-                   signature: response.razorpay_signature,
-               }),
-           })
-               .then((verifyResponse) => verifyResponse.json())
-               .then((verifyData) => {
-                   if (verifyData.success) {
-                       Swal.fire({
-                           icon: "success",
-                           title: "Payment Successful",
-                           text: "Your payment has been verified.",
-                           confirmButtonText: "Okay",
-                       }).then(() => {
-                           window.location.href = `/ordersummery/${data.order}`;
-                       });
-                   } else {
-                       Swal.fire({
-                           icon: "error",
-                           title: "Payment Verification Failed",
-                           text: "Please try again or contact support.",
-                           confirmButtonText: "Okay",
-                       });
-                   }
-               });
-       },
-       prefill: {
-           name: "Customer Name", // Pre-fill customer details
-           email: "customer@example.com",
-           contact: "1234567890",
-       },
-       theme: {
-           color: "#3399cc",
-       },
-   };
-
-   const razorpay = new Razorpay(options);
-   razorpay.open();
-} else {
-   Swal.fire({
-       icon: "error",
-       title: "Order Creation Failed",
-       text: data.error || "Unable to create order. Please try again.",
-       confirmButtonText: "Okay",
-   });
-}
-} catch (error) {
-console.error("Error initiating Razorpay payment:", error);
-Swal.fire({
-   icon: "error",
-   title: "Payment Initialization Failed",
-   text: "An error occurred while starting the payment process. Please try again.",
-   confirmButtonText: "Okay",
-});
-}
-}
-// Handle COD and Wallet
-else {
-Swal.fire({
-icon: "info",
-title: "Confirm Order",
-text: `You selected "${selectedPaymentMethod}". Do you want to proceed?`,
-showCancelButton: true,
-confirmButtonText: "Yes, Place Order",
-cancelButtonText: "No, Go Back",
-}).then((result) => {
-if (result.isConfirmed) {
-   switch (selectedPaymentMethod) {
-       case "Cash on Delivery":
-       const totalAmountInput = document.createElement("input");
-    totalAmountInput.type = "hidden";
-    totalAmountInput.name = "totalAmount";
-    totalAmountInput.value = totalAmount;
-
-    form.appendChild(totalAmountInput);
-           form.action = "/codcontroller";
-           break;
-       case "Wallet":
-       const walletInput = document.createElement("input");
-   walletInput.type = "hidden";
-   walletInput.name = "totalAmount";
-   walletInput.value = totalAmount;
-   form.appendChild(walletInput);
-           form.action = "/walletcontroller";
-           break;
-       default:
-           Swal.fire({
-               icon: "error",
-               title: "Invalid Payment Method",
-               text: "An unknown error occurred. Please try again.",
-               confirmButtonText: "Okay",
-           });
-           return;
-   }
-   form.method = "POST";
-   form.submit();
-}
-});
-}
-});
-});
-
-</script>
-
-                 
-
-
-
-
-
-
-
-
-              
-                
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- SweetAlert2 CDN -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    // Set the hidden fields dynamically before form submission
-    document.getElementById('orderForm').addEventListener('submit', function (e) {
-        // Get the selected address
-        var selectedAddressRadio = document.querySelector('input[name="addressRadioButton"]:checked');
-        if (selectedAddressRadio) {
-            var selectedAddressId = selectedAddressRadio.closest('.address-card').getAttribute('data-address-id');
-            document.getElementById('selectedAddressId').value = selectedAddressId;
-        }
-
-        // Set the payment method dynamically
-        var selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
-        if (selectedPaymentMethod) {
-            document.getElementById('paymentMethod').value = selectedPaymentMethod.value;
-        }
-
-        // Set the other values
-        document.getElementById('totalAmount').value = "<%= subtotal %>";
-        document.getElementById('products').value = "<%= JSON.stringify(userProducts) %>";
-    });
-</script>
-
-                
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                <script>
-                    $('#editAddressModal').on('show.bs.modal', function (e) {
-    var button = $(e.relatedTarget); // Button that triggered the modal
-    var addressId = button.data('address-id'); // Get the addressId from data-* attribute
-    var name = button.data('name');
-    var phone = button.data('phone');
-    var address = button.data('address');
-    var street = button.data('street');
-    var postalCode = button.data('postal-code');
-    var state = button.data('state');
-    var country = button.data('country');
-    var district = button.data('district');
-    var addressType = button.data('address-type');
-
-    // Populate the modal with the address data
-    $('#editAddressId').val(addressId); // Set the addressId in a hidden field
-    $('#editName').val(name);
-    $('#editPhone').val(phone);
-    $('#editAddress').val(address);
-    $('#editStreet').val(street);
-    $('#editPostalCode').val(postalCode);
-    $('#editState').val(state);
-    $('#editCountry').val(country);
-    $('#editDistrict').val(district);
-    $('#editAddressType').val(addressType);
-});
-
-
-                </script>
-                
 
 
 
@@ -891,7 +990,7 @@ if (result.isConfirmed) {
 
 
 
-<!-- JS validation for edit address -->
+            <!-- JS validation for edit address -->
 
 
 
@@ -901,7 +1000,7 @@ if (result.isConfirmed) {
 
 
 
-<!-- JS validation for add address -->
+            <!-- JS validation for add address -->
             <script>
                 const form = document.getElementById('addressForm');
 

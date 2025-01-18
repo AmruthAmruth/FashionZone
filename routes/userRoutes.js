@@ -6,7 +6,7 @@ import { isUserAuthenticated } from '../middileware/auth.js'
 import { createAddress, deleteAddress, editAddress, getAddress, getProfilePage, updateName } from '../controllers/userControllers/profileControllers.js'
 import mongoose from 'mongoose'
 import { checkoutAddAddress, checkoutEditAddress, checkoutPage, proceedToChekout } from '../controllers/userControllers/chekoutControllers.js'
-import { applyCoupon, cancelOrder, cancelProductInOrder, createOrder, createRazorpayOrder, createWalletcheckout, getOrders, orderSummery, removeCoupon, returnProduct, returnProductInOrder, verifyRazorpayPayment } from '../controllers/userControllers/orderControllers.js'
+import { applyCoupon, cancelOrder, cancelProductInOrder, contineOrderPayment, createOrder, createRazorpayOrder, createWalletcheckout, getOrders, orderSummery, removeCoupon, returnProduct, returnProductInOrder, verifyPayment, verifyRazorpayPayment } from '../controllers/userControllers/orderControllers.js'
 import { addToWishlist, getWishList, removeProductFromWishlist } from '../controllers/userControllers/wishlistControllers.js'
 import multer from 'multer'
 const userRouter=express.Router()
@@ -111,6 +111,8 @@ userRouter.post('/razorpaycontroller', createRazorpayOrder)
 userRouter.post('/verifypayment', verifyRazorpayPayment)
 userRouter.post('/ordersummery/cancelproduct', upload.none(),cancelProductInOrder)
 userRouter.post('/ordersummany/returnproduct',upload.none(),returnProductInOrder)
+userRouter.post('/ordersummany/continerazorpaypayment',contineOrderPayment)
+userRouter.post('/verifyorderpayment',verifyPayment)
 
 // ----------------------Wish list -----------------------------------------------------
 

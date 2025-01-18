@@ -45,14 +45,148 @@
                             <p><strong>Order Status:</strong> <%= order.status %></p>
                          
                             <div class="text-center mt-4">
-                              
-                                <form>
+                               
+                                <form id="payment-form">
                                     <input type="hidden" name="totalAmount" value="<%= order.totalAmount %>">
-                                    <input type="hidden" name="paymentMethod" value="<%= order.paymentMethod %>">
-                                    <input type="hidden" name="selectedAddressId" value="<%= shippedAddress._id %>">
-                                    <input type="hidden" name="products" value="<%= order.products %>">
-                                    <button type="submit" id="payNow">Pay Now</button>
+                                    <input type="hidden" name="orderId" value="<%= order.orderId %>">
+                                    <button type="button" id="payNow">Pay Now</button>
                                 </form>
+
+
+
+
+                                <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.12/dist/sweetalert2.min.css" rel="stylesheet">
+
+                                <!-- SweetAlert2 JS -->
+                                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.12/dist/sweetalert2.min.js"></script>
+                                
+                                <!-- Razorpay Checkout Script -->
+                                <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+
+
+
+
+                               
+<script>
+    document.getElementById("payNow").addEventListener("click", function() {
+        const totalAmount = document.querySelector('input[name="totalAmount"]').value;
+        const orderId = document.querySelector('input[name="orderId"]').value;
+
+        // Show SweetAlert confirmation
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to make a payment!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Pay Now!',
+            cancelButtonText: 'No, Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Create the Razorpay order on the server
+                fetch('/ordersummany/continerazorpaypayment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        totalAmount: totalAmount,
+                        orderId: orderId,
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Initialize Razorpay Payment
+                        var options = {
+                            key: "rzp_test_eEMIhlHUZ45CcM",  // Your Razorpay key
+                            amount: data.amount,  // Amount in paise
+                            currency: data.currency,
+                            name: "FashionZone",
+                            description: "Payment for Order",
+                            image: "https://example.com/logo.png",  // Your company logo
+                            order_id: data.orderId,  // Order ID received from your backend
+                            handler: function(response) {
+                                // Handle the Razorpay payment response
+                                const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = response;
+
+                                // Send payment details to the backend for verification
+                                fetch('/verifyorderpayment', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                        razorpay_order_id: razorpay_order_id,
+                                        razorpay_payment_id: razorpay_payment_id,
+                                        razorpay_signature: razorpay_signature
+                                    }),
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        Swal.fire({
+                                            title: 'Success!',
+                                            text: 'Your payment was successful!',
+                                            icon: 'success',
+                                            confirmButtonText: 'OK'
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            title: 'Error!',
+                                            text: 'Payment verification failed. Please try again.',
+                                            icon: 'error',
+                                            confirmButtonText: 'OK'
+                                        });
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: 'An error occurred while verifying the payment.',
+                                        icon: 'error',
+                                        confirmButtonText: 'OK'
+                                    });
+                                });
+                            },
+                            prefill: {
+                                name: "Customer Name",
+                                email: "customer@example.com",
+                                contact: "1234567890"
+                            },
+                            notes: {
+                                address: "Customer address"
+                            },
+                            theme: {
+                                color: "#F37254"
+                            }
+                        };
+
+                        var rzp1 = new Razorpay(options);
+                        rzp1.open();  // Open Razorpay checkout
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Failed to create Razorpay order. Please try again.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'An error occurred while creating the payment order.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                });
+            }
+        });
+    });
+</script>
 
 
 
@@ -129,105 +263,8 @@
             
             <!-- Include the Razorpay script -->
             <!-- Include the Razorpay script -->
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
-<script>
-    // Function to initiate payment
-    document.getElementById('payNow').onclick = async function (e) {
-        e.preventDefault();
 
 
-        // Extract data from the form
-        const totalAmount = document.querySelector("input[name='totalAmount']").value;
-        const products = document.querySelector("input[name='products']").value;
-        const selectedAddressId = document.querySelector("input[name='selectedAddressId']").value;
-        const paymentMethod = document.querySelector("input[name='paymentMethod']").value;
-      
-        try {
-            const response = await fetch("/razorpaycontroller", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    totalAmount,
-                    products,
-                    selectedAddressId,
-                    paymentMethod,
-                }),
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                const options = {
-                    key: "rzp_test_eEMIhlHUZ45CcM", // Replace with your Razorpay key ID
-                    amount: data.amount * 100,
-                    currency: "INR",
-                    name: "Fashion Zone",
-                    description: "Test Transaction",
-                    image: "https://yourlogo.url", // Optional: Add your logo URL
-                    order_id: data.orderId,
-                    handler: function (response) {
-                        fetch("/verifypayment", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                orderId: data.orderId,
-                                paymentId: response.razorpay_payment_id,
-                                signature: response.razorpay_signature,
-                            }),
-                        })
-                            .then((verifyResponse) => verifyResponse.json())
-                            .then((verifyData) => {
-                                if (verifyData.success) {
-                                    Swal.fire({
-                                        icon: "success",
-                                        title: "Payment Successful",
-                                        text: "Your payment has been verified.",
-                                        confirmButtonText: "Okay",
-                                    }).then(() => {
-                                        window.location.href = `/ordersummery/${data.order}`;
-                                    });
-                                } else {
-                                    Swal.fire({
-                                        icon: "error",
-                                        title: "Payment Verification Failed",
-                                        text: "Please try again or contact support.",
-                                        confirmButtonText: "Okay",
-                                    });
-                                }
-                            });
-                    },
-                    prefill: {
-                        name: "Customer Name", // Pre-fill customer details
-                        email: "customer@example.com",
-                        contact: "1234567890",
-                    },
-                    theme: {
-                        color: "#3399cc",
-                    },
-                };
-
-                const razorpay = new Razorpay(options);
-                razorpay.open();
-            } else {
-                Swal.fire({
-                    icon: "error",
-                    title: "Order Creation Failed",
-                    text: data.error || "Unable to create order. Please try again.",
-                    confirmButtonText: "Okay",
-                });
-            }
-        } catch (error) {
-            console.error("Error initiating Razorpay payment:", error);
-            Swal.fire({
-                icon: "error",
-                title: "Payment Initialization Failed",
-                text: "An error occurred while starting the payment process. Please try again.",
-                confirmButtonText: "Okay",
-            });
-        }
-    };
-</script>
  
 
 
