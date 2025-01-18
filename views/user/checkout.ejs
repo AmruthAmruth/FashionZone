@@ -743,9 +743,20 @@ cancelButtonText: "No, Go Back",
 if (result.isConfirmed) {
    switch (selectedPaymentMethod) {
        case "Cash on Delivery":
+       const totalAmountInput = document.createElement("input");
+    totalAmountInput.type = "hidden";
+    totalAmountInput.name = "totalAmount";
+    totalAmountInput.value = totalAmount;
+
+    form.appendChild(totalAmountInput);
            form.action = "/codcontroller";
            break;
        case "Wallet":
+       const walletInput = document.createElement("input");
+   walletInput.type = "hidden";
+   walletInput.name = "totalAmount";
+   walletInput.value = totalAmount;
+   form.appendChild(walletInput);
            form.action = "/walletcontroller";
            break;
        default:

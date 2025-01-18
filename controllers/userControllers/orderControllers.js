@@ -393,9 +393,12 @@ export const returnProduct=async(req,res)=>{
 
 
 //-----------------------Product wise cancelation and return ------------------------------------------------------------
+
 export const updateOrderAndProduct = async (orderId, productId, action, userId) => {
     try {
         const order = await Order.findById(orderId);
+       
+        
         if (!order) {
             return { success: false, message: "Order not found." };
         }
@@ -412,7 +415,7 @@ export const updateOrderAndProduct = async (orderId, productId, action, userId) 
             if (action === 'return') {
                 product.stock += orderProduct.quantity;
             } else if (action === 'cancel') {
-                product.stock += orderProduct.quantity; // Update stock logic if different for cancel
+                product.stock += orderProduct.quantity; 
             }
             await product.save();
         }
@@ -433,7 +436,7 @@ export const updateOrderAndProduct = async (orderId, productId, action, userId) 
         });
         await userWallet.save();
 
-        // Update the order
+
         const updatedOrder = await Order.findByIdAndUpdate(
             orderId,
             { $set: { "products.$[].items.$[item].display": false } },
@@ -484,6 +487,8 @@ export const cancelProductInOrder = async (req, res) => {
 };
 
 export const returnProductInOrder = async (req, res) => {
+  console.log("Return pordut in order working",req.body);
+  
     try {
         const { productId, orderId } = req.body;
 
@@ -496,7 +501,7 @@ export const returnProductInOrder = async (req, res) => {
         if (!result.success) {
             return res.status(400).json({ success: false, message: result.message });
         }
-
+        
         return res.status(200).json({ success: true, message: result.message, order: result.order });
 
     } catch (err) {
@@ -504,6 +509,7 @@ export const returnProductInOrder = async (req, res) => {
         return res.status(500).json({ success: false, message: "An error occurred while returning the product." });
     }
 };
+
 
 // ---------------------------------------------------------------------------------------------------
 
@@ -593,13 +599,24 @@ export const removeCoupon = async (req, res) => {
 
 
 
-export const createWalletcheckout=async(req,res)=>{
-    try{
-     const {selectedAddressId,totalAmount,products,paymentMethod}=req.body
-    
-     const walletData = await Wallet.findOne({ user: req.session.userId });
-    
 
+export const createWalletcheckout = async (req, res) => {
+    try {
+        const { selectedAddressId, totalAmount, products, paymentMethod } = req.body;
+console.log("Total amount",totalAmount);
+console.log(req.body);
+
+
+        if (!req.session.userId || !req.session.user) {
+            return res.status(400).json({
+                status: "error",
+                title: "Session Error",
+                text: "Session has expired or is invalid.",
+            });
+        }
+
+        const walletData = await Wallet.findOne({ user: req.session.userId });
+        console.log(walletData.balance);
 
         if (!walletData) {
             return res.status(400).json({
@@ -609,104 +626,75 @@ export const createWalletcheckout=async(req,res)=>{
             });
         }
 
-
-
         if (totalAmount <= walletData.balance) {
             const orderId = uuidv4();
             const parsedProducts = JSON.parse(products);
-                
 
-                const productTitles = parsedProducts.flatMap(product =>
-                    product.items.map(item => item.title)
-                  );
-                  
-                  
-  
-             const newOrder = new Order({
-            selectedAddressId,
-            totalAmount,
-            products: parsedProducts,
-            paymentMethod,
-            orderId,
-            user:req.session.user
-        });
+            const productTitles = parsedProducts.flatMap(product =>
+                product.items.map(item => item.title)
+            );
 
-       
-        await newOrder.save();
-        console.log("Successfully created an order", newOrder);
+            const newOrder = new Order({
+                selectedAddressId,
+                totalAmount,
+                products: parsedProducts,
+                paymentMethod,
+                orderId,
+                user: req.session.user
+            });
 
+            await newOrder.save();
+            console.log("Successfully created an order", newOrder);
 
+            walletData.balance -= totalAmount;
+            walletData.transaction.push({
+                amount: totalAmount,
+                transactionId: `TXN${Date.now()}`,
+                productName: productTitles,
+                type: 'debit',
+            });
+            await walletData.save();
 
-        walletData.balance -= totalAmount;
-        walletData.transaction.push({
-            amount: totalAmount,
-            transactionId: `TXN${Date.now()}`, 
-            productName: productTitles,
-            type: 'debit',
-        });
-        await walletData.save();
+            // Update product stock
+            for (let product of parsedProducts) {
+                for (let item of product.items) {
+                    const { productId, quantity } = item;
+                    const productInStock = await Product.findById(productId);
 
-
-
-
-
-
-
-
-        for (let product of parsedProducts) {
-            for (let item of product.items) {
-                const { productId, quantity } = item;
-
-                const productInStock = await Product.findById(productId);
-
-                if (productInStock) {
-                    productInStock.stock -= quantity;
-                    if (productInStock.stock < 0) {
-                        productInStock.stock = 0;
+                    if (productInStock) {
+                        productInStock.stock -= quantity;
+                        if (productInStock.stock < 0) {
+                            productInStock.stock = 0;
+                        }
+                        await productInStock.save();
+                        console.log(`Updated product stock for ${productInStock.title}, new stock: ${productInStock.stock}`);
                     }
-                    await productInStock.save();
-                    console.log(`Updated product stock for ${productInStock.title}, new stock: ${productInStock.stock}`);
                 }
             }
-        }
 
+            // Remove ordered items from the cart
+            const userId = req.session.userId;
+            const cart = await Cart.findOne({ userId });
 
+            if (cart && Array.isArray(cart.items)) {
+                const orderedProductIds = parsedProducts.flatMap(product =>
+                    product.items.map(item => item.productId.toString())
+                );
 
+                cart.items = cart.items.filter(cartItem =>
+                    !orderedProductIds.includes(cartItem.productId.toString())
+                );
 
-        const userId = req.session.userId;
-        const cart = await Cart.findOne({ userId });
+                await cart.save();
+                console.log("Products removed from the cart");
+            } else {
+                console.log("Cart is either undefined or does not contain items");
+            }
 
-        if (cart && Array.isArray(cart.items)) {
-           
-            const orderedProductIds = parsedProducts.flatMap(product =>
-                product.items.map(item => item.productId.toString())
-            );
+            console.log("Order created successfully.");
+            res.redirect(`/ordersummery/${newOrder._id}`);
 
-         
-            cart.items = cart.items.filter(cartItem =>
-                !orderedProductIds.includes(cartItem.productId.toString())
-            );
-
-         
-            await cart.save();
-            console.log("Products removed from the cart");
         } else {
-            console.log("Cart is either undefined or does not contain items");
-        }
-
-
-        console.log("Order created successfully.");
-
-
-        res.redirect(`/ordersummery/${newOrder._id}`);
-
-
-
-
-
-
-
-        }else {
             console.log("Insufficient wallet balance.");
             return res.status(400).json({
                 status: "error",
@@ -714,16 +702,13 @@ export const createWalletcheckout=async(req,res)=>{
                 text: "You don't have enough balance in your wallet to complete this transaction.",
             });
         }
-        
 
-
-
-
-        
-       
-
-    }catch(err){
-        console.log("Error while trying to wallet payment",err);
-        
+    } catch (err) {
+        console.log("Error while trying to wallet payment", err);
+        return res.status(500).json({
+            status: "error",
+            title: "Server Error",
+            text: "An unexpected error occurred. Please try again later.",
+        });
     }
-}
+};

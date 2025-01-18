@@ -99,39 +99,45 @@ export const getSalesChartReport = async (req, res, next) => {
     const weeklyPending = getOrdersCountByStatus(allOrders, 'Pending', weeklyRange.start, weeklyRange.end);
     const weeklyDelivered = getOrdersCountByStatus(allOrders, 'Delivered', weeklyRange.start, weeklyRange.end);
     const weeklyCancelled = getOrdersCountByStatus(allOrders, 'Cancelled', weeklyRange.start, weeklyRange.end);
+    const weeklyReturned = getOrdersCountByStatus(allOrders, 'Returned', weeklyRange.start, weeklyRange.end);
 
     // Monthly sales report
     const monthlyRange = getDateRange('month');
     const monthlyPending = getOrdersCountByStatus(allOrders, 'Pending', monthlyRange.start, monthlyRange.end);
     const monthlyDelivered = getOrdersCountByStatus(allOrders, 'Delivered', monthlyRange.start, monthlyRange.end);
     const monthlyCancelled = getOrdersCountByStatus(allOrders, 'Cancelled', monthlyRange.start, monthlyRange.end);
-
+    const monthlyReturned = getOrdersCountByStatus(allOrders, 'Returned', monthlyRange.start, monthlyRange.end);
     // Yearly sales report
     const yearlyRange = getDateRange('year');
     const yearlyPending = getOrdersCountByStatus(allOrders, 'Pending', yearlyRange.start, yearlyRange.end);
     const yearlyDelivered = getOrdersCountByStatus(allOrders, 'Delivered', yearlyRange.start, yearlyRange.end);
     const yearlyCancelled = getOrdersCountByStatus(allOrders, 'Cancelled', yearlyRange.start, yearlyRange.end);
+    const yearlyReturned = getOrdersCountByStatus(allOrders, 'Returned', monthlyRange.start, monthlyRange.end);
 
     const salesChartData = {
       total: {
         pendingProducts: await Order.find({ status: "Pending" }).countDocuments(),
         deliveredProducts: await Order.find({ status: "Delivered" }).countDocuments(),
         cancelledProducts: await Order.find({ status: "Cancelled" }).countDocuments(),
+        returnedProducts: await Order.find({status:"Returned"}).countDocuments()
       },
       weekly: {
         pendingProducts: weeklyPending,
         deliveredProducts: weeklyDelivered,
         cancelledProducts: weeklyCancelled,
+        returnedProducts:weeklyReturned
       },
       monthly: {
         pendingProducts: monthlyPending,
         deliveredProducts: monthlyDelivered,
         cancelledProducts: monthlyCancelled,
+        returnedProducts:monthlyReturned
       },
       yearly: {
         pendingProducts: yearlyPending,
         deliveredProducts: yearlyDelivered,
         cancelledProducts: yearlyCancelled,
+        returnedProducts:monthlyReturned
       },
     };
 
@@ -148,54 +154,53 @@ export const getSalesChartReport = async (req, res, next) => {
 export const mostSoldProductsCatagorysAndBrands = async (req, res, next) => {
   try {
     const products = await Order.aggregate([
-      // Unwind the products array
       { $unwind: "$products" },
       { $unwind: "$products.items" },
 
-      // Group by productId and calculate total quantity sold
+     
       {
         $group: {
-          _id: "$products.items.productId", // Group by productId
-          totalQuantity: { $sum: "$products.items.quantity" }, // Sum the quantity for each productId
-          productDetails: { $first: "$products.items" }, // Get product details
+          _id: "$products.items.productId", 
+          totalQuantity: { $sum: "$products.items.quantity" }, 
+          productDetails: { $first: "$products.items" },
         },
       },
 
-      // Cast productId to ObjectId for matching with Product collection
+     
       {
         $addFields: {
           productObjectId: {
-            $toObjectId: "$_id", // Convert productId to ObjectId
+            $toObjectId: "$_id", 
           },
         },
       },
 
-      // Join with Product collection to fetch brand and other product details
+      
       {
         $lookup: {
-          from: "products", // Collection name for Product
-          localField: "productObjectId", // Field in this collection (converted productId)
-          foreignField: "_id", // Field in Product collection
-          as: "productInfo", // Output array field
+          from: "products", 
+          localField: "productObjectId", 
+          foreignField: "_id", 
+          as: "productInfo", 
         },
       },
 
-      // Unwind productInfo to merge the details
+      
       { $unwind: "$productInfo" },
 
-      // Sort by totalQuantity in descending order
+      
       { $sort: { totalQuantity: -1 } },
 
-      // Project required fields
+      
       {
         $project: {
           _id: 1,
           totalQuantity: 1,
           productDetails: 1,
-          brand: "$productInfo.brand", // Include the brand name
-          category: "$productInfo.category", // Include the category
-          title: "$productInfo.title", // Include the product title
-          price: "$productInfo.price", // Include the price
+          brand: "$productInfo.brand",
+          category: "$productInfo.category", 
+          title: "$productInfo.title", 
+          price: "$productInfo.price", 
         },
       },
     ]);

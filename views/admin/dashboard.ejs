@@ -142,6 +142,9 @@
     </div>
   </div>
 
+
+  
+
   <!-- Top 10 Categories Card -->
   <div class="col-md-6 col-12">
     <div class="card" style="height: 400px;">
@@ -173,6 +176,11 @@
       </div>
     </div>
   </div>
+
+
+  
+
+
 </div>
 
 
@@ -191,9 +199,10 @@
 <script>
   // Define colors
   const colors = {
-    delivered: '#4CAF50',  // Green
-    cancelled: '#F44336',  // Red
-    pending: '#FFC107',    // Yellow
+    delivered: '#008000',  // Green
+    cancelled: '#FF0000',  // Red
+    pending: '#FFA500',    // Yellow
+    return:'#800080',
     primary: '#42A5F5',    // Blue
     hoverPrimary: '#2196F3' // Darker Blue
   };
@@ -202,14 +211,15 @@
   const totalDelivered = <%= salseChart && salseChart.total ? salseChart.total.deliveredProducts : 0 %>;
   const totalCancelled = <%= salseChart && salseChart.total ? salseChart.total.cancelledProducts : 0 %>;
   const totalPending = <%= salseChart && salseChart.total ? salseChart.total.pendingProducts : 0 %>;
+  const totalReturned = <%= salseChart && salseChart.total ? salseChart.total.returnedProducts : 0 %>;
 
   // Doughnut Chart Data (dynamic data)
   const doughnutData = {
-    labels: ['Delivered', 'Cancelled', 'Pending'],
+    labels: ['Delivered', 'Cancelled', 'Pending','Returned'],
     datasets: [{
-      data: [totalDelivered, totalCancelled, totalPending],
-      backgroundColor: [colors.delivered, colors.cancelled, colors.pending],
-      hoverBackgroundColor: [colors.delivered, colors.cancelled, colors.pending],
+      data: [totalDelivered, totalCancelled, totalPending,totalReturned],
+      backgroundColor: [colors.delivered, colors.cancelled, colors.pending,colors.return],
+      hoverBackgroundColor: [colors.delivered, colors.cancelled, colors.pending,colors.return],
       borderWidth: 3
     }]
   };
@@ -247,15 +257,15 @@
   });
 
   // Bar Chart Data (dynamically update the sales data for weekly, monthly, and yearly)
-  const weeklyData = [<%= salseChart && salseChart.weekly ? salseChart.weekly.deliveredProducts : 0 %>, <%= salseChart && salseChart.weekly ? salseChart.weekly.cancelledProducts : 0 %>, <%= salseChart && salseChart.weekly ? salseChart.weekly.pendingProducts : 0 %>];
-  const monthlyData = [<%= salseChart && salseChart.monthly ? salseChart.monthly.deliveredProducts : 0 %>, <%= salseChart && salseChart.monthly ? salseChart.monthly.cancelledProducts : 0 %>, <%= salseChart && salseChart.monthly ? salseChart.monthly.pendingProducts : 0 %>];
-  const yearlyData = [<%= salseChart && salseChart.yearly ? salseChart.yearly.deliveredProducts : 0 %>, <%= salseChart && salseChart.yearly ? salseChart.yearly.cancelledProducts : 0 %>, <%= salseChart && salseChart.yearly ? salseChart.yearly.pendingProducts : 0 %>];
+  const weeklyData = [<%= salseChart && salseChart.weekly ? salseChart.weekly.deliveredProducts : 0 %>, <%= salseChart && salseChart.weekly ? salseChart.weekly.cancelledProducts : 0 %>, <%= salseChart && salseChart.weekly ? salseChart.weekly.pendingProducts : 0 %>, <%= salseChart && salseChart.yearly ? salseChart.yearly.returnedProducts : 0 %>];
+  const monthlyData = [<%= salseChart && salseChart.monthly ? salseChart.monthly.deliveredProducts : 0 %>, <%= salseChart && salseChart.monthly ? salseChart.monthly.cancelledProducts : 0 %>, <%= salseChart && salseChart.monthly ? salseChart.monthly.pendingProducts : 0 %>, <%= salseChart && salseChart.yearly ? salseChart.yearly.returnedProducts : 0 %>];
+  const yearlyData = [<%= salseChart && salseChart.yearly ? salseChart.yearly.deliveredProducts : 0 %>, <%= salseChart && salseChart.yearly ? salseChart.yearly.cancelledProducts : 0 %>, <%= salseChart && salseChart.yearly ? salseChart.yearly.pendingProducts : 0 %>, <%= salseChart && salseChart.yearly ? salseChart.yearly.returnedProducts : 0 %>];
 
   const barData = {
-    labels: ['Delivered', 'Cancelled', 'Pending'],
+    labels: ['Delivered', 'Cancelled', 'Pending','Retuned'],
     datasets: [{
       label: 'Total Sales',
-      data: [totalDelivered, totalCancelled, totalPending], // Using the total data
+      data: [totalDelivered, totalCancelled, totalPending,totalReturned], // Using the total data
       backgroundColor: colors.primary,
       hoverBackgroundColor: colors.hoverPrimary,
       borderRadius: 10,
@@ -344,7 +354,8 @@
         const data = [
           filteredData.delivered,
           filteredData.cancelled,
-          filteredData.pending
+          filteredData.pending,
+        filteredData.reutrned
         ];
 
         // Update the chart with the filtered data

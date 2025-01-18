@@ -252,6 +252,10 @@
 
 
 
+                                                                  
+                                                                     
+
+
                                                                       
                                                                       <% if (order.status === "Delivered") { %>
 
@@ -270,7 +274,6 @@
                                                                         </form>
                                                                       
                                                                       <% } %>
-                                                                      
 
 
                                                                       
@@ -349,14 +352,13 @@
 
 
 
-
-
                                     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
                                     <script>
                                       document.addEventListener('DOMContentLoaded', function () {
                                         const returnButton = document.getElementById('returnButton');
                                         const cancelButton = document.getElementById('cancelButton');
                                         
+                                        // Check if return button exists and add event listener
                                         if (returnButton) {
                                           returnButton.addEventListener('click', function (event) {
                                             event.preventDefault(); // Prevent form submission
@@ -369,13 +371,14 @@
                                               cancelButtonText: 'No, cancel',
                                             }).then((result) => {
                                               if (result.isConfirmed) {
-                                                // Submit the form if the user confirms
+                                                // Submit the return product form if the user confirms
                                                 document.getElementById('returnProductForm').submit();
                                               }
                                             });
                                           });
                                         }
                                     
+                                        // Check if cancel button exists and add event listener
                                         if (cancelButton) {
                                           cancelButton.addEventListener('click', function (event) {
                                             event.preventDefault(); // Prevent form submission
@@ -388,7 +391,7 @@
                                               cancelButtonText: 'No, keep it',
                                             }).then((result) => {
                                               if (result.isConfirmed) {
-                                                // Submit the form if the user confirms
+                                                // Submit the cancel product form if the user confirms
                                                 document.getElementById('cancelProductForm').submit();
                                               }
                                             });
@@ -397,11 +400,6 @@
                                       });
                                     </script>
                                     
-
-
-
-
-
 
 
 
