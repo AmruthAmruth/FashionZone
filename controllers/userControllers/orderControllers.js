@@ -214,7 +214,7 @@ export const contineOrderPayment=async(req,res)=>{
 
 export const verifyPayment =async(req, res) => {
     try {
-        const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
+        const { razorpay_payment_id, razorpay_order_id, razorpay_signature ,orderId} = req.body;
         console.log("Order Id",razorpay_order_id);
         
         const body = razorpay_order_id + "|" + razorpay_payment_id;
@@ -227,10 +227,10 @@ export const verifyPayment =async(req, res) => {
         console.log('Received razorpay_signature:', razorpay_signature);
         console.log('Generated expected_signature:', expected_signature);
 
-    
+    const order= await Order.findOne({orderId})
         if (expected_signature === razorpay_signature) {
-          
-         
+          order.paymentStatus="Paid"
+          await order.save();
             res.status(200).json({ success: true, message: "Payment verified" });
         } else {
             

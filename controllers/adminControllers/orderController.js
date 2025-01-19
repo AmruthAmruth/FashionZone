@@ -210,10 +210,19 @@ export const mostSoldProductsCatagorysAndBrands = async (req, res, next) => {
       acc[category] = (acc[category] || 0) + totalQuantity;
       return acc;
     }, {});
+
+
+    const brandDetails=products.reduce((acc,brand)=>{
+      const {brandName,quantity}=brand
+      acc[brandName]=(acc[brandName] || 0) + quantity
+      return acc
+    },{})
     
     req.categoriesDetails=categoriesDetails
 
-     req.mostSoldDetails=products
+     req.mostSoldDetails=products 
+     req.brand=brandDetails
+    console.log(brandDetails);
     
 
     next();
