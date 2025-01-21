@@ -128,5 +128,6 @@ export const AdminDashboard = async (req, res) => {
     return res.status(500).send("Sales chart data is missing.");
   }
   
+  
   res.render('admin/dashboard', { salseChart ,mostSoldDetails,categoriesDetails,brand});
 };

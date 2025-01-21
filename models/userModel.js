@@ -21,6 +21,9 @@ const userSchema=mongoose.Schema({
         type:String,
         require:true
     },
+    redeemed:{
+        type:String
+    },
     isActive: {
         type: Boolean,
         default: true

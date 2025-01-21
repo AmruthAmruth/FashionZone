@@ -197,7 +197,7 @@ export const mostSoldProductsCatagorysAndBrands = async (req, res, next) => {
           price: "$productInfo.price", 
         },
       },
-    ]);
+    ]).limit(10)
 
     // Aggregating categories details
     const categoriesDetails = products.reduce((acc, item) => {
@@ -218,7 +218,7 @@ export const mostSoldProductsCatagorysAndBrands = async (req, res, next) => {
     req.mostSoldDetails = products;
     req.brand = brandDetails;
 
-    console.log("Brands", brandDetails);
+    console.log("Brands", categoriesDetails);
 
     next();
   } catch (err) {

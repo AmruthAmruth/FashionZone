@@ -9,6 +9,7 @@ import Razorpay from "razorpay";
 import dotenv from 'dotenv';
 import crypto from 'crypto'
 import Wallet from "../../models/walletModel.js";
+import User from "../../models/userModel.js";
 dotenv.config();
 
 
@@ -49,8 +50,22 @@ export const createOrder = async (req, res) => {
             }
         }
 
-
         const userId = req.session.userId;
+
+        const user= await User.findById(userId)
+        console.log(user);
+        
+        if(user.redeemed){
+         const coupon = await Coupon.findOne({couponId:user.redeemed})
+         coupon.usedUsers.push(req.session.userId);
+         console.log("COupon added successfully");
+         
+          await coupon.save();
+          user.redeemed=null
+        }
+
+
+
         const cart = await Cart.findOne({ userId });
 
         if (cart && Array.isArray(cart.items)) {
@@ -67,9 +82,16 @@ export const createOrder = async (req, res) => {
 
             await cart.save();
             console.log("Products removed from the cart");
+
+
+            
         } else {
             console.log("Cart is either undefined or does not contain items");
         }
+
+        
+               
+
 
         res.redirect(`/ordersummery/${newOrder._id}`);
     } catch (err) {
@@ -189,6 +211,17 @@ export const createRazorpayOrder = async (req, res) => {
             console.log("Products removed from the cart");
         } else {
             console.log("Cart is either undefined or does not contain items");
+        }
+
+        const user= await User.findById(userId)
+        
+        if(user.redeemed){
+         const coupon = await Coupon.findOne({couponId:user.redeemed})
+         coupon.usedUsers.push(req.session.userId);
+         console.log("COupon added successfully");
+         
+          await coupon.save();
+          user.redeemed=null
         }
 
 
@@ -638,7 +671,7 @@ export const applyCoupon = async (req, res) => {
         const { couponcode, totalAmount } = req.body;
         const userId = req.session.userId
         const coupon = await Coupon.findOne({ couponId: couponcode })
-
+        const user= await User.findById(userId)
         if (!coupon) {
             return res.status(400).json({ message: 'Invalid coupon code' });
         }
@@ -657,8 +690,10 @@ export const applyCoupon = async (req, res) => {
             discountAmount = coupon.maxAmount;
         }
         const finalAmount = totalAmount - discountAmount;
-        coupon.usedUsers.push(userId);
-        await coupon.save();
+        user.redeemed=couponcode
+        user.save()
+        // coupon.usedUsers.push(userId);
+        // await coupon.save();
         return res.status(200).json({ message: 'Coupon applied successfully', finalAmount, discountAmount });
 
     } catch (err) {
@@ -786,6 +821,20 @@ export const createWalletcheckout = async (req, res) => {
                     }
                 }
             }
+
+
+            const user= await User.findById(req.session.userId)
+        
+        if(user.redeemed){
+         const coupon = await Coupon.findOne({couponId:user.redeemed})
+         coupon.usedUsers.push(req.session.userId);
+         console.log("coupon added successfully");
+         
+          await coupon.save();
+          user.redeemed=null
+        }
+
+
 
             // Remove ordered items from the cart
             const userId = req.session.userId;
