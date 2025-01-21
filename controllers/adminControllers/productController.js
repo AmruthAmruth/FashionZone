@@ -28,11 +28,11 @@ export const getAllProductPage = async (req, res) => {
 
         const totalProducts = await Product.countDocuments();
         const totalPages = Math.ceil(totalProducts / productsPerPage); 
-
+  
         
-        const products = await Product.find()
+        const products = await Product.find() 
             .skip((page - 1) * productsPerPage) 
-            .limit(productsPerPage); 
+            .limit(productsPerPage).sort({createdAt:-1}) 
 
         
         res.render('admin/products', { 

@@ -81,6 +81,7 @@ export const getProductbyId = async (req, res) => {
 
         const relatedProducts = await Product.find({
             category: category, 
+            isActive:true,
             _id: { $ne: id } 
         }).limit(5);
 

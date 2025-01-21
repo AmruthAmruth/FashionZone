@@ -157,16 +157,14 @@ export const mostSoldProductsCatagorysAndBrands = async (req, res, next) => {
       { $unwind: "$products" },
       { $unwind: "$products.items" },
 
-     
       {
         $group: {
           _id: "$products.items.productId", 
-          totalQuantity: { $sum: "$products.items.quantity" }, 
+          totalQuantity: { $sum: "$products.items.quantity" },
           productDetails: { $first: "$products.items" },
         },
       },
 
-     
       {
         $addFields: {
           productObjectId: {
@@ -175,7 +173,6 @@ export const mostSoldProductsCatagorysAndBrands = async (req, res, next) => {
         },
       },
 
-      
       {
         $lookup: {
           from: "products", 
@@ -185,19 +182,16 @@ export const mostSoldProductsCatagorysAndBrands = async (req, res, next) => {
         },
       },
 
-      
       { $unwind: "$productInfo" },
 
-      
       { $sort: { totalQuantity: -1 } },
 
-      
       {
         $project: {
           _id: 1,
           totalQuantity: 1,
           productDetails: 1,
-          brand: "$productInfo.brand",
+          brand: "$productInfo.brand",  // Ensure the brand is correctly referenced
           category: "$productInfo.category", 
           title: "$productInfo.title", 
           price: "$productInfo.price", 
@@ -205,25 +199,26 @@ export const mostSoldProductsCatagorysAndBrands = async (req, res, next) => {
       },
     ]);
 
+    // Aggregating categories details
     const categoriesDetails = products.reduce((acc, item) => {
       const { category, totalQuantity } = item;
       acc[category] = (acc[category] || 0) + totalQuantity;
       return acc;
     }, {});
 
+    // Aggregating brand details
+    const brandDetails = products.reduce((acc, product) => {
+      const { brand, totalQuantity } = product;  // Corrected brand and totalQuantity
+      acc[brand] = (acc[brand] || 0) + totalQuantity;
+      return acc;
+    }, {});
 
-    const brandDetails=products.reduce((acc,brand)=>{
-      const {brandName,quantity}=brand
-      acc[brandName]=(acc[brandName] || 0) + quantity
-      return acc
-    },{})
-    
-    req.categoriesDetails=categoriesDetails
+    // Attaching data to the request object
+    req.categoriesDetails = categoriesDetails;
+    req.mostSoldDetails = products;
+    req.brand = brandDetails;
 
-     req.mostSoldDetails=products 
-     req.brand=brandDetails
-    console.log(brandDetails);
-    
+    console.log("Brands", brandDetails);
 
     next();
   } catch (err) {
@@ -235,3 +230,4 @@ export const mostSoldProductsCatagorysAndBrands = async (req, res, next) => {
     });
   }
 };
+

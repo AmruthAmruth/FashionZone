@@ -6,7 +6,7 @@ import { isUserAuthenticated } from '../middileware/auth.js'
 import { createAddress, deleteAddress, editAddress, getAddress, getProfilePage, updateName } from '../controllers/userControllers/profileControllers.js'
 import mongoose from 'mongoose'
 import { checkoutAddAddress, checkoutEditAddress, checkoutPage, proceedToChekout } from '../controllers/userControllers/chekoutControllers.js'
-import { applyCoupon, cancelOrder, cancelProductInOrder, contineOrderPayment, createOrder, createRazorpayOrder, createWalletcheckout, getOrders, orderSummery, removeCoupon, returnProduct, returnProductInOrder, verifyPayment, verifyRazorpayPayment } from '../controllers/userControllers/orderControllers.js'
+import { applyCoupon, cancelOrder, cancelProductInOrder, contineOrderPayment, createOrder, createRazorpayOrder, createWalletcheckout, getOrders, orderSummery, paymentFailerPage, removeCoupon, returnProduct, returnProductInOrder, verifyPayment, verifyRazorpayPayment } from '../controllers/userControllers/orderControllers.js'
 import { addToWishlist, getWishList, removeProductFromWishlist } from '../controllers/userControllers/wishlistControllers.js'
 import multer from 'multer'
 const userRouter=express.Router()
@@ -37,16 +37,15 @@ userRouter.get('/auth/google/callback',passport.authenticate('google',{failureRe
     console.log("Google login Successfully completed");
     
     req.session.userId=new mongoose.Types.ObjectId(req.user._id)
-    console.log(req.user);
+
     
     req.session.user=req.user
     res.redirect('/')
 })
 
 
-
-
 // -------------------Forgot Password Section------------------------------------------------------------
+
 
 userRouter.get('/forgotpassword',getForgotPasswordPage)
 userRouter.get('/newpassword',getNewPasswordPage)
@@ -113,6 +112,7 @@ userRouter.post('/ordersummery/cancelproduct', upload.none(),cancelProductInOrde
 userRouter.post('/ordersummany/returnproduct',upload.none(),returnProductInOrder)
 userRouter.post('/ordersummany/continerazorpaypayment',contineOrderPayment)
 userRouter.post('/verifyorderpayment',verifyPayment)
+userRouter.get('/paymentfailed/:orderId',paymentFailerPage)
 
 // ----------------------Wish list -----------------------------------------------------
 

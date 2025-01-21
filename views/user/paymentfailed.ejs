@@ -1,0 +1,274 @@
+<%- include('../layout/header.ejs') -%>
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Bootstrap Icons (Optional for the Error Icon) -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+   body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f7fc;
+    color: #333;
+}
+
+.card {
+    max-width: 600px;
+    width: 100%;
+    border-radius: 15px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    padding: 40px;
+    text-align: center;
+}
+
+.card-header {
+    background-color: #f8d7da;
+    color: #721c24;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.error-icon {
+    font-size: 5rem;
+    color: #dc3545;
+    margin-bottom: 30px;
+}
+
+.btn-primary, .btn-secondary {
+    font-size: 1.1rem;
+    padding: 12px 30px;
+    border-radius: 25px;
+    text-transform: uppercase;
+    width: 100%;
+    max-width: 250px;
+    margin-top: 15px;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #f8f9fa;
+    border: 1px solid #007bff;
+    color: #007bff;
+}
+
+.btn-secondary:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Animation */
+.bounce-animation {
+    animation: bounce 1.5s ease infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+</style>
+
+</head>
+<body>
+    <div class="page-wrapper">
+        <%- include('../partials/navbar.ejs') -%>
+    <div class="container vh-100 d-flex justify-content-center align-items-center">
+        <div class="card">
+            <!-- Card Header -->
+            <div class="card-header">
+                <h3>Payment Failed</h3>
+            </div>
+    
+            <!-- Error Icon -->
+            <div class="text-center mb-4">
+                <i class="bi bi-x-circle-fill error-icon bounce-animation"></i>
+            </div>
+    
+            <!-- Order Details -->
+            <div class="text-center">
+                <h4 class="text-danger">Oops! Something went wrong.</h4>
+                <p>Your payment for order <strong>#<%= orderId %></strong> failed.</p>
+                <p>Total Amount: ₹<%= totalAmount %></p>
+                <p>Payment Method: <strong><%= paymentMethod %></strong></p>
+            </div>
+    
+            <!-- Action Buttons -->
+            <div class="text-center mt-4">
+                <form id="payment-form">
+                    <input type="hidden" name="totalAmount" value="<%= totalAmount %>">
+                    <input type="hidden" name="orderId" value="<%= orderId %>">
+                    <input type="hidden" name="id" value="<%= id %>">
+                    <button type="button" id="payNow" class="btn btn-primary">Retry Payment</button>
+                </form>
+                <a href="/" class="btn btn-secondary mt-3">Go to Home</a>
+            </div>
+        </div>
+    </div>
+    
+<%- include('../partials/footer.ejs')-%>
+</div>
+
+
+<!-- Razorpay payment oparation  -->
+
+
+
+
+
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.12/dist/sweetalert2.min.css" rel="stylesheet">
+
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.12/dist/sweetalert2.min.js"></script>
+
+<!-- Razorpay Checkout Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+
+<script>
+    document.getElementById("payNow").addEventListener("click", function() {
+        const totalAmount = document.querySelector('input[name="totalAmount"]').value;
+        const orderId = document.querySelector('input[name="orderId"]').value;
+        const id = document.querySelector('input[name="id"]').value;
+        // Show SweetAlert confirmation
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to make a payment!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Pay Now!',
+            cancelButtonText: 'No, Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Create the Razorpay order on the server
+                fetch('/ordersummany/continerazorpaypayment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        totalAmount: totalAmount,
+                        orderId: orderId,
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Initialize Razorpay Payment
+                        var options = {
+                            key: "rzp_test_eEMIhlHUZ45CcM",  // Your Razorpay key
+                            amount: data.amount,  // Amount in paise
+                            currency: data.currency,
+                            name: "FashionZone",
+                            description: "Payment for Order",
+                            image: "https://example.com/logo.png",  // Your company logo
+                            order_id: data.orderId,  // Order ID received from your backend
+                            handler: function(response) {
+                                // Handle the Razorpay payment response
+                                const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = response;
+    
+                                // Send payment details to the backend for verification
+                                fetch('/verifyorderpayment', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                        razorpay_order_id: razorpay_order_id,
+                                        razorpay_payment_id: razorpay_payment_id,
+                                        razorpay_signature: razorpay_signature,
+                                        orderId
+                                    }),
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        Swal.fire({
+    title: 'Success!',
+    text: 'Your payment was successful!',
+    icon: 'success',
+    confirmButtonText: 'OK'
+}).then((result) => {
+    if (result.isConfirmed) {
+        // Redirect to order summary page
+        window.location.href = `/ordersummery/${id}`;
+    }
+});
+                                    } else {
+                                        Swal.fire({
+                                            title: 'Error!',
+                                            text: 'Payment verification failed. Please try again.',
+                                            icon: 'error',
+                                            confirmButtonText: 'OK'
+                                        });
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: 'An error occurred while verifying the payment.',
+                                        icon: 'error',
+                                        confirmButtonText: 'OK'
+                                    });
+                                });
+                            },
+                            prefill: {
+                                name: "Customer Name",
+                                email: "customer@example.com",
+                                contact: "1234567890"
+                            },
+                            notes: {
+                                address: "Customer address"
+                            },
+                            theme: {
+                                color: "#F37254"
+                            }
+                        };
+    
+                        var rzp1 = new Razorpay(options);
+                        rzp1.open();  // Open Razorpay checkout
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Failed to create Razorpay order. Please try again.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'An error occurred while creating the payment order.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                });
+            }
+        });
+    });
+    </script>
+    
+
+</body>
+</html>

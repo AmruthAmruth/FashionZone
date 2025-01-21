@@ -191,7 +191,7 @@
   
   </div>
 
-  <form action="/admin/addproduct" method="post" enctype="multipart/form-data">
+  <form id="addProductForm" action="/admin/addproduct" method="post" enctype="multipart/form-data" onsubmit="validateForm(event)">
  
   <div class="row">
     <!-- First column-->
@@ -207,42 +207,25 @@
           
           
           <div class="form-floating form-floating-outline mb-5 mt-5">
-            <input 
-            type="text" 
-            class="form-control" 
-            id="ecommerce-product-name" 
-            placeholder="Product Brand" 
-            name="brand" 
-            aria-label="Product title" 
-            pattern="^[A-Za-z\s]{3,}$"
-            oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '').replace(/\s+/g, ' ');"
-            required
-         title="Title must contain only letters and spaces, and must be at least 3 characters long."
-      >
-          
-          <label for="ecommerce-product-name">Brand</label>
+            <input type="text" class="form-control" id="ecommerce-product-name" placeholder="Product Brand" name="brand" >
+            <label for="ecommerce-product-name">Brand</label>
+            <div id="error-brand" class="text-danger" style="display:none;"></div>
           </div>
 
           
-          <div class="form-floating form-floating-outline mb-5">
-            <input type="text" class="form-control" id="ecommerce-product-brand" placeholder="Product Title" name="title" aria-label="Product title"
-            pattern="^[A-Za-z\s]{3,}$"
-         title="Title must contain only letters and spaces, and must be at least 3 characters long."
-         oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '').replace(/\s+/g, ' ');"
-         required
-         >
-            <label for="ecommerce-product-name">Title</label>
-          </div>
+<!-- Title Field -->
+<div class="form-floating form-floating-outline mb-5">
+  <input type="text" class="form-control" id="ecommerce-product-brand" placeholder="Product Title" name="title" >
+  <label for="ecommerce-product-name">Title</label>
+  <div id="error-title" class="text-danger" style="display:none;"></div>
+</div>
 
-          
-         
-          <div class="form-floating form-floating-outline mb-5">
-            <input type="text" class="form-control" id="ecommerce-product-title" placeholder="Product Description" name="description" aria-label="Product Description"
-          
-            required
-             >
-            <label for="ecommerce-product-name">Description</label>
-          </div>
+<!-- Description Field -->
+<div class="form-floating form-floating-outline mb-5">
+  <input type="text" class="form-control" id="ecommerce-product-title" placeholder="Product Description" name="description" >
+  <label for="ecommerce-product-name">Description</label>
+  <div id="error-description" class="text-danger" style="display:none;"></div>
+</div>
           
           
 
@@ -257,6 +240,7 @@
       <div class="card mb-6 shadow-sm">
         <div class="card-header bg-white text-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Product Images</h5>
+            <div id="imagesErr" class="text-danger" style="display: none;">Please upload all four images.</div>
             <p class="text-danger"><%= messages.image[0] %></p>A
         </div>
         <div class="card-body">
@@ -265,8 +249,8 @@
                     <% for (let i = 1; i <= 4; i++) { %>
                     <!-- Image Input and Preview -->
                     <div class="col-lg-6 col-md-6">
-                        <div class="border rounded p-3 text-center">
-                            <label for="imageInput<%= i %>" class="file-upload d-block mb-2">
+                        <div class="border rounded p-3 text-center mt-4">
+                            <label for="imageInput<%= i %>" class="file-upload d-block mb-2 mt-2 ">
                                 <span class="file-select btn btn-outline-primary btn-sm">Choose Image <%= i %></span>
                                 <input name="images[]" type="file" accept="image/jpeg, image/png" id="imageInput<%= i %>" class="imageInput d-none" onchange="showPreview(this, 'imagePreview<%= i %>'); openCropModal(this, <%= i %>)">
                             </label>
@@ -326,19 +310,19 @@
           <h5 class="card-title mb-0">Pricing</h5>
         </div>
         <div class="card-body">
-          <!-- Base Price -->
-          <div class="form-floating form-floating-outline mb-5 mt-5">
-            <input type="number" required class="form-control" id="ecommerce-product-price" placeholder="Price" name="price" aria-label="Product price">
-            <label for="ecommerce-product-price">Best Price</label>
-            <p class="text-danger"><%= messages.price[0] %></p>
-          </div>
+         <!-- Price Field -->
+<div class="form-floating form-floating-outline mb-5">
+  <input type="number"  class="form-control" id="ecommerce-product-price" placeholder="Price" name="price" aria-label="Product price">
+  <label for="ecommerce-product-price">Best Price</label>
+  <div id="error-price" class="text-danger" style="display:none;"></div>
+</div>
 
-          <!-- Discounted Price -->
-          <div class="form-floating form-floating-outline mb-5">
-            <input type="number" required class="form-control" id="ecommerce-product-discount-price" placeholder="Discounted Price" name="disPrice" aria-label="Product discounted price">
-            <label for="ecommerce-product-discount-price">Discounted Price</label>
-            <p class="text-danger"><%= messages.disPrice[0] %></p>
-          </div>
+<!-- Discounted Price Field -->
+<div class="form-floating form-floating-outline mb-5">
+  <input type="number"  class="form-control" id="ecommerce-product-discount-price" placeholder="Discounted Price" name="disPrice" aria-label="Product discounted price">
+  <label for="ecommerce-product-discount-price">Discounted Price</label>
+  <div id="error-discount-price" class="text-danger" style="display:none;"></div>
+</div>
          
          
         </div>
@@ -356,89 +340,82 @@
           
           
             <!-- Color -->
-        
-         
-          <div class="mb-5 col ecommerce-select2-dropdown">
-            <select id="vendor" name="color" required class="form-select form-select-sm" data-placeholder="Select Vendor">
-              <option value="">Select Color</option>
-              <option value="Black">Black</option>
-              <option value="White">White</option>
-              <option value="Gray">Gray</option>
-              <option value="Red">Red</option>
-              <option value="Yello">Yellow</option>
-              <option value="Blue">Blue</option>
-              <option value="Green">Green</option>
-            </select>
-          </div>
+<div class="mb-5 col ecommerce-select2-dropdown">
+  <select id="color" name="color" class="form-select form-select-sm" data-placeholder="Select Vendor">
+    <option value="">Select Color</option>
+    <option value="Black">Black</option>
+    <option value="White">White</option>
+    <option value="Gray">Gray</option>
+    <option value="Red">Red</option>
+    <option value="Yellow">Yellow</option>
+    <option value="Blue">Blue</option>
+    <option value="Green">Green</option>
+  </select>
+  <div id="error-color" class="text-danger" style="display:none;"></div>
+</div>
 
+<!-- Size -->
+<div class="mb-5 col ecommerce-select2-dropdown">
+  <select id="size" name="size" class="form-select form-select-sm" data-placeholder="Select Size">
+    <option value="">Select Size</option>
+    <option value="S">S</option>
+    <option value="M">M</option>
+    <option value="L">L</option>
+    <option value="XL">XL</option>
+    <option value="XXL">XXL</option>
+  </select>
+  <div id="error-size" class="text-danger" style="display:none;"></div>
+</div>
 
-            <!-- Size -->
-         
-         
-            <div class="mb-5 col ecommerce-select2-dropdown">
-                <select id="vendor" name="size" required class="form-select form-select-sm" data-placeholder="Select Vendor">
-                  <option value="">Select Size</option>
-                  <option value="S">S</option>
-                  <option value="M">M</option>
-                  <option value="L">L</option>
-                  <option value="XL">XL</option>
-                  <option value="XXL">XXl</option>
-                </select>
-              </div>
+<!-- Category -->
+<div class="mb-5 col ecommerce-select2-dropdown">
+  <select id="category" name="category" class="form-select form-select-sm" data-placeholder="Select Category">
+    <option value="">Select Category</option>
+    <% categories.forEach(function(category) { %>
+      <option value="<%= category %>"><%= category %></option>
+    <% }); %>
+  </select>
+  <div id="error-category" class="text-danger" style="display:none;"></div>
+</div>
 
-          
-          <!-- Category -->
-         
-          <div class="mb-5 col ecommerce-select2-dropdown">
-            <select id="vendor" name="category" required class="form-select form-select-sm" data-placeholder="Select Vendor">
-                <option value="">Select Category</option>
-                <% categories.forEach(function(category) { %>
-                    <option value="<%= category %>"><%= category %></option>
-                <% }); %>
-            </select>
-        </div>
+<!-- Gender -->
+<div class="mb-5 col ecommerce-select2-dropdown">
+  <select id="gender" name="gender" class="form-select form-select-sm" data-placeholder="Select Gender">
+    <option value="">Select Gender</option>
+    <option value="men">Men's Clothing</option>
+    <option value="women">Women's Clothing</option>
+  </select>
+  <div id="error-gender" class="text-danger" style="display:none;"></div>
+</div>
 
+<!-- Status -->
+<div class="mb-5 col ecommerce-select2-dropdown">
+  <select id="status" name="status" class="form-select form-select-sm" data-placeholder="Select Status">
+    <option value="">Select Status</option>
+    <option value="Published">Published</option>
+    <option value="Scheduled">Scheduled</option>
+    <option value="Inactive">Inactive</option>
+  </select>
+  <div id="error-status" class="text-danger" style="display:none;"></div>
+</div>
 
-          <!-- Gender -->
-          <div class="mb-5 col ecommerce-select2-dropdown">
-            <select id="collection" name="gender" required class="form-select form-select-sm" data-placeholder="Collection">
-              <option value="">Select Gender</option>
-              <option value="men">Men's Clothing</option>
-              <option value="women">Women's-clothing</option>
-            </select>
-          </div>
-
-
-          <!-- Status -->
-          <div class="mb-5 col ecommerce-select2-dropdown">
-            <select id="status-org" name="status" required class="form-select form-select-sm" data-placeholder="Select Status">
-              <option value="">Select Status</option>
-              <option value="Published">Published</option>
-              <option value="Scheduled">Scheduled</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-          </div>
-
-
-          <!-- Stock -->
-         
-
-          <div class="mb-5 col ecommerce-select2-dropdown">
-            <select id="status-org" name="stock" required class="form-select form-select-sm" data-placeholder="Select Status">
-              <option value="">Select Stock</option>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-              <option value="6">6</option>
-              <option value="7">7</option>
-              <option value="8">8</option>
-              <option value="9">9</option>
-              <option value="10">10</option>
-              
-            </select>
-          </div>
+<!-- Stock -->
+<div class="mb-5 col ecommerce-select2-dropdown">
+  <select id="stock" name="stock" class="form-select form-select-sm" data-placeholder="Select Stock">
+    <option value="">Select Stock</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+    <option value="6">6</option>
+    <option value="7">7</option>
+    <option value="8">8</option>
+    <option value="9">9</option>
+    <option value="10">10</option>
+  </select>
+  <div id="error-stock" class="text-danger" style="display:none;"></div>
+</div>
 
 
 
@@ -464,6 +441,129 @@
 
 
 </form>
+
+
+
+
+
+
+
+<!-- SweetAlert CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  // Function to validate form fields
+function validateForm(event) {
+    // Prevent form from submitting
+    event.preventDefault();
+
+    // Get the form elements
+    const brand = document.getElementById("ecommerce-product-name");
+    const title = document.getElementById("ecommerce-product-brand");
+    const description = document.getElementById("ecommerce-product-title");
+    const price = document.getElementById("ecommerce-product-price");
+    const discountPrice = document.getElementById("ecommerce-product-discount-price");
+    const color = document.getElementById("color");
+    const size = document.getElementById("size");
+    const category = document.getElementById("category");
+    const gender = document.getElementById("gender");
+    const status = document.getElementById("status");
+    const stock = document.getElementById("stock");
+
+    // Flags to check if validation passes
+    let isValid = true;
+
+    // Reset all error messages
+    document.querySelectorAll('.text-danger').forEach((errorElement) => {
+        errorElement.style.display = 'none';
+    });
+
+    // Helper function to validate required fields
+    const validateField = (field, errorId, errorMessage, regex = null) => {
+        const value = field.value.trim();
+        if (!value || (regex && !regex.test(value))) {
+            document.getElementById(errorId).style.display = "block";
+            document.getElementById(errorId).textContent = errorMessage;
+            isValid = false;
+        }
+    };
+
+    // Regular expression for valid input (letters, numbers, and spaces only)
+    const validInputRegex = /^[a-zA-Z0-9\s]+$/;
+
+    // Validate fields
+    validateField(brand, "error-brand", "Brand is required and cannot contain special characters.", validInputRegex);
+    validateField(title, "error-title", "Title is required and cannot contain special characters.", validInputRegex);
+    validateField(description, "error-description", "Description is required and cannot contain special characters.", validInputRegex);
+    validateField(price, "error-price", "Price must be greater than 0.", /^\d+(\.\d{1,2})?$/);
+    validateField(discountPrice, "error-discount-price", "Discount Price must be less than the regular price and greater than 0.", /^\d+(\.\d{1,2})?$/);
+    validateField(color, "error-color", "Color is required.");
+    validateField(size, "error-size", "Size is required.");
+    validateField(category, "error-category", "Category is required.");
+    validateField(gender, "error-gender", "Gender is required.");
+    validateField(status, "error-status", "Status is required.");
+    validateField(stock, "error-stock", "Stock is required.");
+
+    // Additional validations for numeric and logical constraints
+    if (price.value <= 0) {
+        document.getElementById("error-price").style.display = "block";
+        document.getElementById("error-price").textContent = "Price must be greater than 0.";
+        isValid = false;
+    }
+
+    if (discountPrice.value && parseFloat(discountPrice.value) >= parseFloat(price.value)) {
+        document.getElementById("error-discount-price").style.display = "block";
+        document.getElementById("error-discount-price").textContent = "Discount Price must be less than the regular price.";
+        isValid = false;
+    }
+
+    // Validate that all image inputs are filled
+    const imageInputs = document.querySelectorAll("input[type='file']");
+    let allImagesUploaded = true;
+    imageInputs.forEach((input, index) => {
+        const errorElement = document.getElementById(`error${index + 1}`);
+        if (!input.value) {
+            errorElement.style.display = "block";
+            errorElement.textContent = "This image is required.";
+            allImagesUploaded = false;
+        } else {
+            errorElement.style.display = "none";
+        }
+    });
+
+    if (!allImagesUploaded) {
+        isValid = false;
+        document.getElementById("imagesErr").style.display = "block";
+        document.getElementById("imagesErr").textContent = "Please upload all four images.";
+    } else {
+        document.getElementById("imagesErr").style.display = "none";
+    }
+
+    // If form is valid, submit the form
+    if (isValid) {
+        Swal.fire({
+            title: 'Success!',
+            text: 'Product added successfully.',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        }).then(() => {
+            document.getElementById("addProductForm").submit();
+        });
+    }
+}
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
 
 
 

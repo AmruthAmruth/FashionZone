@@ -99,6 +99,8 @@ export const updateProductOfferStatus = async (req, res) => {
         }
 
         const offer = await Offer.findById(id).populate('products');
+        console.log("Offer", offer);
+        
         if (!offer) {
             return res.status(404).json({ message: "Offer not found!" });
         }
@@ -106,11 +108,21 @@ export const updateProductOfferStatus = async (req, res) => {
         offer.status = offer.status === 'Active' ? 'Inactive' : 'Active'; 
         await offer.save();
 
+        // Handle the status change for products
         if (offer.status === 'Inactive' && offer.products) {
-            for (const product of offer.products) {
+            const productPromises = offer.products.map(product => {
                 product.disPrice = product.price; 
-                await product.save();
-            }
+                return product.save();
+            });
+            await Promise.all(productPromises);
+        }
+
+        if (offer.status === 'Active' && offer.products && offer.discount) {
+            const productPromises = offer.products.map(product => {
+                product.disPrice = (offer.discount / 100) * product.price; 
+                return product.save();
+            });
+            await Promise.all(productPromises);
         }
 
         res.json({ message: 'Offer status updated successfully', status: offer.status });
@@ -119,6 +131,7 @@ export const updateProductOfferStatus = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
 
 
 

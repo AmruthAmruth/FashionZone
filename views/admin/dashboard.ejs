@@ -115,7 +115,7 @@
   <div class="col-md-6 col-12">
     <div class="card" style="height: 400px;">
       <div class="card-header">
-        <h5 class="card-title mb-0">Top 10 Products</h5>
+        <h5 class="card-title mb-0">Top 10 Brands</h5>
       </div>
       <div class="card-body p-0" style="overflow-y: auto; max-height: 330px;">
         <div class="table-responsive">
@@ -123,18 +123,18 @@
             <thead class="thead-light">
               <tr>
                 <th>No</th>
-                <th>Product Name</th>
+                <th>Brand Name</th>
                 <th>Quantity Sold</th>
               </tr>
             </thead>
             <tbody>
-              <% mostSoldDetails.forEach((product, index) => { %>
+              <% for (const [brandName, quantitySold] of Object.entries(brand)) { %>
                 <tr>
-                  <td><%= index + 1 %></td>
-                  <td><%= product.title %></td>
-                  <td><%= product.totalQuantity %></td>
+                  <td><%= Object.keys(brand).indexOf(brandName) + 1 %></td>
+                  <td><%= brandName %></td>
+                  <td><%= quantitySold %></td>
                 </tr>
-              <% }) %>
+              <% } %>
             </tbody>
           </table>
         </div>
@@ -178,7 +178,38 @@
   </div>
 
 
-  
+  <!-- Top 10 Products Card -->
+  <div class="col-md-12 mt-5 px-5  col-12">
+    <div class="card" style="height: 400px;">
+      <div class="card-header">
+        <h5 class="card-title mb-0">Top 10 Products</h5>
+      </div>
+      <div class="card-body p-0" style="overflow-y: auto; max-height: 330px;">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover mb-0">
+            <thead class="thead-light">
+              <tr>
+                <th>No</th>
+                <th>Product Name</th>
+                <th>Quantity Sold</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% mostSoldDetails.forEach((product, index) => { %>
+                <tr>
+                  <td><%= index + 1 %></td>
+                  <td><%= product.title %></td>
+                  <td><%= product.totalQuantity %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
 
 
 </div>

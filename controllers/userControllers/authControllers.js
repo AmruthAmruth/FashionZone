@@ -104,6 +104,8 @@ export const CreateAccount = async (req, res) => {
 export const VerifyOTP = async (req, res) => {
   try {
       const { otp } = req.body;
+      console.log(otp);
+      
       const tempUser = req.session.tempUser;
 
       if (!tempUser) {
@@ -165,6 +167,7 @@ export const VerifyOTP = async (req, res) => {
     }
 
       req.session.user = newUser;
+      req.session.userId=newUser._id
       req.session.tempUser = null; 
       await OTP.deleteMany({ email: tempUser.email }); 
       return res.redirect('/');

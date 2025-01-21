@@ -1,19 +1,14 @@
 <%- include('../layout/adminheader.ejs') -%>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <!-- Bootstrap JS Bundle (includes Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Bootstrap CSS -->
 <!-- Include Bootstrap JS and Popper.js (required for dropdowns) -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
     </head>
-
     <body>
-
-
         <!-- Layout wrapper -->
         <div class="layout-wrapper layout-content-navbar  ">
             <div class="layout-container">
@@ -23,16 +18,9 @@
                         <!-- Navbar -->
                         <%- include('../partials/adminnavbar.ejs') -%>
                             <!-- / Navbar -->
-
-
-
-
                             <div class="container-xxl flex-grow-1 container-p-y">
       
         
-
-
-
                                 <div class="card mb-6">
                                     <div class="card-widget-separator-wrapper">
                                       <div class="card-body card-widget-separator">
@@ -162,7 +150,7 @@
                                                 <td><%= data.quantity %></td>
                                                 <td><%= data.price %></td>
                                                 <td><%= data.totalAmount %></td>
-                                                <td><%= data.discount  %></td>
+                                                <td><%= data.discount %></td>
                                               </tr>
                                             <% }); %>
                                           <% } else { %>
@@ -176,8 +164,6 @@
                                     </div>
                                   </div>
                                   
-
-
                                   <nav aria-label="Page navigation" class="d-flex justify-content-center mt-3 mb-3">
                                     <ul class="pagination">
                                       <% if (pagination.hasPrevPage) { %>
@@ -204,14 +190,6 @@
                                   
                                   
                                             </div>
-
-
-
-
-
-
-
-
                             </div>
                         </div>
                         </div>
@@ -256,16 +234,9 @@
                         
                         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
-
-
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
-
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-
 <script>
   function downloadReport(type) {
     if (type === 'pdf') {
@@ -275,19 +246,16 @@
         console.error("jsPDF not loaded!");
         return;
       }
-
       const doc = new jsPDF();
       const currentDate = new Date().toLocaleDateString();
       const websiteName = "Fashionzone";
       const reportTitle = "Sales Report";
-
       // Add Website Name and Date
       doc.setFontSize(16);
       doc.text(websiteName, 105, 10, { align: "center" });
       doc.setFontSize(12);
       doc.text(`Date: ${currentDate}`, 200, 10, { align: "right" });
       doc.text(reportTitle, 105, 20, { align: "center" });
-
       // Table Headers and Rows
       const headers = [["Order ID", "Date", "Product", "Quantity", "Price", "Total", "Discount"]];
       const rows = [];
@@ -296,9 +264,7 @@
         const cells = Array.from(row.children).map((cell) => cell.textContent.trim());
         rows.push(cells);
       });
-
       console.log("Rows to be added to PDF:", rows);
-
       // Add Table
       doc.autoTable({
         head: headers,
@@ -306,7 +272,6 @@
         startY: 30, // Starts the table after the header
         margin: { top: 20 },
       });
-
       // Save PDF
       doc.save("sales-report.pdf");
       console.log("PDF download completed.");
@@ -317,10 +282,5 @@
     }
   }
 </script>
-
-
-
-
-
 </body>
 </html>

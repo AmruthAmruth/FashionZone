@@ -1,7 +1,6 @@
 import Order from "../../models/orderModel.js";
 
 
-
 export const getSalesReportPage = async (req, res) => {
     try {
       const { startDate, endDate, filter, page = 1, limit = 10 } = req.query;
@@ -69,8 +68,8 @@ export const getSalesReportPage = async (req, res) => {
       );
   
       const totals = salesData.reduce((acc, item) => {
-        acc.totalDiscount += parseFloat(item.discount); 
-        acc.totalAmount += parseFloat(item.totalAmount); 
+        acc.totalDiscount += parseFloat(item.discount); // Sum up the discount
+        acc.totalAmount += parseFloat(item.totalAmount); // Sum up the totalAmount
         return acc;
       }, { totalDiscount: 0, totalAmount: 0 });
   
@@ -88,4 +87,3 @@ export const getSalesReportPage = async (req, res) => {
       res.status(500).json({ message: 'An error occurred while fetching the sales report' });
     }
   };
-  
