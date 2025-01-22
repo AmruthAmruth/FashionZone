@@ -135,8 +135,8 @@ export const paymentFailerPage = async (req, res) => {
 
 
 const razorpayInstance = new Razorpay({
-    key_id: "rzp_test_eEMIhlHUZ45CcM",
-    key_secret: "JRjeQHH3jzKaEjp1V912XmSA",
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
 
@@ -534,11 +534,9 @@ export const returnProduct = async (req, res) => {
 
 
 //-----------------------Product wise cancelation and return ------------------------------------------------------------
-
 export const updateOrderAndProduct = async (orderId, productId, action, userId) => {
     try {
         const order = await Order.findById(orderId);
-
 
         if (!order) {
             return { success: false, message: "Order not found." };
@@ -551,33 +549,31 @@ export const updateOrderAndProduct = async (orderId, productId, action, userId) 
 
         orderProduct.display = false;
 
-        const product = await Product.findById(orderProduct.productId);
-        if (product) {
-            if (action === 'return') {
-                product.stock += orderProduct.quantity;
-            } else if (action === 'cancel') {
-                product.stock += orderProduct.quantity;
-            }
+        const product = await Product.findById(productId);
+        if (!product) {
+            return { success: false, message: "Product not found in the database." };
+        }
+
+        // Update product stock
+        if (['return', 'cancel'].includes(action)) {
+            product.stock += orderProduct.quantity;
             await product.save();
         }
 
         // Update user wallet
-        let userWallet = await Wallet.findOne({ user: userId });
-        if (!userWallet) {
-            userWallet = new Wallet({ user: userId, balance: 0, transaction: [] });
-        }
-
         const productPrice = orderProduct.price;
+        let userWallet = await Wallet.findOne({ user: userId }) || new Wallet({ user: userId, balance: 0, transaction: [] });
+
         userWallet.balance += productPrice;
         userWallet.transaction.push({
             amount: productPrice,
             transactionId: `TXN${Date.now()}`,
-            productName: product?.title || "Unknown Product",
+            productName: product.title || "Unknown Product",
             type: "credit",
         });
         await userWallet.save();
 
-
+        // Update order details
         const updatedOrder = await Order.findByIdAndUpdate(
             orderId,
             { $set: { "products.$[].items.$[item].display": false } },
@@ -596,11 +592,11 @@ export const updateOrderAndProduct = async (orderId, productId, action, userId) 
             await updatedOrder.save();
         }
 
-        return { success: true, order: updatedOrder, message: `${action} product successfully.` };
+        return { success: true, order: updatedOrder, message: `${action.charAt(0).toUpperCase() + action.slice(1)} product successfully.` };
 
     } catch (err) {
-        console.error(`Error while ${action} the product:`, err);
-        return { success: false, message: `An error occurred while ${action} the product.` };
+        console.error(`Error while ${action}ing the product:`, err);
+        return { success: false, message: `An error occurred while ${action}ing the product.` };
     }
 };
 
@@ -608,6 +604,7 @@ export const updateOrderAndProduct = async (orderId, productId, action, userId) 
 export const cancelProductInOrder = async (req, res) => {
     try {
         const { productId, orderId } = req.body;
+console.log(req.body);
 
         if (!productId || !orderId) {
             return res.status(400).json({ success: false, message: "Order ID and Product ID are required." });
@@ -805,7 +802,6 @@ export const createWalletcheckout = async (req, res) => {
             });
             await walletData.save();
 
-            // Update product stock
             for (let product of parsedProducts) {
                 for (let item of product.items) {
                     const { productId, quantity } = item;
@@ -832,6 +828,7 @@ export const createWalletcheckout = async (req, res) => {
          
           await coupon.save();
           user.redeemed=null
+          await user.save()
         }
 
 

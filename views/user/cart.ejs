@@ -410,7 +410,9 @@
                     title: 'Quantity updated!',
                     text: `The quantity has been updated to ${data.newQuantity}.`,
                     confirmButtonText: 'Ok',
-                });
+                }).then(()=>{
+                    window.location.reload(); 
+                })
             } else {
                 // Error sweet alert
                 Swal.fire({

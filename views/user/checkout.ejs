@@ -178,8 +178,13 @@
                                                                                     </tr>
 
                                                                                     <tr>
-                                                                                        <td>Shipping:</td>
-                                                                                        <td>Free shipping</td>
+                                                                                        <td>Discounted Amount:</td>
+                                                                                        <td><span id="disAmount">
+                                                                                              
+                                                                                            </span></td> <br>
+                                                                                        <input type="hidden"
+                                                                                            name="discountPrice"
+                                                                                            value="<%= subtotal - cartPrice.total %>"></td>
                                                                                     </tr>
 
                                                                                     <tr class="summary-total">
@@ -387,9 +392,6 @@
 
 
 
-
-
-
                                         <!-- Add Address Modal -->
                                         <div class="modal fade" id="addAddressModal" tabindex="-1" role="dialog"
                                             aria-labelledby="addAddressModalLabel" aria-hidden="true">
@@ -561,8 +563,9 @@
                             const couponButton = document.getElementById('couponButton');
                             const couponInput = document.getElementById('couponcode');
                             const totalPriceSpan = document.getElementById('total-price');
+                            const disAmount = document.getElementById('disAmount');
                             const totalPriceInput = document.querySelector('input[name="totalPrice"]');
-
+                            const discountPrice=document.querySelector('input[name="discountPrice"]')
                             couponForm.addEventListener('submit', async function (event) {
                                 event.preventDefault(); // Prevent the form from submitting the default way
 
@@ -617,7 +620,7 @@
                                             // Update total price
                                             totalPriceSpan.textContent = `${data.totalAmount}`;
                                             totalPriceInput.value = data.totalAmount;
-
+                                            
                                             // Reset the form for applying a new coupon
                                             couponInput.disabled = false;
                                             couponButton.textContent = 'Apply';
@@ -633,9 +636,10 @@
 
                                             // Update total price
                                             const displayedAmount = data.finalAmount || totalAmount;
+                                            const difffordiscount= totalAmount - data.finalAmount || 0
                                             totalPriceSpan.textContent = `${displayedAmount}`;
                                             totalPriceInput.value = displayedAmount;
-
+                                          disAmount.textContent=`₹${difffordiscount}`
                                             // Disable the input to prevent changes and switch button to "Remove"
                                             couponInput.disabled = true;
                                             couponButton.textContent = 'Remove';

@@ -53,23 +53,27 @@
             <!-- Loop through the products array and display each product's details -->
             <% order.products.forEach(product => { %>
                 <div class="card mb-3">
-                    <div class="card-body">
-                        <h5><%= product.items[0].title %></h5>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <!-- Display Product Image -->
-                                <img src="/<%= product.items[0].image %>" class="img-fluid" alt="<%= product.items[0].title %>">
-                            </div>
-                            <div class="col-md-8">
-                                <p><strong>Product ID:</strong> <%= product.items[0].productId %></p>
-                                <p><strong>Quantity:</strong> <%= product.items[0].quantity %></p>
-                                <p><strong>Price per unit:</strong> ₹<%= product.items[0].price %></p>
-                                <p><strong>Total Price:</strong> ₹<%= product.items[0].quantity * product.items[0].price %></p>
-                            </div>
+                  <div class="card-body">
+                    <h5>Product Details</h5>
+                    <% product.items.forEach(item => { %> <!-- Loop through each item in the product -->
+                      <div class="row mb-3">
+                        <div class="col-md-4">
+                          <!-- Display Product Image -->
+                          <img src="/<%= item.image %>" class="img-fluid" alt="<%= item.title %>" style="width: 200px;" >
                         </div>
-                    </div>
+                        <div class="col-md-8">
+                          <p><strong>Product Title:</strong> <%= item.title %></p>
+                          <p><strong>Product ID:</strong> <%= item.productId %></p>
+                          <p><strong>Quantity:</strong> <%= item.quantity %></p>
+                          <p><strong>Price per unit:</strong> ₹<%= item.price %></p>
+                          <p><strong>Total Price:</strong> ₹<%= item.quantity * item.price %></p>
+                        </div>
+                      </div>
+                      <hr> <!-- Add a horizontal rule to separate items -->
+                    <% }); %>
+                  </div>
                 </div>
-            <% }); %>
+              <% }); %>
 
             <!-- Button for changing the order status -->
             <form action="/admin/changestatus/<%= order._id %>" method="POST">

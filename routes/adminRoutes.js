@@ -48,8 +48,8 @@ adminRouter.post('/toggleusers/:id',blockAndUnblock)
 
 //  ---------------------Category Management------------------------------------
 
-adminRouter.get('/categories',getCategoryPage)
-adminRouter.post('/addcategory',createCategory)
+adminRouter.get('/categories',adminAutherization,getCategoryPage)
+adminRouter.post('/addcategory',adminAutherization,createCategory)
 adminRouter.post('/togglecategory/:id', showAndHideCategory)
 adminRouter.post('/editcategory/:id',editCategory)
 
@@ -65,12 +65,12 @@ adminRouter.post('/changestatus/:id',changeTheOrderStatus)
 // --------------Offer section=------------------------
 
 
-adminRouter.get('/offers',getOfferPage)
+adminRouter.get('/offers',adminAutherization,getOfferPage)
 adminRouter.post('/addofferforproduct',addOfferForProduct)
 adminRouter.post('/editofferforproduct',upload.none(),editOfferForProduct)
 adminRouter.post('/deleteproductoffer',deleteProductOffer)
 adminRouter.post('/addofferforcategory', addOfferForCategory)
-adminRouter.get('/categoryoffer',getCategoryOffer)
+adminRouter.get('/categoryoffer',adminAutherization,getCategoryOffer)
 adminRouter.post('/editcategoryoffer',editCategoryOffer)
 adminRouter.post('/deletecategoryoffer',deleteCategoryOffer)
 adminRouter.post('/updateofferstatus/:id', updateProductOfferStatus);
@@ -79,7 +79,7 @@ adminRouter.post('/categoryofferstatus',updateCategoryOfferStatus)
 
 
 // -------------------Coupens management ----------------------------------
-adminRouter.get('/coupones',getCoupenspage)
+adminRouter.get('/coupones',adminAutherization,getCoupenspage)
 adminRouter.post('/addcoupon',addCoupon)
 adminRouter.post('/editcoupon',editCoupon)
 adminRouter.post('/couponsoftdelete',couponSoftDelete)
@@ -89,7 +89,7 @@ adminRouter.post('/couponsoftdelete',couponSoftDelete)
 
 // -------------------Salse report management section-------------------------------------------------
 
-adminRouter.get('/salesReport',getSalesReportPage)
+adminRouter.get('/salesReport',adminAutherization,getSalesReportPage)
 
 
 

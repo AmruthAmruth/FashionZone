@@ -137,7 +137,7 @@ export const getSalesChartReport = async (req, res, next) => {
         pendingProducts: yearlyPending,
         deliveredProducts: yearlyDelivered,
         cancelledProducts: yearlyCancelled,
-        returnedProducts:monthlyReturned
+        returnedProducts:yearlyReturned
       },
     };
 
@@ -191,7 +191,7 @@ export const mostSoldProductsCatagorysAndBrands = async (req, res, next) => {
           _id: 1,
           totalQuantity: 1,
           productDetails: 1,
-          brand: "$productInfo.brand",  // Ensure the brand is correctly referenced
+          brand: "$productInfo.brand",  
           category: "$productInfo.category", 
           title: "$productInfo.title", 
           price: "$productInfo.price", 
@@ -199,21 +199,18 @@ export const mostSoldProductsCatagorysAndBrands = async (req, res, next) => {
       },
     ]).limit(10)
 
-    // Aggregating categories details
     const categoriesDetails = products.reduce((acc, item) => {
       const { category, totalQuantity } = item;
       acc[category] = (acc[category] || 0) + totalQuantity;
       return acc;
     }, {});
 
-    // Aggregating brand details
     const brandDetails = products.reduce((acc, product) => {
-      const { brand, totalQuantity } = product;  // Corrected brand and totalQuantity
+      const { brand, totalQuantity } = product;  
       acc[brand] = (acc[brand] || 0) + totalQuantity;
       return acc;
     }, {});
 
-    // Attaching data to the request object
     req.categoriesDetails = categoriesDetails;
     req.mostSoldDetails = products;
     req.brand = brandDetails;

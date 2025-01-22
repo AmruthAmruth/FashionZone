@@ -40,16 +40,42 @@
 
                         <div class="header-search header-search-extended header-search-visible">
                             <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
-                          
-                            <form action="/shop" method="get" >
+                        
+                            <form action="/shop" method="get">
                                 <div class="header-search-wrapper search-wrapper-wide">
                                     <label for="q" class="sr-only">Search</label>
-                                    <input type="text" value="<%= searchQuery ? searchQuery : '' %>"  class="form-control p-5" name="q" id="q" placeholder="Search product ..." required>
-                                    <button class="btn btn-primary p-5" type="submit"><i class="icon-search"></i></button>
-                                </div><!-- End .header-search-wrapper -->
+                                    
+                                    <!-- Input Wrapper for Search and Clear Icon -->
+                                    <div class="position-relative" style="width: 100%;">
+                                        <!-- Search Input -->
+                                        <input 
+                                            type="text" 
+                                            value="<%= searchQuery ? searchQuery : '' %>"  
+                                            class="form-control p-5" 
+                                            name="q" 
+                                            id="q" 
+                                            placeholder="Search product ..." 
+                                            >
+                                        
+                                        <!-- Clear Icon -->
+                                        <i 
+                                            class="icon-close" 
+                                            id="clear-icon" 
+                                            style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px; color: #aaa; display: none;">
+                                        </i>
+                                    </div>
+                                    
+                                    <!-- Submit Button -->
+                                    <button class="btn btn-primary p-5" type="submit">
+                                        <i class="icon-search"></i>
+                                    </button>
+                                </div>
                             </form>
-                            
                         </div>
+                        
+
+
+
 
                        
                     </div><!-- End .toolbox -->
@@ -86,6 +112,9 @@
                                                         <span>Quick view</span>
                                                     </a>
                                                 </div>
+
+                                                <% if (product.stock !==0) { %>
+
                                                 <div class="product-action d-flex justify-content-center">
                                                     <form action="/cart/add/<%= product._id %>" method="POST">
                                                         <button type="submit" class="btn-product btn-cart" style="border: none;">
@@ -93,6 +122,8 @@
                                                         </button>
                                                     </form>
                                                 </div>
+
+                                                <% } %>
                                             </figure>
                                             <div class="product-body">
                                                 <div class="product-cat">
@@ -177,7 +208,7 @@
                        
                        
 
-
+                      
 
                         <form method="GET" action="/shop" style="margin-top: 100px;">
                             <select name="category"
@@ -198,7 +229,11 @@
                                 <option value="newArrivals" <%= sortOption === 'newArrivals' ? 'selected' : '' %>>New Arrivals</option>
                             </select> <br>
                             <button type="submit"  style="width: 150px; height: 40px; background-color: #e9e9e9; margin-left: 50px; color: black; border: none; border-radius: 15px;">Apply Filters</button>
-                        </form>
+                            <a href="/shop" 
+                            class="clear-link text-center px-5 d-flex mt-3" 
+                            style="width: 150px; height: 40px; background-color: #f2f2f2; margin-left: 50px; color: #333; border: none; border-radius: 15px; text-align: center; display: inline-flex; justify-content: center; align-items: center; text-decoration: none; font-weight: 500; transition: background-color 0.3s ease;">
+                             Clear
+                         </a>                        </form>
                         
 
 
@@ -230,6 +265,40 @@
         </div><!-- End .container -->
     </div><!-- End .page-content -->
 </main><!-- End .main -->
+
+
+
+
+<!-- Cear button for the search bar -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+const searchInput = document.getElementById('q');
+const clearIcon = document.getElementById('clear-icon');
+
+// Show or hide the clear icon based on the input value
+searchInput.addEventListener('input', () => {
+if (searchInput.value.trim() !== '') {
+clearIcon.style.display = 'block'; // Show the clear icon
+} else {
+clearIcon.style.display = 'none'; // Hide the clear icon
+}
+});
+
+// Clear the input field when the clear icon is clicked
+clearIcon.addEventListener('click', () => {
+searchInput.value = ''; // Clear the input
+clearIcon.style.display = 'none'; // Hide the clear icon
+searchInput.focus(); // Focus back on the input field
+});
+
+// Initialize the clear icon state based on the input's initial value
+if (searchInput.value.trim() !== '') {
+clearIcon.style.display = 'block';
+}
+});
+
+</script>
+
 
 
 

@@ -10,16 +10,17 @@ export const getShopPage = async (req, res) => {
         const page = parseInt(req.query.page) || 1; 
         const productsPerPage = 6; 
 
-        let query = { isActive: true }; 
-
+        let query = { isActive: true };
         if (searchQuery) {
-            query.title = { $regex: searchQuery, $options: 'i' };
+            query.title = { $regex: searchQuery, $options: 'i' }; 
         }
 
+       
         if (category) {
             query.category = category;
         }
 
+        
         let sortQuery = {}; 
         if (sortOption === 'titleAsc') {
             sortQuery.title = 1; 
@@ -28,29 +29,32 @@ export const getShopPage = async (req, res) => {
         } else if (sortOption === 'priceLowToHigh') {
             sortQuery.disPrice = 1; 
         } else if (sortOption === 'priceHighToLow') {
-            sortQuery.disPrice = -1; 
+            sortQuery.disPrice = -1;
         } else if (sortOption === 'newArrivals') {
-            sortQuery.createdAt = -1; 
+            sortQuery.createdAt = -1;
         }
 
        
         const totalProducts = await Product.countDocuments(query);
         const totalPages = Math.ceil(totalProducts / productsPerPage);
 
+        
         const products = await Product.find(query)
             .sort(sortQuery) 
-            .skip((page - 1) * productsPerPage)
+            .skip((page - 1) * productsPerPage) 
             .limit(productsPerPage);
 
-        
+       
         res.render('user/shop', {
-            user: req.session.user || null,
+            user: req.session.user || null,  
             products,
             searchQuery,
             category,
             sortOption,
             currentPage: page,
             totalPages,
+            totalProducts, 
+            
         });
     } catch (error) {
         console.error('Error fetching products:', error);
@@ -298,6 +302,8 @@ export const cartPriceList = async (req, res, next) => {
 
 
 
+
+
 export const addToCart = async (req, res) => {
     try {
         const productId = req.params.productId;
@@ -349,6 +355,14 @@ console.log("Is working");
         res.status(500).send("Internal Server Error");
     }
 };
+
+
+
+
+
+
+
+
 
 
 

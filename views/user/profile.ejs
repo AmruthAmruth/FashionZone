@@ -235,6 +235,7 @@
                                                               <th>Action</th>
                                                             </tr>
                                                           </thead>
+
                                                           <tbody>
                                                             <% order.products.forEach(function(product) { %>
                                                               <% product.items.forEach(function(item) { %>
@@ -247,39 +248,18 @@
                                                                   <td><%= item.quantity %></td>
                                                                   <td>
                                                                     <% if (item.display) { %>
-                                                                    
-
-
-
-
-                                                                  
-                                                                     
-
-
-                                                                      
-                                                                      <% if (order.status === "Delivered") { %>
-
-                                                                        <form id="returnProductForm" method="post" action="/ordersummany/returnproduct">
-                                                                          <input type="hidden" value="<%= item.productId %>" name="productId">
-                                                                          <input type="hidden" value="<%= order._id %>" name="orderId">
-                                                                          <button type="button" id="returnButton" class="btn btn-outline-dark">Return Product</button>
-                                                                        </form>
-                                                                      
-                                                                      <% } else { %>
-                                                                      
-                                                                        <form id="cancelProductForm" method="post" action="/ordersummery/cancelproduct">
-                                                                          <input type="hidden" value="<%= item.productId %>" name="productId">
-                                                                          <input type="hidden" value="<%= order._id %>" name="orderId">
-                                                                          <button type="button" id="cancelButton" class="btn btn-outline-dark">Cancel Product</button>
-                                                                        </form>
-                                                                      
-                                                                      <% } %>
-
-
-                                                                      
-
-
-
+                                                                      <form id="<%= order.status === 'Delivered' ? 'returnProductForm_' + item.productId : 'cancelProductForm_' + item.productId %>" 
+                                                                            method="post" 
+                                                                            action="<%= order.status === 'Delivered' ? '/ordersummany/returnproduct' : '/ordersummery/cancelproduct' %>">
+                                                                        <input type="hidden" value="<%= item.productId %>" name="productId">
+                                                                        <input type="hidden" value="<%= order._id %>" name="orderId">
+                                                                        <button type="button" 
+                                                                                class="btn btn-outline-dark actionButton" 
+                                                                                data-action="<%= order.status === 'Delivered' ? 'return' : 'cancel' %>" 
+                                                                                data-form-id="<%= order.status === 'Delivered' ? 'returnProductForm_' + item.productId : 'cancelProductForm_' + item.productId %>">
+                                                                          <%= order.status === 'Delivered' ? 'Return Product' : 'Cancel Product' %>
+                                                                        </button>
+                                                                      </form>
                                                                     <% } else { %>
                                                                       <span class="text-muted">Product Cancelled</span>
                                                                     <% } %>
@@ -288,6 +268,17 @@
                                                               <% }); %>
                                                             <% }); %>
                                                           </tbody>
+                                                          
+                                                          
+
+
+
+
+                                                        </table>
+
+
+
+
                                                         </table>
                                                       </div>
                                                       <div class="card-footer text-muted">
@@ -351,8 +342,7 @@
 
 
 
-
-                                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                                    <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
                                     <script>
                                       document.addEventListener('DOMContentLoaded', function () {
                                         const returnButton = document.getElementById('returnButton');
@@ -398,7 +388,8 @@
                                           });
                                         }
                                       });
-                                    </script>
+                                    </script> -->
+                                    
                                     
 
 
@@ -825,7 +816,7 @@
 <!-- Cancel a single product -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
+    <!-- <script>
       document.addEventListener('DOMContentLoaded', () => {
           const cancelButton = document.getElementById('cancelButton');
           const cancelForm = document.getElementById('cancelProductForm');
@@ -892,11 +883,11 @@
               });
           });
       });
-  </script>
+  </script> -->
   
       
 <!-- Return a sinple product -->
-<script>
+<!-- <script>
   document.addEventListener('DOMContentLoaded', () => {
       const returnButton = document.getElementById('returnButton');
       const returnForm = document.getElementById('returnProductForm');
@@ -966,13 +957,104 @@
           });
       });
   });
+</script> -->
+
+
+
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+  // Event delegation for all return and cancel buttons
+  document.body.addEventListener('click', function (event) {
+    const button = event.target;
+
+    // Check if the clicked element is an action button
+    if (button.classList.contains('actionButton')) {
+      event.preventDefault();
+
+      const actionType = button.dataset.action; // "return" or "cancel"
+      const formId = button.dataset.formId; // Corresponding form ID
+      const form = document.getElementById(formId);
+
+      // Ensure the form exists
+      if (!form) {
+        console.error(`Form with ID "${formId}" not found.`);
+        return;
+      }
+
+      // SweetAlert2 confirmation messages
+      const swalConfig = {
+        return: {
+          title: 'Are you sure?',
+          text: 'Do you really want to return this product?',
+          confirmButtonText: 'Yes, return it!',
+          cancelButtonText: 'No, keep it',
+        },
+        cancel: {
+          title: 'Are you sure?',
+          text: 'Do you really want to cancel this product?',
+          confirmButtonText: 'Yes, cancel it!',
+          cancelButtonText: 'No, keep it',
+        },
+      };
+
+      // Show confirmation dialog based on the action type
+      Swal.fire({
+        title: swalConfig[actionType].title,
+        text: swalConfig[actionType].text,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: swalConfig[actionType].confirmButtonText,
+        cancelButtonText: swalConfig[actionType].cancelButtonText,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Submit the form using AJAX
+          const formData = new FormData(form);
+          fetch(form.action, {
+            method: 'POST',
+            body: formData,
+          })
+            .then((response) => response.json()) // Parse JSON response
+            .then((data) => {
+              if (data.success) {
+                Swal.fire({
+                  title: 'Success!',
+                  text: `${data.message}\nOrder ID: ${data.order.orderId}\nTotal: ${data.order.totalAmount}`,
+                  icon: 'success',
+                  confirmButtonText: 'Ok',
+                }).then(() => {
+                  location.reload(); // Reload the page to reflect changes
+                });
+              } else {
+                Swal.fire({
+                  title: 'Error!',
+                  text: data.message,
+                  icon: 'error',
+                  confirmButtonText: 'Try Again',
+                });
+              }
+            })
+            .catch((error) => {
+              console.error('Error:', error);
+              Swal.fire({
+                title: 'Error!',
+                text: 'Something went wrong. Please try again.',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+              });
+            });
+        } else {
+          console.log(`User canceled the ${actionType} action.`);
+        }
+      });
+    }
+  });
+});
+
 </script>
-
-
-
-
-
-
 
 
 
