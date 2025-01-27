@@ -140,6 +140,8 @@ const razorpayInstance = new Razorpay({
 });
 
 
+// razorpay
+
 
 
 export const createRazorpayOrder = async (req, res) => {
@@ -237,6 +239,46 @@ export const createRazorpayOrder = async (req, res) => {
     }
 };
 
+export const verifyRazorpayPayment = async (req, res) => {
+    try {
+        console.log("Verify razorpay order is workign now", req.body);
+
+        const { orderId, paymentId, signature } = req.body;
+
+        if (!orderId || !paymentId || !signature) {
+            return res.status(400).json({ error: "Missing payment verification details." });
+        }
+
+        const expectedSignature = crypto
+            .createHmac("sha256", "JRjeQHH3jzKaEjp1V912XmSA")
+            .update(orderId + "|" + paymentId)
+            .digest("hex");
+
+        const order = await Order.findOne({ orderId })
+
+        if (!order) {
+            throw new Error('Order not found');
+        }
+
+        if (expectedSignature === signature) {
+            order.paymentStatus = "Paid"
+            await order.save()
+            res.status(200).json({ success: true, message: "Payment verified successfully" });
+        } else {
+            order.paymentStatus = "Failed"
+            await order.save()
+            res.status(400).json({ success: false, message: "Payment verification failed" });
+        }
+    } catch (err) {
+        console.log("Error during Razorpay payment verification:", err);
+        res.status(500).json({ error: "Error verifying payment. Please try again." });
+    }
+};
+
+
+// ////////////////////////////////
+
+
 
 
 export const contineOrderPayment = async (req, res) => {
@@ -311,41 +353,7 @@ export const verifyPayment = async (req, res) => {
 
 
 
-export const verifyRazorpayPayment = async (req, res) => {
-    try {
-        console.log("Verify razorpay order is workign now", req.body);
 
-        const { orderId, paymentId, signature } = req.body;
-
-        if (!orderId || !paymentId || !signature) {
-            return res.status(400).json({ error: "Missing payment verification details." });
-        }
-
-        const expectedSignature = crypto
-            .createHmac("sha256", "JRjeQHH3jzKaEjp1V912XmSA")
-            .update(orderId + "|" + paymentId)
-            .digest("hex");
-
-        const order = await Order.findOne({ orderId })
-
-        if (!order) {
-            throw new Error('Order not found');
-        }
-
-        if (expectedSignature === signature) {
-            order.paymentStatus = "Paid"
-            await order.save()
-            res.status(200).json({ success: true, message: "Payment verified successfully" });
-        } else {
-            order.paymentStatus = "Failed"
-            await order.save()
-            res.status(400).json({ success: false, message: "Payment verification failed" });
-        }
-    } catch (err) {
-        console.log("Error during Razorpay payment verification:", err);
-        res.status(500).json({ error: "Error verifying payment. Please try again." });
-    }
-};
 
 
 
