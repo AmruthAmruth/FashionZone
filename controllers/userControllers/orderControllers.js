@@ -190,7 +190,7 @@ export const createRazorpayOrder = async (req, res) => {
                         productInStock.stock = 0;
                     }
                     await productInStock.save();
-                    console.log(`Updated product stock for ${productInStock.title}, new stock: ${productInStock.stock}`);
+                    
                 }
             }
         }
@@ -284,7 +284,7 @@ export const verifyPayment = async (req, res) => {
         const body = razorpay_order_id + "|" + razorpay_payment_id;
 
         const expected_signature = crypto
-            .createHmac("sha256", "JRjeQHH3jzKaEjp1V912XmSA")
+            .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
             .update(body)
             .digest("hex");
 

@@ -98,15 +98,15 @@ export const AdminLogin = async (req, res) => {
 
 export const AdminLogout=async(req,res)=>{
   try{
-    console.log(req.session.admin);
+  
     
         req.session.destroy((err)=>{
           if(err){
-            console.log("Error while session destroyed");
+           
             return res.redirect('/')
             
           }
-          console.log("Session destroyed successfully");
+        
           return res.redirect('/')
           
         })

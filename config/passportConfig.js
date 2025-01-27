@@ -15,8 +15,6 @@ passport.use(
     }, 
     async (accessToken, refreshToken, profile, done) => { 
       try {
-        console.log('Google Profile:', profile);
-       
         
         
         let user = await User.findOne({ email: profile.emails[0].value });
