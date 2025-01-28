@@ -135,8 +135,8 @@ export const paymentFailerPage = async (req, res) => {
 
 
 const razorpayInstance = new Razorpay({
-    key_id: "rzp_test_eEMIhlHUZ45CcM",
-    key_secret: "JRjeQHH3jzKaEjp1V912XmSA",
+    key_id: "rzp_test_SsN3kF1vkA34wm",
+    key_secret: "NZV6ZXQpcu6Z7uXY1a6Fipwn",
 });
 
 
@@ -250,7 +250,7 @@ export const verifyRazorpayPayment = async (req, res) => {
         }
 
         const expectedSignature = crypto
-            .createHmac("sha256", "JRjeQHH3jzKaEjp1V912XmSA")
+            .createHmac("sha256", "NZV6ZXQpcu6Z7uXY1a6Fipwn")
             .update(orderId + "|" + paymentId)
             .digest("hex");
 
