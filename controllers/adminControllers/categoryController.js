@@ -20,29 +20,40 @@ export const getCategoryPage=async(req,res)=>{
 }
 
 
-export const createCategory=async(req,res)=>{
-    try{
 
-        const {category,description}=req.body
-
-  if(!category || !description){
-    return res.redirect('admin/categories')
-  }
-          
-        const newCategory= new Category({
-            category,
-            description
-        })
-
-            await newCategory.save()
-            res.redirect('/admin/categories');
-
-
-    }catch(err){
-        console.log("Error while trying to add category",err);
-        
+export const createCategory = async (req, res) => {
+    try {
+      const { category, description } = req.body;
+  
+      // Check if both category and description are provided
+      if (!category || !description) {
+        return res.redirect('admin/categories');
+      }
+  
+      // Check if the category already exists (case-insensitive check)
+      const existingCategory = await Category.findOne({
+        category: { $regex: new RegExp(`^${category}$`, 'i') }
+      });
+  
+      if (existingCategory) {
+        // If category exists (case-insensitive), redirect back with an error message
+        return res.redirect('admin/categories?error=Category already exists');
+      }
+  
+      // If no existing category, create a new one
+      const newCategory = new Category({
+        category,
+        description
+      });
+  
+      await newCategory.save();
+      res.redirect('/admin/categories');
+  
+    } catch (err) {
+      console.log("Error while trying to add category", err);
     }
-}
+  }
+  
 
 
 export const editCategory=async(req,res)=>{
