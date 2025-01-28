@@ -27,20 +27,19 @@ export const createCategory = async (req, res) => {
   
       // Check if both category and description are provided
       if (!category || !description) {
-        return res.redirect('admin/categories');
+        return res.redirect('/admin/categories');
       }
   
-      // Check if the category already exists (case-insensitive check)
       const existingCategory = await Category.findOne({
         category: { $regex: new RegExp(`^${category}$`, 'i') }
       });
   
       if (existingCategory) {
-        // If category exists (case-insensitive), redirect back with an error message
-        return res.redirect('admin/categories');
+ 
+        return res.redirect('/admin/categories');
       }
   
-      // If no existing category, create a new one
+      
       const newCategory = new Category({
         category,
         description
