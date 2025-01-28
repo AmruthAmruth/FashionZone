@@ -37,7 +37,7 @@ export const createCategory = async (req, res) => {
   
       if (existingCategory) {
         // If category exists (case-insensitive), redirect back with an error message
-        return res.redirect('admin/categories?error=Category already exists');
+        return res.redirect('admin/categories');
       }
   
       // If no existing category, create a new one
