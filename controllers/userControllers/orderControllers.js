@@ -135,8 +135,8 @@ export const paymentFailerPage = async (req, res) => {
 
 
 const razorpayInstance = new Razorpay({
-    key_id: "rzp_test_vVHTvfU31Svako",
-    key_secret: "Qv0v56Dn7c3pdmtfhc0LKmjS",
+    key_id: "rzp_test_eEMIhlHUZ45CcM",
+    key_secret: "JRjeQHH3jzKaEjp1V912XmSA",
 });
 
 
