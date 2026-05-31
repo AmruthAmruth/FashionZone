@@ -1,49 +1,24 @@
-<nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
-  
-
-  
-
-      
-      
-
-      
-      
-    <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0   d-xl-none ">
+<nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar" style="background: rgba(26,26,46,0.95) !important; backdrop-filter: blur(10px) !important; border-bottom: 1px solid rgba(201,169,110,0.15) !important; box-shadow: var(--fz-shadow-sm) !important; margin-top: 15px !important; border-radius: var(--fz-radius) !important; padding: 0 24px !important;">
+    
+    <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
       <a class="nav-item nav-link px-0 me-xl-6" href="javascript:void(0)">
-        <i class="ri-menu-fill ri-24px"></i>
+        <i class="ri-menu-fill ri-24px" style="color: var(--fz-gold) !important;"></i>
       </a>
     </div>
-    
 
     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
-
-    
-      
-      
-
-      
+      <div class="navbar-nav align-items-center">
+        <div class="nav-item d-flex align-items-center">
+          <span style="font-family: var(--font-heading); color: #fff; font-weight: 600; font-size: 1.15rem; letter-spacing: 0.5px;">Control Dashboard</span>
+        </div>
+      </div>
 
       <ul class="navbar-nav flex-row align-items-center ms-auto">
-
-        
-      
-         <form action="/admin/adminlogout" method="post">
-           <button type="submit" class="btn btn-danger">Logout</button>
+         <form action="/admin/adminlogout" method="post" style="margin: 0;">
+           <button type="submit" class="btn" style="padding: 8px 20px !important; font-size: 12px !important; border-radius: 50px !important; background: linear-gradient(135deg, var(--fz-gold), var(--fz-gold-dark)) !important; border: none !important; color: var(--fz-dark) !important; font-weight: 700 !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; transition: var(--fz-transition); box-shadow: 0 4px 12px rgba(201,169,110,0.2) !important;">
+             <i class="ri-logout-box-r-line me-1" style="vertical-align: middle;"></i> Logout
+           </button>
          </form>
-       
-        
-
-
       </ul>
     </div>
-
-    
-    <!-- Search Small Screens -->
-    <div class="navbar-search-wrapper search-input-wrapper  d-none">
-      <input type="text" class="form-control search-input container-xxl border-0" placeholder="Search..." aria-label="Search...">
-      <i class="ri-close-fill search-toggler cursor-pointer"></i>
-    </div>
-    
-    
-
 </nav>

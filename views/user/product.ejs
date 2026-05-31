@@ -1,803 +1,790 @@
-
-
-
 <%- include('../layout/header.ejs') -%>
 
-
-
-    </head>
-
 <style>
+    :root {
+        --primary: #c9a96e;
+        --primary-dark: #a8813d;
+        --dark: #111827;
+        --navy: #1a1a2e;
+        --text: #6b7280;
+        --muted: #9ca3af;
+        --light: #f8f7f4;
+        --border: rgba(17, 24, 39, 0.1);
+        --shadow: 0 18px 45px rgba(17, 24, 39, 0.08);
+        --shadow-hover: 0 28px 70px rgba(17, 24, 39, 0.14);
+    }
+
+    body {
+        background: #fafafa;
+        color: var(--dark);
+    }
+
+    .main {
+        background:
+            radial-gradient(circle at top left, rgba(201, 169, 110, 0.08), transparent 32%),
+            linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+        padding-bottom: 70px;
+    }
+
+    .breadcrumb-nav {
+        background: #fff;
+        border-bottom: 1px solid var(--border) !important;
+        padding: 14px 0;
+        margin-bottom: 40px !important;
+    }
+
+    .breadcrumb {
+        margin-bottom: 0;
+    }
+
+    .product-details-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 30px;
+        box-shadow: var(--shadow);
+        padding: 30px;
+    }
+
+    .product-gallery-card {
+        border-radius: 26px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        box-shadow: 0 14px 35px rgba(17, 24, 39, 0.06);
+        background: #f7f7f7;
+    }
+
+    .product-main-image {
+        position: relative;
+        width: 100%;
+        height: 540px;
+        overflow: hidden;
+        background: #f6f6f6;
+    }
+
+    #product-zoom {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.18s ease-out;
+        transform-origin: center center;
+    }
+
+    .product-image-gallery {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-top: 18px;
+    }
+
+    .product-gallery-item {
+        border-radius: 18px;
+        overflow: hidden;
+        border: 2px solid transparent;
+        aspect-ratio: 1 / 1;
+        transition: all 0.3s ease;
+        background: #fff;
+        box-shadow: 0 8px 22px rgba(17, 24, 39, 0.06);
+        padding: 4px;
+    }
+
+    .product-gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 14px;
+    }
+
+    .product-gallery-item.active,
+    .product-gallery-item:hover {
+        border-color: var(--primary);
+        transform: translateY(-4px);
+        box-shadow: 0 14px 30px rgba(201, 169, 110, 0.22);
+    }
+
+    .product-details-panel {
+        padding: 10px 10px 10px 28px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .brand-tag {
+        display: inline-flex;
+        width: fit-content;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(201, 169, 110, 0.12);
+        color: var(--primary-dark);
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 16px;
+    }
+
+    .single-product-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2rem, 4vw, 3rem);
+        line-height: 1.15;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 14px;
+        letter-spacing: -0.5px;
+    }
+
+    .ratings-container {
+        margin-bottom: 20px;
+    }
+
+    .ratings-text {
+        font-size: 13px;
+        color: var(--text);
+        text-decoration: none;
+        margin-left: 8px;
+    }
+
     .product-price {
-    font-size: 18px;
-    color: #333;
-}
+        display: flex;
+        align-items: baseline;
+        gap: 14px;
+        margin: 18px 0 24px 0;
+    }
 
-.original-price {
-    text-decoration: line-through;  /* This will add a strikethrough */
-    color: #888;  /* Light gray color to show the original price */
-    margin-right: 10px;
-}
+    .discounted-price {
+        font-size: 2.4rem;
+        color: #16a34a;
+        font-weight: 900;
+        letter-spacing: -0.5px;
+    }
 
-.discounted-price {
-    font-size: 25px;
-    color: #008e07;  
-    font-weight: normal;
-}
+    .original-price {
+        text-decoration: line-through;
+        color: var(--muted);
+        font-size: 1.15rem;
+        font-weight: 600;
+    }
 
-.product-main-image {
-    position: relative;
-    width: 455px; /* Image width */
-    height: 455px; /* Image height */
-    overflow: hidden; /* Hide anything outside the container */
-}
+    .product-content {
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        padding: 22px 0;
+        margin-bottom: 24px;
+    }
 
-#product-zoom {
-    width: 100%;
-    height: 100%;
-    transition: transform 0.1s ease-out; /* Smooth zoom effect */
-    transform-origin: center center; /* Default zoom position */
-}
+    .product-content p {
+        font-size: 15px;
+        line-height: 1.8;
+        color: var(--text);
+        margin: 0;
+    }
 
-.product-main-image:hover #product-zoom {
-    cursor: crosshair; /* Crosshair cursor on hover */
-}
+    .product-meta-box {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-top: 8px;
+    }
 
+    .product-meta-item {
+        background: #fafafa;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 14px 16px;
+        font-size: 13.5px;
+        color: var(--text);
+    }
 
+    .product-meta-item strong {
+        display: block;
+        color: var(--navy);
+        font-weight: 800;
+        margin-bottom: 5px;
+    }
+
+    .stock-success {
+        color: #16a34a;
+        font-weight: 800;
+    }
+
+    .stock-danger {
+        color: #dc2626;
+        font-weight: 800;
+    }
+
+    .action-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-top: 34px;
+        align-items: flex-end;
+    }
+
+    .qty-label {
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--navy);
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .qty-stepper {
+        display: flex;
+        align-items: center;
+        border: 1.5px solid #e5e7eb;
+        border-radius: 999px;
+        background: #fff;
+        overflow: hidden;
+        padding: 5px;
+        width: 150px;
+        box-shadow: 0 8px 22px rgba(17, 24, 39, 0.05);
+    }
+
+    .qty-btn {
+        background: #f3f4f6;
+        border: none;
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--navy);
+        font-weight: 800;
+        cursor: pointer;
+        border-radius: 50%;
+        transition: all 0.25s ease;
+    }
+
+    .qty-btn:hover {
+        background: var(--primary);
+        color: var(--navy);
+    }
+
+    .qty-input-field {
+        width: 54px;
+        border: none;
+        background: transparent;
+        text-align: center;
+        font-weight: 800;
+        font-size: 15px;
+        color: var(--navy);
+        outline: none;
+    }
+
+    .btn-fz-primary {
+        border: none;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: var(--navy) !important;
+        font-size: 13px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.9px;
+        transition: all 0.3s ease;
+        box-shadow: 0 14px 34px rgba(201, 169, 110, 0.28);
+    }
+
+    .btn-fz-primary:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 48px rgba(201, 169, 110, 0.42);
+    }
+
+    .wishlist-btn {
+        display: block;
+        width: 100%;
+        padding: 14px !important;
+        border-radius: 999px !important;
+        border: 1.5px solid #e5e7eb !important;
+        background: #fff !important;
+        color: var(--navy) !important;
+        font-size: 13px;
+        font-weight: 800;
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .wishlist-btn:hover {
+        border-color: var(--primary) !important;
+        background: rgba(201, 169, 110, 0.08) !important;
+        transform: translateY(-3px);
+    }
+
+    .related-section {
+        margin-top: 70px;
+        padding-top: 55px;
+        border-top: 1px solid var(--border);
+    }
+
+    .related-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.3rem;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 40px;
+    }
+
+    .product.product-7 {
+        background: #fff;
+        border-radius: 24px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        box-shadow: 0 12px 32px rgba(17, 24, 39, 0.05);
+        transition: all 0.35s ease;
+    }
+
+    .product.product-7:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .product-media {
+        border-radius: 24px 24px 0 0;
+        overflow: hidden;
+        background: #f4f4f4;
+    }
+
+    .product-image {
+        transition: transform 0.75s ease;
+    }
+
+    .product.product-7:hover .product-image {
+        transform: scale(1.08);
+    }
+
+    .product-body {
+        padding: 20px 18px 24px !important;
+    }
+
+    .product-cat a {
+        color: var(--muted);
+        font-size: 12px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-weight: 800;
+    }
+
+    .product-title {
+        font-size: 15px !important;
+        font-weight: 800 !important;
+        line-height: 1.45 !important;
+        min-height: 42px;
+    }
+
+    .product-title a {
+        color: var(--dark);
+        transition: color 0.3s ease;
+    }
+
+    .product-title a:hover {
+        color: var(--primary-dark);
+    }
+
+    .product.product-7 .product-price {
+        justify-content: center;
+        font-size: 17px;
+        font-weight: 800;
+        color: var(--navy);
+        margin: 8px 0 0;
+    }
+
+    .product-label {
+        border-radius: 999px;
+        padding: 7px 12px;
+        font-weight: 800;
+        font-size: 11px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    .btn-product-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 50% !important;
+        background: #fff !important;
+        box-shadow: 0 10px 25px rgba(17, 24, 39, 0.12);
+        transition: all 0.3s ease;
+    }
+
+    .btn-product-icon:hover {
+        background: var(--primary) !important;
+        color: var(--navy) !important;
+        transform: scale(1.08);
+    }
+
+    .product-action {
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(10px);
+    }
+
+    .btn-product.btn-cart span {
+        font-weight: 800;
+        letter-spacing: 0.8px;
+    }
+
+    @media (max-width: 991px) {
+        .product-details-panel {
+            padding: 30px 0 0;
+        }
+
+        .product-main-image {
+            height: 470px;
+        }
+    }
+
+    @media (max-width: 575px) {
+        .product-details-card {
+            padding: 18px;
+            border-radius: 22px;
+        }
+
+        .product-main-image {
+            height: 390px;
+        }
+
+        .product-image-gallery {
+            gap: 10px;
+        }
+
+        .product-meta-box {
+            grid-template-columns: 1fr;
+        }
+
+        .discounted-price {
+            font-size: 2rem;
+        }
+
+        .action-row {
+            display: block;
+        }
+
+        .qty-stepper {
+            width: 100%;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .btn-fz-primary {
+            width: 100%;
+        }
+    }
 </style>
-
-
-
-<!-- jQuery Library -->
-
-  
+</head>
 
 <body>
     <div class="page-wrapper">
         <%- include('../partials/navbar.ejs') -%>
 
         <main class="main">
-            <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
-                <div class="container d-flex align-items-center">
+            <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-4">
+                <div class="container">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/">Home</a></li>
                         <li class="breadcrumb-item"><a href="/shop">Shop</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Product</li>
+                        <li class="breadcrumb-item active" aria-current="page"><%= product.title %></li>
                     </ol>
-
-                   
-                </div><!-- End .container -->
-            </nav><!-- End .breadcrumb-nav -->
-
-
-
-
-
-
-
-
-
-
-
+                </div>
+            </nav>
 
             <div class="page-content">
                 <div class="container">
-                    <div class="product-details-top">
-                      
-                      
-                      
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="product-gallery product-gallery-vertical">
-                                    <div class="row">
-                                        <figure class="product-main-image cproduct-container" style="position: relative; overflow: hidden;">
-                                            <img id="product-zoom" 
-                                                 src="/<%=product.images[0] %>" 
-                                                 style="width: 100%; height: 100%;" 
-                                                 alt="product image">
-                                        </figure>
+                    <div class="product-details-card">
+                        <div class="row align-items-center">
+                            <div class="col-lg-6 mb-4 mb-lg-0">
+                                <div class="product-gallery-card">
+                                    <div class="product-main-image">
+                                        <img id="product-zoom" src="/<%= product.images[0] %>" alt="<%= product.title %>">
+                                    </div>
+                                </div>
 
-                                    
-                                        <!-- End .product-main-image -->
-                        
-                                        <div id="product-zoom-gallery" class="product-image-gallery">
-                                            <a class="product-gallery-item active" href="#" data-image="/<%=product.images[0]%>" data-zoom-image="/<%=product.images[0] %>">
-                                                <img src="/<%=product.images[0]%>" alt="product side">
-                                            </a>
-                                            <a class="product-gallery-item" href="#" data-image="/<%=product.images[1]%>" data-zoom-image="/<%=product.images[1]%>">
-                                                <img src="/<%=product.images[1]%>" alt="product cross">
-                                            </a>
-                                            <a class="product-gallery-item" href="#" data-image="/<%=product.images[2]%>" data-zoom-image="/<%=product.images[2]%>">
-                                                <img src="/<%=product.images[2]%>" alt="product with model">
-                                            </a>
-                                            <a class="product-gallery-item" href="#" data-image="/<%=product.images[3]%>" data-zoom-image="/<%=product.images[3]%>">
-                                                <img src="/<%=product.images[3]%>" alt="product back">
-                                            </a>
-                                        </div><!-- End .product-image-gallery -->
-                                    </div><!-- End .row -->
-                                </div><!-- End .product-gallery -->
-                            </div><!-- End .col-md-6 -->
-                        
-                            <div class="col-md-6">
-                                <div class="product-details">
-                                    <h1 class="product-title"><%= product.brand %></h1><!-- End .product-title -->
+                                <div id="product-zoom-gallery" class="product-image-gallery">
+                                    <a class="product-gallery-item active" href="#" data-image="/<%= product.images[0] %>">
+                                        <img src="/<%= product.images[0] %>" alt="Product image 1">
+                                    </a>
+
+                                    <% if (product.images[1]) { %>
+                                        <a class="product-gallery-item" href="#" data-image="/<%= product.images[1] %>">
+                                            <img src="/<%= product.images[1] %>" alt="Product image 2">
+                                        </a>
+                                    <% } %>
+
+                                    <% if (product.images[2]) { %>
+                                        <a class="product-gallery-item" href="#" data-image="/<%= product.images[2] %>">
+                                            <img src="/<%= product.images[2] %>" alt="Product image 3">
+                                        </a>
+                                    <% } %>
+
+                                    <% if (product.images[3]) { %>
+                                        <a class="product-gallery-item" href="#" data-image="/<%= product.images[3] %>">
+                                            <img src="/<%= product.images[3] %>" alt="Product image 4">
+                                        </a>
+                                    <% } %>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="product-details-panel">
+                                    <span class="brand-tag"><%= product.brand %></span>
+
+                                    <h1 class="single-product-title"><%= product.title %></h1>
+
                                     <div class="ratings-container">
                                         <div class="ratings">
-                                            <div class="ratings-val" style="width: 80%;"></div><!-- End .ratings-val -->
-                                        </div><!-- End .ratings -->
-                                        <a class="ratings-text" href="#product-review-link" id="review-link">( 2 Reviews )</a>
-                                    </div><!-- End .rating-container -->
-                        
-                                    <h2 class="product-title"><%= product.title %></h2>
+                                            <div class="ratings-val" style="width: 80%;"></div>
+                                        </div>
+                                        <a class="ratings-text" href="#">( 2 Client Reviews )</a>
+                                    </div>
+
                                     <div class="product-price">
-                                        <span class="original-price">₹ <%= product.price %></span> <!-- Original Price -->
-                                        <span class="discounted-price">₹ <%= product.disPrice %></span> <!-- Discounted Price -->
+                                        <span class="discounted-price">₹<%= product.disPrice %></span>
+                                        <span class="original-price">₹<%= product.price %></span>
                                     </div>
+
                                     <div class="product-content">
-                                        <p><%= product.description %> </p>
-                                    </div><!-- End .product-content -->
-                        
-                                    <div class="details-filter-row details-row-size">
-                                        <label>Color:<%= product.color %></label>
-                                    </div><!-- End .details-filter-row -->
-                                    
-                                    <div class="details-filter-row details-row-size">
-                                        <label>Category:<%= product.category %></label>
-                                    </div><!-- End .details-filter-row -->
-                                    
-                                    
-                                    <div class="details-filter-row details-row-size" style="display: flex; flex-wrap: nowrap; align-items: center;">
-                                        <label for="size" style="margin-right: 10px; white-space: nowrap;">Size: <%= product.size %></label> 
-                                        <label for="stock" style="white-space: nowrap;">
-                                            Stock: 
-                                            <% if (product.stock === 0) { %>
-                                                <span class="out-of-stock text-danger" style="color: red; font-weight: bold;">Out of stock</span>
-                                            <% } else { %>
-                                                <%= product.stock %>
-                                            <% } %>
-                                        </label>
+                                        <p><%= product.description %></p>
                                     </div>
-                                    
-                                    
-                                    <!-- End .details-filter-row -->
-                        
-                                  
-                                  
-                                    <div class="details-action-wrapper">
+
+                                    <div class="product-meta-box">
+                                        <div class="product-meta-item">
+                                            <strong>Category</strong>
+                                            <span><%= product.category %></span>
+                                        </div>
+
+                                        <div class="product-meta-item">
+                                            <strong>Available Color</strong>
+                                            <span><%= product.color %></span>
+                                        </div>
+
+                                        <div class="product-meta-item">
+                                            <strong>Size</strong>
+                                            <span><%= product.size %></span>
+                                        </div>
+
+                                        <div class="product-meta-item">
+                                            <strong>Inventory Status</strong>
+                                            <% if (product.stock === 0) { %>
+                                                <span class="stock-danger">Out of Stock</span>
+                                            <% } else { %>
+                                                <span class="stock-success">In Stock (<%= product.stock %> items left)</span>
+                                            <% } %>
+                                        </div>
+                                    </div>
+
+                                    <% if (product.stock > 0) { %>
                                         <form action="/cart/add/<%= product._id %>" method="POST" id="add-to-cart-form">
-                                            <span>Quantity:</span>
-                                            <!-- Adjust the max attribute of the quantity input based on stock -->
-                                            <input type="number" name="quantity" value="1" min="1" max="5" class="quantity-input" id="quantity-input">
-                        
-                                            <div class="product-details-action mt-3">
-                                                <% if (product.stock > 0) { %>
-                                                <button type="submit" class="btn-product btn-cart">
-                                                    <p>Add To Cart</p>
+                                            <div class="action-row">
+                                                <div>
+                                                    <span class="qty-label">Quantity</span>
+
+                                                    <div class="qty-stepper">
+                                                        <button type="button" class="qty-btn" onclick="adjustQty(-1)">
+                                                            <i class="icon-minus"></i>
+                                                        </button>
+
+                                                        <input type="text" name="quantity" value="1" readonly class="qty-input-field" id="quantity-input">
+
+                                                        <button type="button" class="qty-btn" onclick="adjustQty(1)">
+                                                            <i class="icon-plus"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <button type="submit" class="btn-fz-primary" style="flex:1; min-width:220px; padding:16px 36px !important; margin:0 !important; cursor:pointer; height:54px; display:inline-flex; align-items:center; justify-content:center; gap:10px;">
+                                                    <i class="icon-shopping-cart"></i>
+                                                    <span>Add To Bag</span>
                                                 </button>
-                                                <% } %>
                                             </div>
                                         </form>
 
-                                        <form id="wishlist-form" method="POST" action="/wishlist" style="margin-top: 150px; margin-left: -220px;">
+                                        <form id="wishlist-form" method="POST" action="/wishlist" class="mt-3">
                                             <input type="hidden" name="productId" value="<%= product._id %>">
-                                            <div class="product-details-action mt-3">
-                                                <% if (product.stock > 0) { %>
-                                                <button type="submit" class="btn-product btn-cart btn-wishlist" style="width: 200px;">
-                                                    <p>Add To Wishlist</p>
-                                                </button>
-                                                <% } %>
-                                            </div>
-                                          </form>
 
-                                          
-                                    </div><!-- End .details-action-wrapper -->
+                                            <button type="submit" class="wishlist-btn text-center">
+                                                <i class="icon-heart-o" style="margin-right:6px;"></i>
+                                                Add To Wishlist
+                                            </button>
+                                        </form>
+                                    <% } %>
                                 </div>
-                        
-                                <div class="product-details-footer">
-                        
-                                    <div class="social-icons social-icons-sm">
-                                        <span class="social-label">Share:</span>
-                                        <a href="#" class="social-icon" title="Facebook" target="_blank"><i class="icon-facebook-f"></i></a>
-                                        <a href="#" class="social-icon" title="Twitter" target="_blank"><i class="icon-twitter"></i></a>
-                                        <a href="#" class="social-icon" title="Instagram" target="_blank"><i class="icon-instagram"></i></a>
-                                        <a href="#" class="social-icon" title="Pinterest" target="_blank"><i class="icon-pinterest"></i></a>
-                                    </div>
-                                </div><!-- End .product-details-footer -->
-                            </div><!-- End .col-md-6 -->
-                        </div><!-- End .col-md-6 -->
-                        </div><!-- End .row -->
-
-
-                        
-                    </div><!-- End .product-details-top -->
-
-
-
-
-
-
-
-                    <% if (relatedProducts.length>0) { %>
-                    
-                    <h2 class="title text-center mb-4 mt-5">You May Also Like</h2><!-- End .title text-center -->
-                    <% } else { %>
-                        <p></p>
-                    <% } %>
-                    
-                    <div class="owl-carousel  owl-simple carousel-equal-height carousel-with-shadow" data-toggle="owl" 
-                    style="width: 90%; display: flex; justify-content: center;  margin: auto;"
-    data-owl-options='{
-        "nav": false, 
-        "dots": true,
-        "margin": 20,
-        "loop": false,
-        "responsive": {
-            "0": {
-                "items":1
-            },
-            "480": {
-                "items":2
-            },
-            "768": {
-                "items":3
-            },
-            "992": {
-                "items":4
-            },
-            "1200": {
-                "items":4,
-                "nav": true,
-                "dots": false
-            }
-        }
-    }'>
-
-    <% relatedProducts.forEach(product => { %>
-        <div class="product product-7 text-center">
-            <figure class="product-media">
-                <% if (product.stock==0) { %>
-                    <span class="product-label label-new bg-danger">Out Of Stock</span>
-                <% } %>
-                <a href="/product/<%= product._id %>?category=<%= product.category %>">
-                    <img src="/<%= product.images[0] %>" alt="<%= product.title %>" class="product-image">
-                </a>
-
-                <div class="product-action-vertical">
-                                                    
-                    <form id="wishlist-form" method="POST" action="/wishlist">
-                        <input type="hidden" name="productId" value="<%= product._id %>">
-                        <button type="submit" class="btn-product-icon btn-wishlist btn-expandable" style="border: none; margin-bottom: 10px;">
-                          <span>Add to Wishlist</span>
-                        </button>
-                      </form>
-
-                </div><!-- End .product-action-vertical -->
-
-                <div class="product-action d-flex justify-content-center">
-                    <form action="/cart/add/<%= product._id %>" method="POST">
-                        <button type="submit" class="btn-product btn-cart" style="border: none;">
-                            <span>Add to cart</span>
-                        </button>
-                    </form>
-                </div><!-- End .product-action -->
-            </figure><!-- End .product-media -->
-
-            <div class="product-body">
-                <div class="product-cat">
-                    <a href="/shop?category=<%= product.category %>"><%= product.category %></a>
-                </div><!-- End .product-cat -->
-                <h3 class="product-title">
-                    <a href="/product/<%= product._id %>?category=<%= product.category %>">
-                        <%= product.title %>
-                    </a>
-                </h3><!-- End .product-title -->
-                <div class="product-price">
-                    $<%= product.price %>
-                </div><!-- End .product-price -->
-                <div class="ratings-container">
-                    <div class="ratings">
-                        <div class="ratings-val" style="width: <%= product.rating * 20 %>%"></div><!-- End .ratings-val -->
-                    </div><!-- End .ratings -->
-                    <span class="ratings-text">( <%= product.reviewsCount || 0 %> Reviews )</span>
-                </div><!-- End .ratings-container -->
-
-                <div class="product-nav product-nav-dots">
-                    color:<%= product.color %>
-                    
-                
-                </div><!-- End .product-nav -->
-            </div><!-- End .product-body -->
-        </div><!-- End .product -->
-    <% }) %>
-
-</div><!-- End .owl-carousel -->
-
-
-                        
-                        <!-- End .product -->
-
-
-
-
-
-<!-- End .product -->
+                            </div>
+                        </div>
                     </div>
-                </div><!-- End .container -->
 
-               
-            </div><!-- End .page-content -->
-        </main><!-- End .main -->
+                    <% if (relatedProducts && relatedProducts.length > 0) { %>
+                        <div class="related-section">
+                            <h2 class="related-title text-center">You May Also Like</h2>
 
-      
- 
-        <%- include('../partials/footer.ejs')-%>
-  
+                            <div class="owl-carousel owl-simple carousel-equal-height carousel-with-shadow" data-toggle="owl"
+                                data-owl-options='{
+                                    "nav": false, 
+                                    "dots": true,
+                                    "margin": 20,
+                                    "loop": false,
+                                    "responsive": {
+                                        "0": {"items":1},
+                                        "480": {"items":2},
+                                        "768": {"items":3},
+                                        "992": {"items":4},
+                                        "1200": {"items":4, "nav": true, "dots": false}
+                                    }
+                                }'>
+                                <% relatedProducts.forEach(prod => { %>
+                                    <div class="product product-7 text-center">
+                                        <figure class="product-media">
+                                            <% if (prod.stock === 0) { %>
+                                                <span class="product-label bg-danger text-white">Out Of Stock</span>
+                                            <% } %>
 
+                                            <a href="/product/<%= prod._id %>?category=<%= prod.category %>">
+                                                <img src="/<%= prod.images[0] %>" alt="<%= prod.title %>" class="product-image">
+                                            </a>
 
-<!-- Image zoom  -->
+                                            <div class="product-action-vertical">
+                                                <form method="POST" action="/wishlist" style="margin:0;">
+                                                    <input type="hidden" name="productId" value="<%= prod._id %>">
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const zoomContainer = document.querySelector(".product-main-image");
-        const zoomImage = document.getElementById("product-zoom");
-    
-        zoomContainer.addEventListener("mousemove", function (e) {
-            const rect = zoomContainer.getBoundingClientRect(); // Get the position of the container
-            const x = e.clientX - rect.left; // Mouse X position inside container
-            const y = e.clientY - rect.top; // Mouse Y position inside container
-    
-            // Calculate the percentage of mouse position relative to the image container
-            const xPercent = (x / rect.width) * 100;
-            const yPercent = (y / rect.height) * 100;
-    
-            // Set the transform origin dynamically based on the mouse position
-            zoomImage.style.transformOrigin = `${xPercent}% ${yPercent}%`;
-    
-            // Apply zoom effect
-            zoomImage.style.transform = "scale(2)"; // Apply zoom factor
-        });
-    
-        zoomContainer.addEventListener("mouseleave", function () {
-            zoomImage.style.transform = "scale(1)"; // Reset zoom on mouse leave
-            zoomImage.style.transformOrigin = "center center"; // Reset origin to center
-        });
-    });
-    
-    
-    </script>
+                                                    <button type="submit" class="btn-product-icon btn-wishlist" style="border: none; cursor:pointer;">
+                                                        <i class="icon-heart-o"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
 
+                                            <% if (prod.stock > 0) { %>
+                                                <div class="product-action d-flex justify-content-center">
+                                                    <form action="/cart/add/<%= prod._id %>" method="POST" style="width:100%; margin:0;">
+                                                        <button type="submit" class="btn-product btn-cart" style="width:100%; border: none; background:none; cursor:pointer;">
+                                                            <span>Add to cart</span>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            <% } %>
+                                        </figure>
 
+                                        <div class="product-body">
+                                            <div class="product-cat">
+                                                <a href="/shop?category=<%= prod.category %>"><%= prod.category %></a>
+                                            </div>
 
+                                            <h3 class="product-title">
+                                                <a href="/product/<%= prod._id %>?category=<%= prod.category %>"><%= prod.title %></a>
+                                            </h3>
 
+                                            <div class="product-price">
+                                                ₹<%= prod.price %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }) %>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </main>
 
+        <%- include('../partials/footer.ejs') -%>
+    </div>
 
+    <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
-
-
-
-
-<!-- Add to cart Sweet popup -->
-
-
-<script>
-    document.getElementById('add-to-cart-form').addEventListener('submit', function(e) {
-        e.preventDefault(); // Prevent the form from submitting immediately
-
-        // Show SweetAlert when the form is submitted
-        Swal.fire({
-            icon: 'success',
-            title: 'Added to Cart',
-            text: 'Your item has been added to the cart!',
-        }).then((result) => {
-            // After the popup closes, submit the form programmatically
-            if (result.isConfirmed) {
-                this.submit(); // Submit the form after the user closes the popup
-            }
-        });
-    });
-</script>
-
-
-
-<!-- <script>
-    // Add event listener to the button
-    document.getElementById('add-to-wishlist').addEventListener('click', function(event) {
-      event.preventDefault();
-  
-      // Get userId and productId (you can get these dynamically from your application)
-      const userId = 'USER_ID';  // Replace with actual user ID
-      const productId = 'PRODUCT_ID';  // Replace with actual product ID
-  
-      // Send the data to the server using fetch
-      fetch('/wishlist/add', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          productId: productId,
-        }),
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.message === 'Product added to wishlist') {
-          // Show success SweetAlert popup
-          Swal.fire({
-            title: 'Success!',
-            text: 'Product added to your wishlist!',
-            icon: 'success',
-            confirmButtonText: 'Okay'
-          });
-        } else {
-          // Show error SweetAlert popup
-          Swal.fire({
-            title: 'Error!',
-            text: 'Something went wrong. Please try again.',
-            icon: 'error',
-            confirmButtonText: 'Try Again'
-          });
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        // Show error SweetAlert popup in case of a network issue
-        Swal.fire({
-          title: 'Error!',
-          text: 'Error adding to wishlist. Please try again.',
-          icon: 'error',
-          confirmButtonText: 'Try Again'
-        });
-      });
-    });
-  </script> -->
-
-
-
-
-
-
-
-
-<!-- SweetAlert Script -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
+    <script>
         const quantityInput = document.getElementById('quantity-input');
-        const stock = <%= product.stock %>; // Get the stock value from the backend
-        const maxLimit = Math.min(5, stock); // Set the max limit based on stock or 5
-        
-        // Set the maximum value for the input
-        quantityInput.max = maxLimit;
+        const stock = <%= product.stock || 0 %>;
+        const maxLimit = Math.min(5, stock);
 
-        // If the user tries to increase the quantity beyond the limit, reset it to the max limit and show SweetAlert
-        quantityInput.addEventListener('input', function() {
-            if (parseInt(quantityInput.value) > maxLimit) {
-                // Reset the input value to the maximum allowed quantity
-                quantityInput.value = maxLimit;
-                
-                // Show SweetAlert message
+        function adjustQty(amount) {
+            if (!quantityInput) return;
+
+            let currentVal = parseInt(quantityInput.value) || 1;
+            let newVal = currentVal + amount;
+
+            if (newVal < 1) newVal = 1;
+
+            if (newVal > maxLimit) {
+                newVal = maxLimit;
+
                 Swal.fire({
-                    title: 'Oops!',
-                    text: `You can only add up to ${maxLimit} items.`,
+                    title: 'Limit Reached',
+                    text: `Only up to ${maxLimit} units can be added to your bag.`,
                     icon: 'warning',
                     confirmButtonText: 'Okay'
                 });
             }
+
+            quantityInput.value = newVal;
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const zoomContainer = document.querySelector(".product-main-image");
+            const zoomImage = document.getElementById("product-zoom");
+
+            if (zoomContainer && zoomImage) {
+                zoomContainer.addEventListener("mousemove", function (e) {
+                    const rect = zoomContainer.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+
+                    const xPercent = (x / rect.width) * 100;
+                    const yPercent = (y / rect.height) * 100;
+
+                    zoomImage.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+                    zoomImage.style.transform = "scale(2.15)";
+                });
+
+                zoomContainer.addEventListener("mouseleave", function () {
+                    zoomImage.style.transform = "scale(1)";
+                    zoomImage.style.transformOrigin = "center center";
+                });
+            }
+
+            const mainImg = document.getElementById('product-zoom');
+            const thumbs = document.querySelectorAll('.product-gallery-item');
+
+            thumbs.forEach(thumb => {
+                thumb.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    thumbs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const newSrc = this.getAttribute('data-image');
+
+                    if (mainImg) {
+                        mainImg.style.opacity = "0";
+
+                        setTimeout(() => {
+                            mainImg.setAttribute('src', newSrc);
+                            mainImg.style.opacity = "1";
+                        }, 120);
+                    }
+                });
+            });
+
+            const cartForm = document.getElementById('add-to-cart-form');
+
+            if (cartForm) {
+                cartForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Added to Bag',
+                        text: 'Item has been added to your shopping bag!',
+                        confirmButtonText: 'Great'
+                    }).then(() => {
+                        this.submit();
+                    });
+                });
+            }
         });
-    });
-</script>
+    </script>
 
-
-
-
-
-  
-
-
-
-
-    </div><!-- End .page-wrapper -->
-    <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
-
-    <!-- Mobile Menu -->
-    <div class="mobile-menu-overlay"></div><!-- End .mobil-menu-overlay -->
-
-    <div class="mobile-menu-container">
-        <div class="mobile-menu-wrapper">
-            <span class="mobile-menu-close"><i class="icon-close"></i></span>
-
-            <form action="#" method="get" class="mobile-search">
-                <label for="mobile-search" class="sr-only">Search</label>
-                <input type="search" class="form-control" name="mobile-search" id="mobile-search" placeholder="Search in..." required>
-                <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
-            </form>
-            
-            <nav class="mobile-nav">
-                <ul class="mobile-menu">
-                    <li class="active">
-                        <a href="index.html">Home</a>
-
-                        <ul>
-                            <li><a href="index-1.html">01 - furniture store</a></li>
-                            <li><a href="index-2.html">02 - furniture store</a></li>
-                            <li><a href="index-3.html">03 - electronic store</a></li>
-                            <li><a href="index-4.html">04 - electronic store</a></li>
-                            <li><a href="index-5.html">05 - fashion store</a></li>
-                            <li><a href="index-6.html">06 - fashion store</a></li>
-                            <li><a href="index-7.html">07 - fashion store</a></li>
-                            <li><a href="index-8.html">08 - fashion store</a></li>
-                            <li><a href="index-9.html">09 - fashion store</a></li>
-                            <li><a href="index-10.html">10 - shoes store</a></li>
-                            <li><a href="index-11.html">11 - furniture simple store</a></li>
-                            <li><a href="index-12.html">12 - fashion simple store</a></li>
-                            <li><a href="index-13.html">13 - market</a></li>
-                            <li><a href="index-14.html">14 - market fullwidth</a></li>
-                            <li><a href="index-15.html">15 - lookbook 1</a></li>
-                            <li><a href="index-16.html">16 - lookbook 2</a></li>
-                            <li><a href="index-17.html">17 - fashion store</a></li>
-                            <li><a href="index-18.html">18 - fashion store (with sidebar)</a></li>
-                            <li><a href="index-19.html">19 - games store</a></li>
-                            <li><a href="index-20.html">20 - book store</a></li>
-                            <li><a href="index-21.html">21 - sport store</a></li>
-                            <li><a href="index-22.html">22 - tools store</a></li>
-                            <li><a href="index-23.html">23 - fashion left navigation store</a></li>
-                            <li><a href="index-24.html">24 - extreme sport store</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="category.html">Shop</a>
-                        <ul>
-                            <li><a href="category-list.html">Shop List</a></li>
-                            <li><a href="category-2cols.html">Shop Grid 2 Columns</a></li>
-                            <li><a href="category.html">Shop Grid 3 Columns</a></li>
-                            <li><a href="category-4cols.html">Shop Grid 4 Columns</a></li>
-                            <li><a href="category-boxed.html"><span>Shop Boxed No Sidebar<span class="tip tip-hot">Hot</span></span></a></li>
-                            <li><a href="category-fullwidth.html">Shop Fullwidth No Sidebar</a></li>
-                            <li><a href="product-category-boxed.html">Product Category Boxed</a></li>
-                            <li><a href="product-category-fullwidth.html"><span>Product Category Fullwidth<span class="tip tip-new">New</span></span></a></li>
-                            <li><a href="cart.html">Cart</a></li>
-                            <li><a href="checkout.html">Checkout</a></li>
-                            <li><a href="wishlist.html">Wishlist</a></li>
-                            <li><a href="#">Lookbook</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="product.html" class="sf-with-ul">Product</a>
-                        <ul>
-                            <li><a href="product.html">Default</a></li>
-                            <li><a href="product-centered.html">Centered</a></li>
-                            <li><a href="product-extended.html"><span>Extended Info<span class="tip tip-new">New</span></span></a></li>
-                            <li><a href="product-gallery.html">Gallery</a></li>
-                            <li><a href="product-sticky.html">Sticky Info</a></li>
-                            <li><a href="product-sidebar.html">Boxed With Sidebar</a></li>
-                            <li><a href="product-fullwidth.html">Full Width</a></li>
-                            <li><a href="product-masonry.html">Masonry Sticky Info</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="#">Pages</a>
-                        <ul>
-                            <li>
-                                <a href="about.html">About</a>
-
-                                <ul>
-                                    <li><a href="about.html">About 01</a></li>
-                                    <li><a href="about-2.html">About 02</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <a href="contact.html">Contact</a>
-
-                                <ul>
-                                    <li><a href="contact.html">Contact 01</a></li>
-                                    <li><a href="contact-2.html">Contact 02</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="login.html">Login</a></li>
-                            <li><a href="faq.html">FAQs</a></li>
-                            <li><a href="404.html">Error 404</a></li>
-                            <li><a href="coming-soon.html">Coming Soon</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="blog.html">Blog</a>
-
-                        <ul>
-                            <li><a href="blog.html">Classic</a></li>
-                            <li><a href="blog-listing.html">Listing</a></li>
-                            <li>
-                                <a href="#">Grid</a>
-                                <ul>
-                                    <li><a href="blog-grid-2cols.html">Grid 2 columns</a></li>
-                                    <li><a href="blog-grid-3cols.html">Grid 3 columns</a></li>
-                                    <li><a href="blog-grid-4cols.html">Grid 4 columns</a></li>
-                                    <li><a href="blog-grid-sidebar.html">Grid sidebar</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <a href="#">Masonry</a>
-                                <ul>
-                                    <li><a href="blog-masonry-2cols.html">Masonry 2 columns</a></li>
-                                    <li><a href="blog-masonry-3cols.html">Masonry 3 columns</a></li>
-                                    <li><a href="blog-masonry-4cols.html">Masonry 4 columns</a></li>
-                                    <li><a href="blog-masonry-sidebar.html">Masonry sidebar</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <a href="#">Mask</a>
-                                <ul>
-                                    <li><a href="blog-mask-grid.html">Blog mask grid</a></li>
-                                    <li><a href="blog-mask-masonry.html">Blog mask masonry</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <a href="#">Single Post</a>
-                                <ul>
-                                    <li><a href="single.html">Default with sidebar</a></li>
-                                    <li><a href="single-fullwidth.html">Fullwidth no sidebar</a></li>
-                                    <li><a href="single-fullwidth-sidebar.html">Fullwidth with sidebar</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="elements-list.html">Elements</a>
-                        <ul>
-                            <li><a href="elements-products.html">Products</a></li>
-                            <li><a href="elements-typography.html">Typography</a></li>
-                            <li><a href="elements-titles.html">Titles</a></li>
-                            <li><a href="elements-banners.html">Banners</a></li>
-                            <li><a href="elements-product-category.html">Product Category</a></li>
-                            <li><a href="elements-video-banners.html">Video Banners</a></li>
-                            <li><a href="elements-buttons.html">Buttons</a></li>
-                            <li><a href="elements-accordions.html">Accordions</a></li>
-                            <li><a href="elements-tabs.html">Tabs</a></li>
-                            <li><a href="elements-testimonials.html">Testimonials</a></li>
-                            <li><a href="elements-blog-posts.html">Blog Posts</a></li>
-                            <li><a href="elements-portfolio.html">Portfolio</a></li>
-                            <li><a href="elements-cta.html">Call to Action</a></li>
-                            <li><a href="elements-icon-boxes.html">Icon Boxes</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </nav><!-- End .mobile-nav -->
-
-            <div class="social-icons">
-                <a href="#" class="social-icon" target="_blank" title="Facebook"><i class="icon-facebook-f"></i></a>
-                <a href="#" class="social-icon" target="_blank" title="Twitter"><i class="icon-twitter"></i></a>
-                <a href="#" class="social-icon" target="_blank" title="Instagram"><i class="icon-instagram"></i></a>
-                <a href="#" class="social-icon" target="_blank" title="Youtube"><i class="icon-youtube"></i></a>
-            </div><!-- End .social-icons -->
-        </div><!-- End .mobile-menu-wrapper -->
-    </div><!-- End .mobile-menu-container -->
-
-    <!-- Sign in / Register Modal -->
-    <div class="modal fade" id="signin-modal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true"><i class="icon-close"></i></span>
-                    </button>
-
-                    <div class="form-box">
-                        <div class="form-tab">
-                            <ul class="nav nav-pills nav-fill" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link active" id="signin-tab" data-toggle="tab" href="#signin" role="tab" aria-controls="signin" aria-selected="true">Sign In</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="register-tab" data-toggle="tab" href="#register" role="tab" aria-controls="register" aria-selected="false">Register</a>
-                                </li>
-                            </ul>
-                            <div class="tab-content" id="tab-content-5">
-                                <div class="tab-pane fade show active" id="signin" role="tabpanel" aria-labelledby="signin-tab">
-                                    <form action="#">
-                                        <div class="form-group">
-                                            <label for="singin-email">Username or email address *</label>
-                                            <input type="text" class="form-control" id="singin-email" name="singin-email" required>
-                                        </div><!-- End .form-group -->
-
-                                        <div class="form-group">
-                                            <label for="singin-password">Password *</label>
-                                            <input type="password" class="form-control" id="singin-password" name="singin-password" required>
-                                        </div><!-- End .form-group -->
-
-                                        <div class="form-footer">
-                                            <button type="submit" class="btn btn-outline-primary-2">
-                                                <span>LOG IN</span>
-                                                <i class="icon-long-arrow-right"></i>
-                                            </button>
-
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="signin-remember">
-                                                <label class="custom-control-label" for="signin-remember">Remember Me</label>
-                                            </div><!-- End .custom-checkbox -->
-
-                                            <a href="#" class="forgot-link">Forgot Your Password?</a>
-                                        </div><!-- End .form-footer -->
-                                    </form>
-                                    <div class="form-choice">
-                                        <p class="text-center">or sign in with</p>
-                                        <div class="row">
-                                            <div class="col-sm-6">
-                                                <a href="#" class="btn btn-login btn-g">
-                                                    <i class="icon-google"></i>
-                                                    Login With Google
-                                                </a>
-                                            </div><!-- End .col-6 -->
-                                            <div class="col-sm-6">
-                                                <a href="#" class="btn btn-login btn-f">
-                                                    <i class="icon-facebook-f"></i>
-                                                    Login With Facebook
-                                                </a>
-                                            </div><!-- End .col-6 -->
-                                        </div><!-- End .row -->
-                                    </div><!-- End .form-choice -->
-                                </div><!-- .End .tab-pane -->
-                                <div class="tab-pane fade" id="register" role="tabpanel" aria-labelledby="register-tab">
-                                    <form action="#">
-                                        <div class="form-group">
-                                            <label for="register-email">Your email address *</label>
-                                            <input type="email" class="form-control" id="register-email" name="register-email" required>
-                                        </div><!-- End .form-group -->
-
-                                        <div class="form-group">
-                                            <label for="register-password">Password *</label>
-                                            <input type="password" class="form-control" id="register-password" name="register-password" required>
-                                        </div><!-- End .form-group -->
-
-                                        <div class="form-footer">
-                                            <button type="submit" class="btn btn-outline-primary-2">
-                                                <span>SIGN UP</span>
-                                                <i class="icon-long-arrow-right"></i>
-                                            </button>
-
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="register-policy" required>
-                                                <label class="custom-control-label" for="register-policy">I agree to the <a href="#">privacy policy</a> *</label>
-                                            </div><!-- End .custom-checkbox -->
-                                        </div><!-- End .form-footer -->
-                                    </form>
-                                    <div class="form-choice">
-                                        <p class="text-center">or sign in with</p>
-                                        <div class="row">
-                                            <div class="col-sm-6">
-                                                <a href="#" class="btn btn-login btn-g">
-                                                    <i class="icon-google"></i>
-                                                    Login With Google
-                                                </a>
-                                            </div><!-- End .col-6 -->
-                                            <div class="col-sm-6">
-                                                <a href="#" class="btn btn-login  btn-f">
-                                                    <i class="icon-facebook-f"></i>
-                                                    Login With Facebook
-                                                </a>
-                                            </div><!-- End .col-6 -->
-                                        </div><!-- End .row -->
-                                    </div><!-- End .form-choice -->
-                                </div><!-- .End .tab-pane -->
-                            </div><!-- End .tab-content -->
-                        </div><!-- End .form-tab -->
-                    </div><!-- End .form-box -->
-                </div><!-- End .modal-body -->
-            </div><!-- End .modal-content -->
-        </div><!-- End .modal-dialog -->
-    </div><!-- End .modal -->
-
-    <!-- Plugins JS File -->
-    <script src="/static/js/jquery.min.js"></script>
-    <script src="/static/js/bootstrap.bundle.min.js"></script>
-    <script src="/static/js/jquery.hoverIntent.min.js"></script>
-    <script src="/static/js/jquery.waypoints.min.js"></script>
-    <script src="/static/js/superfish.min.js"></script>
-    <script src="/static/js/owl.carousel.min.js"></script>
-    <script src="/static/js/bootstrap-input-spinner.js"></script>
-    <script src="/static/js/jquery.elevateZoom.min.js"></script>
-    <script src="/static/js/bootstrap-input-spinner.js"></script>
-    <script src="/static/js/jquery.magnific-popup.min.js"></script>
-    <!-- Main JS File -->
     <script src="/static/js/main.js"></script>
 </body>
+</html>

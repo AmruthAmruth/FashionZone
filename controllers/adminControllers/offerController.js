@@ -119,7 +119,7 @@ export const updateProductOfferStatus = async (req, res) => {
 
         if (offer.status === 'Active' && offer.products && offer.discount) {
             const productPromises = offer.products.map(product => {
-                product.disPrice = (offer.discount / 100) * product.price; 
+                product.disPrice = product.price - (product.price * (offer.discount / 100));
                 return product.save();
             });
             await Promise.all(productPromises);
@@ -222,9 +222,10 @@ export const deleteProductOffer=async(req,res)=>{
         const products = await Product.find({ '_id': { $in: productIds } });
 
         products.forEach(product => {
-            product.disPrice = product.price; 
-            product.save(); 
+            product.disPrice = product.price;
         });
+
+        await Promise.all(products.map(product => product.save()));
 
         await Offer.deleteOne({ _id: offerId });
         console.log("Offer deleted successfully");

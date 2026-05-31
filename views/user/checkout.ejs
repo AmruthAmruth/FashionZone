@@ -1,97 +1,53 @@
 <%- include('../layout/header.ejs') -%>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
 
+<div class="page-wrapper">
+    <%- include('../partials/navbar.ejs') -%>
 
+    <main class="main">
+        <div class="page-header text-center" style="background-image: url('/static/images/page-header-bg.jpg')">
+            <div class="container">
+                <h1 class="page-title">Secured Checkout<span>Complete your order.</span></h1>
+            </div>
+        </div>
 
+        <nav aria-label="breadcrumb" class="breadcrumb-nav mb-4">
+            <div class="container">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/shop">Shop</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+                </ol>
+            </div>
+        </nav>
 
-    </head>
+        <div class="page-content">
+            <div class="checkout">
+                <div class="container">
+                    <div class="row">
+                        <!-- Left Panel: Shipping Addresses & Coupons -->
+                        <div class="col-lg-9" id="addressContainer">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h3 class="font-heading" style="font-size:1.6rem; font-weight:700; color:#1a1a2e; margin:0;">Shipping Address</h3>
+                                <button type="button" class="btn-fz-primary" style="padding:10px 24px !important; font-size:12px !important;" data-toggle="modal" data-target="#addAddressModal">
+                                    <span>Add Address</span>
+                                </button>
+                            </div>
 
-    < <div class="page-wrapper">
-        <%- include('../partials/navbar.ejs') -%>
-
-            <body>
-
-
-
-
-                <div class="page-wrapper">
-
-
-                    <main class="main">
-                        <div class="page-header text-center"
-                            style="background-image: url('/static  /images/page-header-bg.jpg')">
-                            <div class="container">
-                                <h1 class="page-title">Checkout<span>Shop</span></h1>
-                            </div><!-- End .container -->
-                        </div><!-- End .page-header -->
-                        <nav aria-label="breadcrumb" class="breadcrumb-nav">
-                            <div class="container">
-                                <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="/">Home</a></li>
-                                    <li class="breadcrumb-item"><a href="/shop">Shop</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">Checkout</li>
-                                </ol>
-                            </div><!-- End .container -->
-                        </nav><!-- End .breadcrumb-nav -->
-
-                        <div class="page-content">
-
-
-
-
-
-
-
-
-
-
-
-                            <div class="checkout">
-                                <div class="container">
-
-
-
-                                    <div class="row">
-
-                                        <div class="col-lg-9" id="addressContainer">
-                                            <div class="d-flex justify-content-between align-items-center m-3">
-                                                <h3 class="address-heading">Delivery Address</h3>
-                                                <button type="button" class="btn btn-outline-primary-2 mb-1"
-                                                    data-toggle="modal" data-target="#addAddressModal">
-                                                    <span>Add Address</span>
-                                                    <i class="icon-long-arrow-right"></i>
-                                                </button>
-                                            </div>
-
-                                            <% if (Array.isArray(userAddress)) { %>
-                                                <% userAddress.forEach((address, index)=> { %>
-                                                    <div class="card card-dashboard mb-2 address-card"
-                                                        data-address-id="<%= address._id %>">
-                                                        <div
-                                                            class="card-body d-flex justify-content-between align-items-center p-0 m-1">
-                                                            <div>
-                                                                <!-- Ensure radio button value is set to address._id -->
-                                                                <input type="radio" class="pl-4 ml-3 mr-1"
-                                                                    name="addressRadioButton"
-                                                                    id="addressRadio<%= index %>"
-                                                                    value="<%= address._id %>" <%=index===0 ? 'checked'
-                                                                    : '' %>
-                                                                >
-                                                                <p class="pl-5">
-                                                                    <strong>
-                                                                        <%= address.name %>
-                                                                    </strong><br>
-                                                                    <%= address.type %> <br>
-                                                                        <%= address.phone %><br>
-                                                                            <%= address.city %>, <%= address.district %>
-                                                                                    , <%= address.state %>, <%=
-                                                                                            address.country %> <br>
-                                                                                            <%= address.house %>, <%=
-                                                                                                    address.pincode %>
-                                                                </p>
+                            <div class="row mb-4">
+                                <% if (Array.isArray(userAddress) && userAddress.length > 0) { %>
+                                    <% userAddress.forEach((address, index) => { %>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card address-card h-100" data-address-id="<%= address._id %>" style="border:1.5px solid <%= index === 0 ? '#c9a96e' : '#e2e2ec' %>; border-radius:16px; background:#fff; box-shadow:0 6px 16px rgba(0,0,0,0.03); transition:all 0.25s ease;">
+                                                <div class="card-body p-4 d-flex flex-column justify-content-between">
+                                                    <div>
+                                                        <div class="d-flex align-items-center justify-content-between mb-3">
+                                                            <div class="custom-control custom-radio">
+                                                                <input type="radio" name="addressRadioButton" id="addressRadio<%= index %>" value="<%= address._id %>" <%= index === 0 ? 'checked' : '' %> class="custom-control-input">
+                                                                <label class="custom-control-label" for="addressRadio<%= index %>" style="font-weight:600 !important; color:#1a1a2e; font-size:14px; text-transform:uppercase; letter-spacing:0.5px;"><%= address.type %></label>
                                                             </div>
-                                                            <a href="#" class="edit-address text-right mr-3"
-                                                                data-toggle="modal" data-target="#editAddressModal"
+                                                            <a href="#" class="edit-address" data-toggle="modal" data-target="#editAddressModal"
                                                                 data-name="<%= address.name %>"
                                                                 data-phone="<%= address.phone %>"
                                                                 data-address="<%= address.house %>"
@@ -101,1002 +57,747 @@
                                                                 data-country="<%= address.country %>"
                                                                 data-district="<%= address.district %>"
                                                                 data-address-type="<%= address.type %>"
-                                                                data-address-id="<%= address._id %>">
-                                                                <i class="icon-edit" style="color: #cc9966;"></i>EDIT
+                                                                data-address-id="<%= address._id %>"
+                                                                style="font-size:12px; font-weight:700; color:#c9a96e; text-decoration:none;">
+                                                                <i class="icon-edit"></i> Edit
                                                             </a>
                                                         </div>
-                                                    </div>
-                                                    <% }); %>
-                                                        <% } else { %>
-                                                            <p>No addresses found.</p>
-                                                            <% } %>
-
-
-
-                                                                <div class="cart-discount">
-                                                                    <form id="couponForm" action="/applycouponcode"
-                                                                        method="post">
-                                                                        <div class="input-group">
-                                                                            <input type="text" class="form-control"
-                                                                                name="couponcode" id="couponcode"
-                                                                                required
-                                                                                placeholder="Enter coupon code">
-                                                                            <input type="hidden" name="totalAmount"
-                                                                                value="<%= cartPrice.total %>">
-                                                                            <div class="input-group-append">
-                                                                                <button
-                                                                                    class="btn btn-outline-primary-2 p-3"
-                                                                                    id="couponButton" type="submit"
-                                                                                    data-applied="false">
-                                                                                    Apply
-                                                                                </button>
-                                                                            </div><!-- .End .input-group-append -->
-                                                                        </div><!-- End .input-group -->
-                                                                    </form>
-                                                                </div>
-
-                                        </div>
-
-
-
-
-
-
-                                        <aside class="col-lg-3">
-                                            <div class="summary">
-                                                <h3 class="summary-title">Your Order</h3>
-                                                <form method="POST" action="/createorder" id="orderForm">
-                                                    <input type="hidden" id="selectedAddressId"
-                                                        name="selectedAddressId">
-
-                                                    <table class="table table-summary">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Product</th>
-                                                                <th>Total</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <% let subtotal=0; %>
-                                                                <% userProducts.forEach(product=> { %>
-                                                                    <% product.items.forEach(item=> { %>
-                                                                        <tr>
-                                                                            <td><a href="#">
-                                                                                    <%= item.title %>
-                                                                                </a></td>
-                                                                            <td>₹<%= item.price * item.quantity %>
-                                                                            </td>
-                                                                        </tr>
-                                                                        <% subtotal +=item.price * item.quantity; %>
-                                                                            <% }); %>
-                                                                                <% }); %>
-
-                                                                                    <tr class="summary-subtotal">
-                                                                                        <td>Subtotal:</td>
-                                                                                        <td id="amount">₹<%= subtotal %>
-                                                                                        </td>
-                                                                                    </tr>
-
-                                                                                    <tr>
-                                                                                        <td>Discounted Amount:</td>
-                                                                                        <td><span id="disAmount">
-                                                                                              
-                                                                                            </span></td> <br>
-                                                                                        <input type="hidden"
-                                                                                            name="discountPrice"
-                                                                                            value="<%= subtotal - cartPrice.total %>"></td>
-                                                                                    </tr>
-
-                                                                                    <tr class="summary-total">
-                                                                                        <td>Final Price After Discounts:
-                                                                                        </td>
-                                                                                        <td>₹<span id="total-price">
-                                                                                                <%= cartPrice.total %>
-                                                                                            </span></td>
-                                                                                        <input type="hidden"
-                                                                                            name="totalPrice"
-                                                                                            value="<%= cartPrice.total %>">
-                                                                                    </tr>
-                                                        </tbody>
-
-
-                                                    </table>
-
-                                                    <input type="hidden" name="totalPrice"
-                                                        value="<%= cartPrice.total %>">
-                                                    <input type="hidden" name="products"
-                                                        value="<%= JSON.stringify(userProducts) %>">
-
-                                                    <div class="accordion-summary" id="accordion-payment">
-                                                        <div class="card mb-2">
-                                                            <div class="card-header" id="heading-1">
-                                                                <h2 class="card-title" id="paymentLabel">Payment Methods
-                                                                </h2>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="card mb-1">
-                                                            <div class="card-header" id="heading-2">
-                                                                <h2 class="card-title">
-                                                                    <input type="radio" name="paymentMethod"
-                                                                        id="payment-method-2" value="Razor pay">
-                                                                    <label for="payment-method-2" role="button"
-                                                                        data-toggle="collapse" href="#collapse-2"
-                                                                        aria-expanded="false"
-                                                                        aria-controls="collapse-2">Debit Card/Credit
-                                                                        Card/UPI</label>
-                                                                </h2>
-                                                            </div>
-                                                            <div id="collapse-2" class="collapse"
-                                                                aria-labelledby="heading-2"
-                                                                data-parent="#accordion-payment">
-                                                                <div class="card-body">
-                                                                    Online Payment
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="card mb-1">
-                                                            <div class="card-header" id="heading-3">
-                                                                <h2 class="card-title">
-                                                                    <input type="radio" name="paymentMethod"
-                                                                        id="payment-method-3" value="Cash on Delivery">
-                                                                    <label for="payment-method-3" role="button"
-                                                                        data-toggle="collapse" href="#collapse-3"
-                                                                        aria-expanded="false"
-                                                                        aria-controls="collapse-3">Cash on
-                                                                        Delivery</label>
-                                                                </h2>
-                                                            </div>
-                                                            <div id="collapse-3" class="collapse"
-                                                                aria-labelledby="heading-3"
-                                                                data-parent="#accordion-payment">
-                                                                <div class="card-body">
-                                                                    A method of collecting payment that requires
-                                                                    customers to pay for goods at the time of delivery.
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="card">
-                                                            <div class="card-header" id="heading-wallet">
-                                                                <h2 class="card-title">
-                                                                    <input type="radio" name="paymentMethod"
-                                                                        id="payment-method-wallet" value="Wallet">
-                                                                    <label for="payment-method-wallet" role="button"
-                                                                        data-toggle="collapse" href="#collapse-wallet"
-                                                                        aria-expanded="false"
-                                                                        aria-controls="collapse-wallet">Wallet</label>
-                                                                </h2>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <button type="submit"
-                                                        class="btn btn-outline-primary-2 btn-order btn-block"
-                                                        id="placeOrderButton">
-                                                        <span class="btn-text">Place Order</span>
-                                                        <span class="btn-hover-text">Place Order</span>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </aside>
-
-
-
-
-
-
-                                        <!-- Modal for Editing Address -->
-                                        <div class="modal fade" id="editAddressModal" tabindex="-1" role="dialog"
-                                            aria-labelledby="editAddressModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header bg-primary text-white">
-                                                        <h5 class="modal-title text-center w-100"
-                                                            id="editAddressModalLabel">Edit Address</h5>
-                                                        <button type="button" class="close text-white"
-                                                            data-dismiss="modal" aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body p-5">
-
-
-                                                        <form id="editAddressForm" action="/checkouteditaddress"
-                                                            method="POST">
-                                                            <!-- Hidden input field for Address ID -->
-                                                            <input type="hidden" id="editAddressId" name="addressId">
-
-                                                            <!-- Full Name -->
-                                                            <div class="form-group">
-                                                                <label for="editName">Full Name</label>
-                                                                <input type="text" class="form-control" id="editName"
-                                                                    name="name" required>
-                                                            </div>
-
-                                                            <!-- Phone Number -->
-                                                            <div class="form-group">
-                                                                <label for="editPhone">Phone Number</label>
-                                                                <input type="text" class="form-control" id="editPhone"
-                                                                    name="phone" required>
-                                                            </div>
-
-                                                            <!-- Address -->
-                                                            <div class="form-group">
-                                                                <label for="editAddress">Address</label>
-                                                                <input type="text" class="form-control" id="editAddress"
-                                                                    name="house" required>
-                                                            </div>
-
-                                                            <!-- Street -->
-                                                            <div class="form-group">
-                                                                <label for="editStreet">Street</label>
-                                                                <input type="text" class="form-control" id="editStreet"
-                                                                    name="street" required>
-                                                            </div>
-
-                                                            <!-- Postal Code -->
-                                                            <div class="form-group">
-                                                                <label for="editPostalCode">Postal Code</label>
-                                                                <input type="text" class="form-control"
-                                                                    id="editPostalCode" name="postalCode" required>
-                                                            </div>
-
-                                                            <!-- State -->
-                                                            <div class="form-group">
-                                                                <label for="editState">State</label>
-                                                                <input type="text" class="form-control" id="editState"
-                                                                    name="state" required>
-                                                            </div>
-
-                                                            <!-- Country -->
-                                                            <div class="form-group">
-                                                                <label for="editCountry">Country</label>
-                                                                <input type="text" class="form-control" id="editCountry"
-                                                                    name="country" required>
-                                                            </div>
-
-                                                            <!-- District -->
-                                                            <div class="form-group">
-                                                                <label for="editDistrict">District</label>
-                                                                <input type="text" class="form-control"
-                                                                    id="editDistrict" name="district" required>
-                                                            </div>
-
-                                                            <!-- Address Type -->
-                                                            <div class="form-group">
-                                                                <label for="editAddressType">Address Type</label>
-                                                                <input type="text" class="form-control"
-                                                                    id="editAddressType" name="addressType" required>
-                                                            </div>
-
-                                                            <div class="text-center mt-4">
-                                                                <button type="submit"
-                                                                    class="btn btn-outline-primary w-100">Save
-                                                                    Address</button>
-                                                            </div>
-                                                        </form>
-
-
-
-
-
+                                                        <p style="font-size:13.5px; line-height:1.6; color:#555; margin:0 0 10px 24px;">
+                                                            <strong style="color:#1a1a2e;"><%= address.name %></strong><br>
+                                                            <%= address.phone %><br>
+                                                            <%= address.house %>, <%= address.city %><br>
+                                                            <%= address.district %>, <%= address.state %> — <%= address.pincode %><br>
+                                                            <%= address.country %>
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+                                    <% }); %>
+                                <% } else { %>
+                                    <div class="col-12 text-center py-5" style="background:#f8f9fa; border-radius:16px; border:1.5px dashed #e2e2ec;">
+                                        <i class="icon-map-marker mb-3" style="font-size:2.5rem; color:#c9a96e; display:block;"></i>
+                                        <h4 style="font-family:'Playfair Display', serif; font-weight:600; color:#1a1a2e; margin-bottom:8px;">No Addresses Found</h4>
+                                        <p style="color:#777; font-size:13.5px;">Please add a shipping address to complete your checkout process.</p>
+                                    </div>
+                                <% } %>
+                            </div>
 
+                            <!-- Coupon Discount Box -->
+                            <div class="cart-discount mb-4" style="background:#fafafa; border:1px solid #e2e2ec; padding:24px; border-radius:16px;">
+                                <h4 class="font-heading mb-3" style="font-size:1.1rem; font-weight:700; color:#1a1a2e;">Have a Promo Coupon?</h4>
+                                <form id="couponForm" action="/applycouponcode" method="post" class="m-0">
+                                    <div class="input-group" style="border-radius:50px; background:#fff; border:1.5px solid #e2e2ec; overflow:hidden;">
+                                        <input type="text" class="form-control" name="couponcode" id="couponcode" required placeholder="Enter coupon code..." style="border:none !important; background:transparent !important; font-size:13.5px; padding:12px 20px !important; height:auto; color:#1a1a2e !important;">
+                                        <input type="hidden" id="couponTotalAmount" name="couponTotalAmount" value="<%= cartPrice.total %>">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-primary" id="couponButton" type="submit" data-applied="false" style="background:#1a1a2e !important; color:#fff !important; padding:12px 28px !important; border:none !important; border-radius:0 50px 50px 0 !important; font-weight:600; font-size:13.5px; height:100%;">
+                                                Apply
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
 
+                        <!-- Right Panel: Order Summary & Checkout CTAs -->
+                        <aside class="col-lg-3">
+                            <div class="cart-summary" style="background:#fafafa; border:1px solid #e2e2ec; padding:28px; border-radius:18px;">
+                                <h3 class="summary-title" style="font-family:'Playfair Display', serif; font-size:1.3rem; font-weight:700; color:#1a1a2e; border-bottom:2px solid #c9a96e; padding-bottom:10px; margin-bottom:24px; display:inline-block;">Your Order</h3>
+                                
+                                <form method="POST" action="#" id="orderForm" class="m-0">
+                                    <input type="hidden" id="selectedAddressId" name="selectedAddressId">
+                                    <input type="hidden" name="totalAmount" value="<%= cartPrice.total %>">
+                                    <textarea id="products" name="products" hidden><%- JSON.stringify(userProducts) %></textarea>
 
+                                    <table class="table table-summary m-0">
+                                        <thead>
+                                            <tr>
+                                                <th style="font-size:12px; font-weight:600; text-transform:uppercase; color:#777; padding-bottom:12px;">Product</th>
+                                                <th style="font-size:12px; font-weight:600; text-transform:uppercase; color:#777; padding-bottom:12px; text-align:right;">Subtotal</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% let subtotal = 0; %>
+                                            <% userProducts.forEach(product => { %>
+                                                <% product.items.forEach(item => { %>
+                                                    <tr style="border-bottom:1px solid #f1f1f5;">
+                                                        <td style="font-size:13.5px; color:#555; padding:12px 0; max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"><%= item.title %> <strong style="color:#1a1a2e;">x<%= item.quantity %></strong></td>
+                                                        <td style="font-size:13.5px; font-weight:500; color:#1a1a2e; padding:12px 0; text-align:right;">₹<%= item.price * item.quantity %></td>
+                                                    </tr>
+                                                    <% subtotal += item.price * item.quantity; %>
+                                                <% }); %>
+                                            <% }); %>
 
+                                            <tr style="border:none;">
+                                                <td style="font-size:13.5px; font-weight:600; color:#555; padding:12px 0 6px 0;">Subtotal:</td>
+                                                <td id="amount" style="font-size:14px; font-weight:600; color:#1a1a2e; padding:12px 0 6px 0; text-align:right;">₹<%= subtotal %></td>
+                                            </tr>
 
+                                            <tr style="border:none;">
+                                                <td style="font-size:13.5px; font-weight:600; color:#555; padding:6px 0;">Discounts:</td>
+                                                <td style="font-size:14px; font-weight:600; color:#eb5e55; padding:6px 0; text-align:right;"><span id="disAmount">₹<%= subtotal - cartPrice.total %></span></td>
+                                                <input type="hidden" name="discountPrice" value="<%= subtotal - cartPrice.total %>">
+                                            </tr>
 
-                                        <!-- Add Address Modal -->
-                                        <div class="modal fade" id="addAddressModal" tabindex="-1" role="dialog"
-                                            aria-labelledby="addAddressModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header bg-primary text-white">
-                                                        <h5 class="modal-title text-center w-100"
-                                                            id="addAddressModalLabel">Add Address</h5>
-                                                        <button type="button" class="close text-white"
-                                                            data-dismiss="modal" aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body p-5">
-                                                        <form action="/checkoutaddaddress" method="post"
-                                                            id="addressForm" novalidate>
-                                                            <div class="row">
-                                                                <div class="col-sm-6 mb-3">
-                                                                    <label for="name">Full Name</label>
-                                                                    <input type="text" class="form-control" id="name"
-                                                                        name="name" placeholder="Enter your full name"
-                                                                        required>
-                                                                    <div class="invalid-feedback">Full Name is required.
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-sm-6 mb-3">
-                                                                    <label for="phone">Phone Number</label>
-                                                                    <input type="number" class="form-control" id="phone"
-                                                                        name="phone"
-                                                                        placeholder="Enter your phone number" required>
-                                                                    <div class="invalid-feedback">Phone Number is
-                                                                        required.</div>
-                                                                </div>
-                                                            </div>
+                                            <tr style="border-top:1.5px solid #e2e2ec; border-bottom:none;">
+                                                <td style="font-size:14px; font-weight:700; color:#1a1a2e; padding:16px 0 10px 0;">Final Price:</td>
+                                                <td style="font-size:18px; font-weight:700; color:#27ae60; padding:16px 0 10px 0; text-align:right;">
+                                                    ₹<span id="total-price"><%= cartPrice.total %></span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
 
-                                                            <div class="row">
-                                                                <div class="col-sm-6 mb-3">
-                                                                    <label for="country">Country</label>
-                                                                    <input type="text" class="form-control" id="country"
-                                                                        name="country" placeholder="Enter your country"
-                                                                        required>
-                                                                    <div class="invalid-feedback">Country is required.
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-sm-6 mb-3">
-                                                                    <label for="state">State</label>
-                                                                    <input type="text" class="form-control" id="state"
-                                                                        name="state" placeholder="Enter your state"
-                                                                        required>
-                                                                    <div class="invalid-feedback">State is required.
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="row">
-                                                                <div class="col-sm-6 mb-3">
-                                                                    <label for="district">District</label>
-                                                                    <input type="text" class="form-control"
-                                                                        id="district" name="district"
-                                                                        placeholder="Enter your district" required>
-                                                                    <div class="invalid-feedback">District is required.
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-sm-6 mb-3">
-                                                                    <label for="city">City</label>
-                                                                    <input type="text" class="form-control" id="city"
-                                                                        name="city" placeholder="Enter your city"
-                                                                        required>
-                                                                    <div class="invalid-feedback">City is required.
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="row">
-                                                                <div class="col-sm-6 mb-3">
-                                                                    <label for="landmark">Landmark</label>
-                                                                    <input type="text" class="form-control"
-                                                                        id="landmark" name="landmark"
-                                                                        placeholder="Enter a landmark" required>
-                                                                    <div class="invalid-feedback">Landmark is required.
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-sm-6 mb-3">
-                                                                    <label for="house">House/Building</label>
-                                                                    <input type="text" class="form-control" id="house"
-                                                                        name="house" placeholder="Enter house/building"
-                                                                        required>
-                                                                    <div class="invalid-feedback">House/Building is
-                                                                        required.</div>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="row">
-                                                                <div class="col-sm-6 mb-3">
-                                                                    <label for="pincode">Postal Code</label>
-                                                                    <input type="number" class="form-control"
-                                                                        id="pincode" name="pincode"
-                                                                        placeholder="Enter postal code" required>
-                                                                    <div class="invalid-feedback">Postal Code is
-                                                                        required.</div>
-                                                                </div>
-                                                                <div class="col-sm-6 mb-3">
-                                                                    <label for="address-type">Address Type</label>
-                                                                    <select id="address-type" class="form-control"
-                                                                        name="type" required>
-                                                                        <option value="">Select Address Type</option>
-                                                                        <option value="HOME">Home</option>
-                                                                        <option value="WORK">Work</option>
-                                                                        <option value="Other">Other</option>
-                                                                    </select>
-                                                                    <div class="invalid-feedback">Address Type is
-                                                                        required.</div>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="text-center mt-4">
-                                                                <button type="submit"
-                                                                    class="btn btn-outline-primary w-100">
-                                                                    <span>SAVE ADDRESS</span>
-                                                                    <i class="icon-long-arrow-right"></i>
-                                                                </button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
+                                    <!-- Payment Options Accordion -->
+                                    <div class="accordion-summary mb-4" id="accordion-payment" style="border-top:1.5px solid #e2e2ec; padding-top:20px;">
+                                        <h4 style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:#1a1a2e; margin-bottom:12px;">Payment Method</h4>
+                                        
+                                        <div class="card mb-2" style="border-radius:10px; border:1.5px solid #e2e2ec; overflow:hidden; background:#fff;">
+                                            <div class="card-header p-3" style="background:#f8f9fa;">
+                                                <div class="custom-control custom-radio">
+                                                    <input type="radio" name="paymentMethod" id="payment-method-2" value="Razorpay" class="custom-control-input">
+                                                    <label class="custom-control-label" for="payment-method-2" style="font-size:13px; font-weight:600; color:#1a1a2e; cursor:pointer;">Razorpay (Cards / UPI / NetBanking)</label>
                                                 </div>
                                             </div>
                                         </div>
 
+                                        <div class="card mb-2" style="border-radius:10px; border:1.5px solid #e2e2ec; overflow:hidden; background:#fff;">
+                                            <div class="card-header p-3" style="background:#f8f9fa;">
+                                                <div class="custom-control custom-radio">
+                                                    <input type="radio" name="paymentMethod" id="payment-method-3" value="Cash on Delivery" class="custom-control-input">
+                                                    <label class="custom-control-label" for="payment-method-3" style="font-size:13px; font-weight:600; color:#1a1a2e; cursor:pointer;">Cash on Delivery (COD)</label>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                        <!-----Add Address modal End------>
+                                        <div class="card mb-2" style="border-radius:10px; border:1.5px solid #e2e2ec; overflow:hidden; background:#fff;">
+                                            <div class="card-header p-3" style="background:#f8f9fa;">
+                                                <div class="custom-control custom-radio">
+                                                    <input type="radio" name="paymentMethod" id="payment-method-wallet" value="Wallet" class="custom-control-input">
+                                                    <label class="custom-control-label" for="payment-method-wallet" style="font-size:13px; font-weight:600; color:#1a1a2e; cursor:pointer;">Wallet Balance</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-
-
-                                    </div><!-- End .row -->
-
-
-
-
-
-
-
-
-
-
-
-                                </div><!-- End .container -->
-                            </div><!-- End .checkout -->
-                        </div><!-- End .page-content -->
-                    </main><!-- End .main -->
+                                    <button type="submit" class="btn-fz-primary w-100 text-center" id="placeOrderButton" style="display:block; width:100% !important; padding:14px !important; margin:0 !important; cursor:pointer;">
+                                        Place Order
+                                    </button>
+                                </form>
+                            </div>
+                        </aside>
+                    </div>
                 </div>
+            </div>
+        </div>
+    </main>
 
-                <%- include('../partials/footer.ejs') -%>
+    <!-- Modal for Adding Address -->
+    <div class="modal fade" id="addAddressModal" tabindex="-1" role="dialog" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content" style="border-radius:20px; overflow:hidden;">
+                <div class="modal-header bg-dark text-white p-4">
+                    <h5 class="modal-title font-heading w-100 text-center m-0" id="addAddressModalLabel" style="font-size:1.5rem; font-weight:600; color:#fff;">Add Shipping Address</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="position:absolute; right:20px; top:20px;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-5">
+                    <form action="/checkoutaddaddress" method="post" id="addressForm" novalidate class="m-0">
+                        <div class="row">
+                            <div class="col-sm-6 mb-3">
+                                <label for="name">Full Name</label>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Enter your full name" required>
+                                <div class="invalid-feedback">Full Name is required.</div>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <label for="phone">Phone Number</label>
+                                <input type="number" class="form-control" id="phone" name="phone" placeholder="Enter your phone number" required>
+                                <div class="invalid-feedback">Phone Number is required.</div>
+                            </div>
+                        </div>
 
+                        <div class="row">
+                            <div class="col-sm-6 mb-3">
+                                <label for="country">Country</label>
+                                <input type="text" class="form-control" id="country" name="country" placeholder="Enter country" required>
+                                <div class="invalid-feedback">Country is required.</div>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <label for="state">State</label>
+                                <input type="text" class="form-control" id="state" name="state" placeholder="Enter state" required>
+                                <div class="invalid-feedback">State is required.</div>
+                            </div>
+                        </div>
 
+                        <div class="row">
+                            <div class="col-sm-6 mb-3">
+                                <label for="district">District</label>
+                                <input type="text" class="form-control" id="district" name="district" placeholder="Enter district" required>
+                                <div class="invalid-feedback">District is required.</div>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <label for="city">City</label>
+                                <input type="text" class="form-control" id="city" name="city" placeholder="Enter city" required>
+                                <div class="invalid-feedback">City is required.</div>
+                            </div>
+                        </div>
 
+                        <div class="row">
+                            <div class="col-sm-6 mb-3">
+                                <label for="landmark">Landmark</label>
+                                <input type="text" class="form-control" id="landmark" name="landmark" placeholder="Enter nearby landmark" required>
+                                <div class="invalid-feedback">Landmark is required.</div>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <label for="house">House/Building</label>
+                                <input type="text" class="form-control" id="house" name="house" placeholder="Enter house/flat number" required>
+                                <div class="invalid-feedback">House/Building is required.</div>
+                            </div>
+                        </div>
 
+                        <div class="row">
+                            <div class="col-sm-6 mb-3">
+                                <label for="pincode">Postal Code</label>
+                                <input type="number" class="form-control" id="pincode" name="pincode" placeholder="Enter pincode" required>
+                                <div class="invalid-feedback">Postal Code is required.</div>
+                            </div>
+                            <div class="col-sm-6 mb-3">
+                                <label for="address-type">Address Type</label>
+                                <select id="address-type" class="form-control" name="type" required style="height:auto; padding:12px 14px;">
+                                    <option value="">Select Address Type</option>
+                                    <option value="HOME">Home (Delivery all day)</option>
+                                    <option value="WORK">Work (Delivery between 9 AM - 6 PM)</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <div class="invalid-feedback">Address Type is required.</div>
+                            </div>
+                        </div>
 
+                        <button type="submit" class="btn-fz-primary w-100 text-center mt-4" style="display:block; width:100% !important; padding:14px !important; margin:0 !important; cursor:pointer;">
+                            Save Address
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- Modal for Editing Address -->
+    <div class="modal fade" id="editAddressModal" tabindex="-1" role="dialog" aria-labelledby="editAddressModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content" style="border-radius:20px; overflow:hidden;">
+                <div class="modal-header bg-dark text-white p-4">
+                    <h5 class="modal-title font-heading w-100 text-center m-0" id="editAddressModalLabel" style="font-size:1.5rem; font-weight:600; color:#fff;">Edit Shipping Address</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="position:absolute; right:20px; top:20px;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-5">
+                    <form id="editAddressForm" action="/checkouteditaddress" method="POST" class="m-0">
+                        <input type="hidden" id="editAddressId" name="addressId">
 
+                        <div class="form-group mb-3">
+                            <label for="editName">Full Name</label>
+                            <input type="text" class="form-control" id="editName" name="name" required>
+                        </div>
 
-                    <!-- ------------coupeon section script -->
+                        <div class="form-group mb-3">
+                            <label for="editPhone">Phone Number</label>
+                            <input type="text" class="form-control" id="editPhone" name="phone" required>
+                        </div>
 
-                    <!-- Include SweetAlert2 -->
-                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                        <div class="form-group mb-3">
+                            <label for="editAddress">Address (House/Building)</label>
+                            <input type="text" class="form-control" id="editAddress" name="house" required>
+                        </div>
 
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function () {
-                            const couponForm = document.getElementById('couponForm');
-                            const couponButton = document.getElementById('couponButton');
-                            const couponInput = document.getElementById('couponcode');
-                            const totalPriceSpan = document.getElementById('total-price');
-                            const disAmount = document.getElementById('disAmount');
-                            const totalPriceInput = document.querySelector('input[name="totalPrice"]');
-                            const discountPrice=document.querySelector('input[name="discountPrice"]')
-                            couponForm.addEventListener('submit', async function (event) {
-                                event.preventDefault(); // Prevent the form from submitting the default way
+                        <div class="form-group mb-3">
+                            <label for="editStreet">Street / Area</label>
+                            <input type="text" class="form-control" id="editStreet" name="street" required>
+                        </div>
 
-                                const couponcode = couponInput.value.trim();
-                                const totalAmount = document.querySelector('input[name="totalAmount"]').value;
+                        <div class="form-group mb-3">
+                            <label for="editPostalCode">Postal Code</label>
+                            <input type="text" class="form-control" id="editPostalCode" name="postalCode" required>
+                        </div>
 
-                                if (!couponcode) {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Error',
-                                        text: 'Please enter a coupon code.',
-                                        confirmButtonText: 'Close',
-                                    });
-                                    return;
-                                }
+                        <div class="form-group mb-3">
+                            <label for="editState">State</label>
+                            <input type="text" class="form-control" id="editState" name="state" required>
+                        </div>
 
-                                try {
-                                    let response, data;
+                        <div class="form-group mb-3">
+                            <label for="editCountry">Country</label>
+                            <input type="text" class="form-control" id="editCountry" name="country" required>
+                        </div>
 
-                                    if (couponButton.dataset.applied === 'true') {
-                                        // Remove coupon
-                                        response = await fetch('/removecoupon', {
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-Type': 'application/json',
-                                            },
-                                            body: JSON.stringify({ couponcode, totalAmount }),
-                                        });
-                                    } else {
-                                        // Apply coupon
-                                        response = await fetch('/applycouoponcode', {
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-Type': 'application/json',
-                                            },
-                                            body: JSON.stringify({ couponcode, totalAmount }),
-                                        });
-                                    }
+                        <div class="form-group mb-3">
+                            <label for="editDistrict">District</label>
+                            <input type="text" class="form-control" id="editDistrict" name="district" required>
+                        </div>
 
-                                    data = await response.json();
+                        <div class="form-group mb-3">
+                            <label for="editAddressType">Address Type</label>
+                            <input type="text" class="form-control" id="editAddressType" name="addressType" required>
+                        </div>
 
-                                    if (response.ok) {
-                                        if (couponButton.dataset.applied === 'true') {
-                                            // Coupon removed successfully
-                                            Swal.fire({
-                                                icon: 'success',
-                                                title: 'Coupon Removed!',
-                                                text: `Coupon has been removed. Your total is ₹${data.totalAmount}`,
-                                                confirmButtonText: 'Okay',
-                                            });
+                        <button type="submit" class="btn-fz-primary w-100 text-center mt-4" style="display:block; width:100% !important; padding:14px !important; margin:0 !important; cursor:pointer;">
+                            Update Address
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-                                            // Update total price
-                                            totalPriceSpan.textContent = `${data.totalAmount}`;
-                                            totalPriceInput.value = data.totalAmount;
-                                            
-                                            // Reset the form for applying a new coupon
-                                            couponInput.disabled = false;
-                                            couponButton.textContent = 'Apply';
-                                            couponButton.dataset.applied = 'false';
-                                        } else {
-                                            // Coupon applied successfully
-                                            Swal.fire({
-                                                icon: 'success',
-                                                title: 'Coupon Applied!',
-                                                text: `You saved ₹${data.discountAmount}! Your total is ₹${data.finalAmount}`,
-                                                confirmButtonText: 'Cool',
-                                            });
+<%- include('../partials/footer.ejs') -%>
 
-                                            // Update total price
-                                            const displayedAmount = data.finalAmount || totalAmount;
-                                            const difffordiscount= totalAmount - data.finalAmount || 0
-                                            totalPriceSpan.textContent = `${displayedAmount}`;
-                                            totalPriceInput.value = displayedAmount;
-                                          disAmount.textContent=`₹${difffordiscount}`
-                                            // Disable the input to prevent changes and switch button to "Remove"
-                                            couponInput.disabled = true;
-                                            couponButton.textContent = 'Remove';
-                                            couponButton.dataset.applied = 'true';
-                                        }
-                                    } else {
-                                        // Show error popup
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: 'Oops...',
-                                            text: data.message,
-                                            confirmButtonText: 'Try Again',
-                                        });
-                                    }
-                                } catch (error) {
-                                    console.log("Error while processing coupon", error);
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Oops...',
-                                        text: 'There was an error processing your request. Please try again later.',
-                                        confirmButtonText: 'Close',
-                                    });
-                                }
-                            });
+<!-- Coupon Handler Script -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const couponForm = document.getElementById('couponForm');
+        const couponButton = document.getElementById('couponButton');
+        const couponInput = document.getElementById('couponcode');
+        const totalPriceSpan = document.getElementById('total-price');
+        const disAmount = document.getElementById('disAmount');
+        const totalAmountInput = document.querySelector('#orderForm input[name="totalAmount"]');
+        const discountPrice = document.querySelector('input[name="discountPrice"]');
+
+        couponForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const couponcode = couponInput.value.trim();
+            const totalAmount = Number(totalAmountInput ? totalAmountInput.value : 0);
+
+            if (!couponcode) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Please enter a coupon code.',
+                    confirmButtonText: 'Close',
+                });
+                return;
+            }
+
+            try {
+                let response;
+
+                if (couponButton.dataset.applied === 'true') {
+                    response = await fetch('/removecoupon', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ couponcode, totalAmount }),
+                    });
+                } else {
+                    response = await fetch('/applycouponcode', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ couponcode, totalAmount }),
+                    });
+                }
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (couponButton.dataset.applied === 'true') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Coupon Removed!',
+                            text: `Coupon has been removed. Your total is ₹${data.totalAmount}`,
+                            confirmButtonText: 'Okay',
                         });
-                    </script>
 
+                        totalPriceSpan.textContent = `${data.totalAmount}`;
+                        if (totalAmountInput) totalAmountInput.value = data.totalAmount;
 
+                        couponInput.disabled = false;
+                        couponButton.textContent = 'Apply';
+                        couponButton.dataset.applied = 'false';
+                    } else {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Coupon Applied!',
+                            text: `You saved ₹${data.discountAmount}! Your total is ₹${data.finalAmount}`,
+                            confirmButtonText: 'Cool',
+                        });
 
+                        const displayedAmount = data.finalAmount || totalAmount;
+                        const discountValue = totalAmount - data.finalAmount || 0;
+                        totalPriceSpan.textContent = `${displayedAmount}`;
+                        if (totalAmountInput) totalAmountInput.value = displayedAmount;
+                        if (disAmount) disAmount.textContent = `₹${discountValue}`;
 
+                        couponInput.disabled = true;
+                        couponButton.textContent = 'Remove';
+                        couponButton.dataset.applied = 'true';
+                    }
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: data.message,
+                        confirmButtonText: 'Try Again',
+                    });
+                }
+            } catch (error) {
+                console.log("Error while processing coupon", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'There was an error processing your request. Please try again later.',
+                    confirmButtonText: 'Close',
+                });
+            }
+        });
+    });
+</script>
 
+<!-- Razorpay Payment & COD / Wallet script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("orderForm");
+        const paymentMethods = document.getElementsByName("paymentMethod");
 
+        form.addEventListener("submit", async function (e) {
+            e.preventDefault();
 
+            let selectedPaymentMethod = null;
+            for (let i = 0; i < paymentMethods.length; i++) {
+                if (paymentMethods[i].checked) {
+                    selectedPaymentMethod = paymentMethods[i].value;
+                    break;
+                }
+            }
 
+            if (!selectedPaymentMethod) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "No Payment Method Selected",
+                    text: "Please select a payment method before placing your order.",
+                    confirmButtonText: "Okay",
+                });
+                return;
+            }
 
+            const totalAmount = document.querySelector('input[name="totalAmount"]').value;
+            const checkedAddress = document.querySelector('input[name="addressRadioButton"]:checked');
 
+            if (!checkedAddress) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Select Shipping Address",
+                    text: "Please choose a shipping address before placing your order.",
+                    confirmButtonText: "Okay",
+                });
+                return;
+            }
 
+            document.getElementById('selectedAddressId').value = checkedAddress.value;
 
+            if (selectedPaymentMethod === "Razorpay") {
+                try {
+                    const response = await fetch("/razorpaycontroller", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            totalAmount,
+                            products: document.getElementById('products').value,
+                            selectedAddressId: document.getElementById("selectedAddressId").value,
+                            paymentMethod: selectedPaymentMethod,
+                        }),
+                    });
 
+                    const data = await response.json();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-                    <script>
-                        document.addEventListener("DOMContentLoaded", function () {
-                            const form = document.getElementById("orderForm");
-                            const paymentMethods = document.getElementsByName("paymentMethod");
-
-                            form.addEventListener("submit", async function (e) {
-                                e.preventDefault(); // Prevent default form submission
-
-                                let selectedPaymentMethod = null;
-                                for (let i = 0; i < paymentMethods.length; i++) {
-                                    if (paymentMethods[i].checked) {
-                                        selectedPaymentMethod = paymentMethods[i].value;
-                                        break;
+                    if (data.success) {
+                        const options = {
+                            key: "rzp_test_SsN3kF1vkA34wm",
+                            amount: data.amount,
+                            currency: "INR",
+                            name: "Fashion Zone",
+                            description: "Secure Order Payment",
+                            order_id: data.orderId,
+                            handler: function (response) {
+                                fetch("/verifypayment", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({
+                                        razorpay_payment_id: response.razorpay_payment_id,
+                                        razorpay_order_id: response.razorpay_order_id,
+                                        razorpay_signature: response.razorpay_signature,
+                                        orderId: data.orderId,
+                                    }),
+                                })
+                                .then((verifyResponse) => verifyResponse.json())
+                                .then((verifyData) => {
+                                    if (verifyData.success) {
+                                        Swal.fire({
+                                            icon: "success",
+                                            title: "Payment Successful",
+                                            text: "Your payment has been verified.",
+                                            confirmButtonText: "Okay",
+                                        }).then(() => {
+                                            window.location.href = `/ordersummery/${data.order}`;
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: "error",
+                                            title: "Payment Verification Failed",
+                                            text: "Please try again or contact support.",
+                                            confirmButtonText: "Okay",
+                                        }).then(() => {
+                                            window.location.href = `/paymentfailed/${data.order}`;
+                                        });
                                     }
-                                }
-
-                                if (!selectedPaymentMethod) {
-                                    Swal.fire({
-                                        icon: "warning",
-                                        title: "No Payment Method Selected",
-                                        text: "Please select a payment method before placing your order.",
-                                        confirmButtonText: "Okay",
-                                    });
-                                    return;
-                                }
-
-                                // Get total amount
-                                const totalAmount = document.querySelector('input[name="totalPrice"]').value;
-                                console.log("This is the total Amount", totalAmount);
-
-
-                                // Restrict COD if total amount > 1000
-                                if (selectedPaymentMethod === "Cash on Delivery" && totalAmount > 1000) {
+                                })
+                                .catch((err) => {
+                                    console.error("Verification Error:", err);
                                     Swal.fire({
                                         icon: "error",
-                                        title: "Cash on Delivery Not Allowed",
-                                        text: "Cash on Delivery is not available for orders above ₹1000. Please select a different payment method.",
+                                        title: "Payment Verification Failed",
+                                        text: "An error occurred during payment verification.",
                                         confirmButtonText: "Okay",
+                                    }).then(() => {
+                                        window.location.href = `/paymentfailed/${data.order}`;
                                     });
-                                    return;
-                                }
+                                });
+                            },
+                            prefill: {
+                                name: "Customer Name",
+                                email: "customer@example.com",
+                                contact: "1234567890",
+                            },
+                            theme: {
+                                color: "#1a1a2e",
+                            },
+                        };
 
-                                // Handle Razorpay Payment
-                                if (selectedPaymentMethod === "Razor pay") {
-                                    try {
-    const response = await fetch("/razorpaycontroller", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            totalAmount,
-            products: document.querySelector("input[name='products']").value,
-            selectedAddressId: document.getElementById("selectedAddressId").value,
-            paymentMethod: selectedPaymentMethod,
-        }),
-    });
+                        const razorpay = new Razorpay(options);
 
-    const data = await response.json();
-
-    if (data.success) {
-        const options = {
-            key: "rzp_test_SsN3kF1vkA34wm", // Replace with your Razorpay key ID
-            amount: data.amount * 100,
-            currency: "INR",
-            name: "Fashion Zone",
-            description: "Test Transaction",
-            image: "https://yourlogo.url", // Optional: Add your logo URL
-            order_id: data.orderId,
-            handler: function (response) {
-                // Verification of successful payment
-                fetch("/verifypayment", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        orderId: data.orderId,
-                        paymentId: response.razorpay_payment_id,
-                        signature: response.razorpay_signature,
-                    }),
-                })
-                    .then((verifyResponse) => verifyResponse.json())
-                    .then((verifyData) => {
-                        if (verifyData.success) {
-                            Swal.fire({
-                                icon: "success",
-                                title: "Payment Successful",
-                                text: "Your payment has been verified.",
-                                confirmButtonText: "Okay",
-                            }).then(() => {
-                                window.location.href = `/ordersummery/${data.order}`;
-                            });
-                        } else {
+                        razorpay.on("payment.failed", function () {
                             Swal.fire({
                                 icon: "error",
-                                title: "Payment Verification Failed",
-                                text: "Please try again or contact support.",
+                                title: "Payment Failed",
+                                text: "Your payment could not be processed. Please try again.",
                                 confirmButtonText: "Okay",
                             }).then(() => {
                                 window.location.href = `/paymentfailed/${data.order}`;
                             });
-                        }
-                    })
-                    .catch((err) => {
-                        console.error("Verification Error:", err);
+                        });
+
+                        razorpay.open();
+                    } else {
                         Swal.fire({
                             icon: "error",
-                            title: "Payment Verification Failed",
-                            text: "An error occurred during payment verification.",
+                            title: "Order Creation Failed",
+                            text: data.error || "Unable to create order. Please try again.",
                             confirmButtonText: "Okay",
-                        }).then(() => {
-                            window.location.href = `/paymentfailed/${data.order}`;
                         });
+                    }
+                } catch (error) {
+                    console.error("Error initiating Razorpay payment:", error);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Payment Initialization Failed",
+                        text: "An error occurred while starting the payment process. Please try again.",
+                        confirmButtonText: "Okay",
+                    }).then(() => {
+                        window.location.href = "/paymentfailed";
                     });
-            },
-            prefill: {
-                name: "Customer Name", 
-                email: "customer@example.com",
-                contact: "1234567890",
-            },
-            theme: {
-                color: "#3399cc",
-            },
-        };
+                }
+            } else if (selectedPaymentMethod === "Wallet") {
+                Swal.fire({
+                    icon: "info",
+                    title: "Confirm Wallet Payment",
+                    text: "You will pay using your wallet balance. Do you want to proceed?",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, Pay with Wallet",
+                    cancelButtonText: "No, Go Back",
+                }).then(async (result) => {
+                    if (!result.isConfirmed) return;
 
-        const razorpay = new Razorpay(options);
-
-
-        razorpay.on("payment.failed", function (response) {
-            Swal.fire({
-                icon: "error",
-                title: "Payment Failed",
-                text: "Your payment could not be processed. Please try again.",
-                confirmButtonText: "Okay",
-            }).then(() => {
-                window.location.href =  `/paymentfailed/${data.order}`; 
-            });
-        });
-
-        razorpay.open();
-    } else {
-        Swal.fire({
-            icon: "error",
-            title: "Order Creation Failed",
-            text: data.error || "Unable to create order. Please try again.",
-            confirmButtonText: "Okay",
-        });
-    }
-} catch (error) {
-    console.error("Error initiating Razorpay payment:", error);
-    Swal.fire({
-        icon: "error",
-        title: "Payment Initialization Failed",
-        text: "An error occurred while starting the payment process. Please try again.",
-        confirmButtonText: "Okay",
-    }).then(() => {
-        window.location.href = "/paymentfailed";
-    });
-}
-                                }
-                                // Handle COD and Wallet
-                                else {
-                                    Swal.fire({
-                                        icon: "info",
-                                        title: "Confirm Order",
-                                        text: `You selected "${selectedPaymentMethod}". Do you want to proceed?`,
-                                        showCancelButton: true,
-                                        confirmButtonText: "Yes, Place Order",
-                                        cancelButtonText: "No, Go Back",
-                                    }).then((result) => {
-                                        if (result.isConfirmed) {
-                                            switch (selectedPaymentMethod) {
-                                                case "Cash on Delivery":
-                                                    const totalAmountInput = document.createElement("input");
-                                                    totalAmountInput.type = "hidden";
-                                                    totalAmountInput.name = "totalAmount";
-                                                    totalAmountInput.value = totalAmount;
-
-                                                    form.appendChild(totalAmountInput);
-                                                    form.action = "/codcontroller";
-                                                    break;
-                                                case "Wallet":
-                                                    const walletInput = document.createElement("input");
-                                                    walletInput.type = "hidden";
-                                                    walletInput.name = "totalAmount";
-                                                    walletInput.value = totalAmount;
-                                                    form.appendChild(walletInput);
-                                                    form.action = "/walletcontroller";
-                                                    break;
-                                                default:
-                                                    Swal.fire({
-                                                        icon: "error",
-                                                        title: "Invalid Payment Method",
-                                                        text: "An unknown error occurred. Please try again.",
-                                                        confirmButtonText: "Okay",
-                                                    });
-                                                    return;
-                                            }
-                                            form.method = "POST";
-                                            form.submit();
-                                        }
-                                    });
-                                }
-                            });
+                    try {
+                        const response = await fetch("/walletcontroller", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                totalAmount,
+                                products: document.getElementById('products').value,
+                                selectedAddressId: document.getElementById("selectedAddressId").value,
+                                paymentMethod: selectedPaymentMethod,
+                            }),
                         });
 
-                    </script>
+                        const walletData = await response.json();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    <!-- SweetAlert2 CDN -->
-                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-                    <script>
-                        // Set the hidden fields dynamically before form submission
-                        document.getElementById('orderForm').addEventListener('submit', function (e) {
-                            // Get the selected address
-                            var selectedAddressRadio = document.querySelector('input[name="addressRadioButton"]:checked');
-                            if (selectedAddressRadio) {
-                                var selectedAddressId = selectedAddressRadio.closest('.address-card').getAttribute('data-address-id');
-                                document.getElementById('selectedAddressId').value = selectedAddressId;
-                            }
-
-                            // Set the payment method dynamically
-                            var selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
-                            if (selectedPaymentMethod) {
-                                document.getElementById('paymentMethod').value = selectedPaymentMethod.value;
-                            }
-
-                            // Set the other values
-                            document.getElementById('totalAmount').value = "<%= subtotal %>";
-                            document.getElementById('products').value = "<%= JSON.stringify(userProducts) %>";
-                        });
-                    </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    <script>
-                        $('#editAddressModal').on('show.bs.modal', function (e) {
-                            var button = $(e.relatedTarget); // Button that triggered the modal
-                            var addressId = button.data('address-id'); // Get the addressId from data-* attribute
-                            var name = button.data('name');
-                            var phone = button.data('phone');
-                            var address = button.data('address');
-                            var street = button.data('street');
-                            var postalCode = button.data('postal-code');
-                            var state = button.data('state');
-                            var country = button.data('country');
-                            var district = button.data('district');
-                            var addressType = button.data('address-type');
-
-                            // Populate the modal with the address data
-                            $('#editAddressId').val(addressId); // Set the addressId in a hidden field
-                            $('#editName').val(name);
-                            $('#editPhone').val(phone);
-                            $('#editAddress').val(address);
-                            $('#editStreet').val(street);
-                            $('#editPostalCode').val(postalCode);
-                            $('#editState').val(state);
-                            $('#editCountry').val(country);
-                            $('#editDistrict').val(district);
-                            $('#editAddressType').val(addressType);
-                        });
-
-
-                    </script>
-
-
-
-
-
-            </body>
-
-
-
-            <!-- JS validation for edit address -->
-
-
-
-
-
-
-
-
-
-            <!-- JS validation for add address -->
-            <script>
-                const form = document.getElementById('addressForm');
-
-                form.addEventListener('submit', function (event) {
-                    event.preventDefault(); // Prevent default form submission
-                    let isValid = true;
-
-                    // Validate all form fields
-                    const inputs = form.querySelectorAll('.form-control');
-                    inputs.forEach(input => {
-                        const feedback = input.nextElementSibling;
-                        const value = input.value.trim();
-
-                        if (!value) {
-                            input.classList.add('is-invalid');
-                            feedback.textContent = `${input.previousElementSibling.textContent} is required.`;
-                            isValid = false;
-                        } else if (input.name === 'phone') {
-                            // Validate phone number
-                            const phoneRegex = /^[0-9]{10}$/;
-                            if (!phoneRegex.test(value)) {
-                                input.classList.add('is-invalid');
-                                feedback.textContent = 'Phone Number must be exactly 10 digits.';
-                                isValid = false;
-                            } else {
-                                input.classList.remove('is-invalid');
-                                feedback.textContent = '';
-                            }
-                        } else if (input.name === 'pincode') {
-                            // Validate pincode
-                            const pincodeRegex = /^[0-9]{6}$/;
-                            if (!pincodeRegex.test(value)) {
-                                input.classList.add('is-invalid');
-                                feedback.textContent = 'Postal Code must be exactly 6 digits.';
-                                isValid = false;
-                            } else {
-                                input.classList.remove('is-invalid');
-                                feedback.textContent = '';
-                            }
+                        if (response.ok && walletData.success) {
+                            window.location.href = `/ordersummery/${walletData.orderId}`;
                         } else {
-                            input.classList.remove('is-invalid');
-                            feedback.textContent = '';
+                            Swal.fire({
+                                icon: "error",
+                                title: walletData.title || "Wallet Payment Failed",
+                                text: walletData.text || walletData.message || "Unable to complete wallet payment.",
+                                confirmButtonText: "Okay",
+                            });
                         }
-                    });
-
-                    // Allow form submission if valid
-                    if (isValid) {
-                        alert('Form submitted successfully!');
-                        form.submit();
+                    } catch (error) {
+                        console.error("Wallet payment error:", error);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Payment Error",
+                            text: "An error occurred while processing wallet payment.",
+                            confirmButtonText: "Okay",
+                        });
                     }
                 });
+            } else {
+                Swal.fire({
+                    icon: "info",
+                    title: "Confirm Order",
+                    text: `You selected "${selectedPaymentMethod}". Do you want to proceed?`,
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, Place Order",
+                    cancelButtonText: "No, Go Back",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        if (selectedPaymentMethod === "Cash on Delivery") {
+                            form.action = "/codcontroller";
+                            form.method = "POST";
 
-                // Remove error message as user types
-                form.querySelectorAll('.form-control').forEach(input => {
-                    input.addEventListener('input', function () {
-                        if (this.value.trim()) {
-                            this.classList.remove('is-invalid');
-                            this.nextElementSibling.textContent = '';
+                            const methodInput = document.createElement("input");
+                            methodInput.type = "hidden";
+                            methodInput.name = "paymentMethod";
+                            methodInput.value = selectedPaymentMethod;
+                            form.appendChild(methodInput);
+
+                            form.submit();
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Invalid Payment Method",
+                                text: "An unknown error occurred. Please try again.",
+                                confirmButtonText: "Okay",
+                            });
                         }
-                    });
+                    }
                 });
+            }
+        });
+    });
+</script>
 
-            </script>
+<script>
+    document.getElementById('orderForm').addEventListener('submit', function (e) {
+        var selectedAddressRadio = document.querySelector('input[name="addressRadioButton"]:checked');
+        if (selectedAddressRadio) {
+            var selectedAddressId = selectedAddressRadio.closest('.address-card').getAttribute('data-address-id');
+            document.getElementById('selectedAddressId').value = selectedAddressId;
+        }
 
+        var selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+        if (selectedPaymentMethod) {
+            var methodInput = document.createElement("input");
+            methodInput.type = "hidden";
+            methodInput.name = "paymentMethod";
+            methodInput.value = selectedPaymentMethod.value;
+            this.appendChild(methodInput);
+        }
+    });
 
-            </html>
+    $('#editAddressModal').on('show.bs.modal', function (e) {
+        var button = $(e.relatedTarget);
+        var addressId = button.data('address-id');
+        var name = button.data('name');
+        var phone = button.data('phone');
+        var address = button.data('address');
+        var street = button.data('street');
+        var postalCode = button.data('postal-code');
+        var state = button.data('state');
+        var country = button.data('country');
+        var district = button.data('district');
+        var addressType = button.data('address-type');
+
+        $('#editAddressId').val(addressId);
+        $('#editName').val(name);
+        $('#editPhone').val(phone);
+        $('#editAddress').val(address);
+        $('#editStreet').val(street);
+        $('#editPostalCode').val(postalCode);
+        $('#editState').val(state);
+        $('#editCountry').val(country);
+        $('#editDistrict').val(district);
+        $('#editAddressType').val(addressType);
+    });
+</script>
+
+<script>
+    const addAddressForm = document.getElementById('addressForm');
+    if (addAddressForm) {
+        addAddressForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            let isValid = true;
+
+            const inputs = addAddressForm.querySelectorAll('.form-control');
+            inputs.forEach(input => {
+                const feedback = input.nextElementSibling;
+                const value = input.value.trim();
+
+                if (!value) {
+                    input.classList.add('is-invalid');
+                    if (feedback) feedback.textContent = `${input.previousElementSibling ? input.previousElementSibling.textContent : 'Field'} is required.`;
+                    isValid = false;
+                } else if (input.name === 'phone') {
+                    const phoneRegex = /^[0-9]{10}$/;
+                    if (!phoneRegex.test(value)) {
+                        input.classList.add('is-invalid');
+                        if (feedback) feedback.textContent = 'Phone Number must be exactly 10 digits.';
+                        isValid = false;
+                    } else {
+                        input.classList.remove('is-invalid');
+                        if (feedback) feedback.textContent = '';
+                    }
+                } else if (input.name === 'pincode') {
+                    const pincodeRegex = /^[0-9]{6}$/;
+                    if (!pincodeRegex.test(value)) {
+                        input.classList.add('is-invalid');
+                        if (feedback) feedback.textContent = 'Postal Code must be exactly 6 digits.';
+                        isValid = false;
+                    } else {
+                        input.classList.remove('is-invalid');
+                        if (feedback) feedback.textContent = '';
+                    }
+                } else {
+                    input.classList.remove('is-invalid');
+                    if (feedback) feedback.textContent = '';
+                }
+            });
+
+            if (isValid) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Address Saved',
+                    text: 'Your new shipping address has been registered.',
+                    confirmButtonText: 'Great'
+                }).then(() => {
+                    addAddressForm.submit();
+                });
+            }
+        });
+
+        addAddressForm.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('input', function () {
+                if (this.value.trim()) {
+                    this.classList.remove('is-invalid');
+                    if (this.nextElementSibling) this.nextElementSibling.textContent = '';
+                }
+            });
+        });
+    }
+</script>
+</body>
+</html>

@@ -17,18 +17,38 @@ dotenv.config();
 export const createOrder = async (req, res) => {
     try {
         const { totalAmount, products, paymentMethod, selectedAddressId } = req.body;
+
+        if (!req.session.userId || !req.session.user) {
+            return res.status(401).redirect('/login');
+        }
+
+        if (!totalAmount || !products || !selectedAddressId) {
+            return res.status(400).send('Missing required fields for COD order.');
+        }
+
+        const normalizedPaymentMethod = typeof paymentMethod === 'string' ? paymentMethod.trim() : 'Cash on Delivery';
+        if (normalizedPaymentMethod.toLowerCase() !== 'cash on delivery') {
+            return res.status(400).send('Invalid payment method for COD order.');
+        }
+
+        const totalAmountNumber = Number(totalAmount);
+        if (Number.isNaN(totalAmountNumber) || totalAmountNumber <= 0) {
+            return res.status(400).send('Invalid total amount.');
+        }
+
+        const parsedProducts = typeof products === 'string' ? JSON.parse(products) : products;
         const orderId = uuidv4();
-        const parsedProducts = JSON.parse(products);
 
         const newOrder = new Order({
             selectedAddressId,
-            totalAmount,
+            totalAmount: totalAmountNumber.toString(),
             products: parsedProducts,
-            paymentMethod,
+            paymentMethod: 'Cash on Delivery',
             orderId,
-            user: req.session.user
+            user: req.session.userId,
+            paymentStatus: 'Pending',
+            status: 'Pending',
         });
-
 
         await newOrder.save();
         console.log("Successfully created an order", newOrder);
@@ -52,16 +72,16 @@ export const createOrder = async (req, res) => {
 
         const userId = req.session.userId;
 
-        const user= await User.findById(userId)
-        console.log(user);
-        
-        if(user.redeemed){
-         const coupon = await Coupon.findOne({couponId:user.redeemed})
-         coupon.usedUsers.push(req.session.userId);
-         console.log("COupon added successfully");
-         
-          await coupon.save();
-          user.redeemed=null
+        const user = await User.findById(userId);
+        if (user?.redeemed) {
+            const coupon = await Coupon.findOne({ couponId: user.redeemed });
+            if (coupon) {
+                coupon.usedUsers.push(req.session.userId);
+                console.log("Coupon added successfully");
+                await coupon.save();
+            }
+            user.redeemed = null;
+            await user.save();
         }
 
 
@@ -150,18 +170,23 @@ export const createRazorpayOrder = async (req, res) => {
 
         const { totalAmount, products, paymentMethod, selectedAddressId } = req.body;
 
-        const parsedProducts = typeof products === "string" ? JSON.parse(products) : products;
+        if (!req.session.userId || !req.session.user) {
+            return res.status(401).json({ error: "User session required." });
+        }
 
         if (!totalAmount || !products || !paymentMethod || !selectedAddressId) {
             return res.status(400).json({ error: "Missing required fields." });
         }
 
-        if (totalAmount <= 0) {
+        const totalAmountNumber = Number(totalAmount);
+        if (Number.isNaN(totalAmountNumber) || totalAmountNumber <= 0) {
             return res.status(400).json({ error: "Invalid total amount." });
         }
 
+        const parsedProducts = typeof products === "string" ? JSON.parse(products) : products;
+
         const order = await razorpayInstance.orders.create({
-            amount: totalAmount * 100,
+            amount: totalAmountNumber * 100,
             currency: "INR",
             receipt: `receipt_${Date.now()}`,
         });
@@ -169,8 +194,8 @@ export const createRazorpayOrder = async (req, res) => {
 
         const newOrder = new Order({
             selectedAddressId,
-            totalAmount: totalAmount.toString(),
-            user: req.session.user,
+            totalAmount: totalAmountNumber.toString(),
+            user: req.session.userId,
             products: parsedProducts,
             paymentMethod,
             orderId: order.id,
@@ -215,15 +240,16 @@ export const createRazorpayOrder = async (req, res) => {
             console.log("Cart is either undefined or does not contain items");
         }
 
-        const user= await User.findById(userId)
-        
-        if(user.redeemed){
-         const coupon = await Coupon.findOne({couponId:user.redeemed})
-         coupon.usedUsers.push(req.session.userId);
-         console.log("COupon added successfully");
-         
-          await coupon.save();
-          user.redeemed=null
+        const user = await User.findById(userId);
+        if (user?.redeemed) {
+            const coupon = await Coupon.findOne({ couponId: user.redeemed });
+            if (coupon) {
+                coupon.usedUsers.push(req.session.userId);
+                console.log("Coupon added successfully");
+                await coupon.save();
+            }
+            user.redeemed = null;
+            await user.save();
         }
 
 
@@ -339,7 +365,8 @@ export const verifyPayment = async (req, res) => {
 
         const body = razorpay_order_id + "|" + razorpay_payment_id;
         const expected_signature = crypto
-            .createHmac("sha256", "NZV6ZXQpcu6Z7uXY1a6Fipwn")  
+            .createHmac("sha256", "NZV6ZXQpcu6Z7uXY1a6Fipwn")
+            .update(body)
             .digest("hex");
 
         console.log('Received razorpay_signature:', razorpay_signature);
@@ -773,36 +800,48 @@ export const createWalletcheckout = async (req, res) => {
         const { selectedAddressId, totalAmount, products, paymentMethod } = req.body;
         console.log("Total amount", req.body);
 
-
         if (!req.session.userId || !req.session.user) {
             return res.status(400).json({
-                status: "error",
+                success: false,
                 title: "Session Error",
                 text: "Session has expired or is invalid.",
             });
         }
 
+        if (!selectedAddressId || !totalAmount || !products || !paymentMethod) {
+            return res.status(400).json({
+                success: false,
+                title: "Invalid Request",
+                text: "Missing required checkout fields.",
+            });
+        }
+
+        const totalAmountNumber = Number(totalAmount);
+        if (Number.isNaN(totalAmountNumber) || totalAmountNumber <= 0) {
+            return res.status(400).json({
+                success: false,
+                title: "Invalid Amount",
+                text: "The total amount is invalid.",
+            });
+        }
+
         let walletData = await Wallet.findOne({ user: req.session.userId });
-        console.log("Wallet",walletData);
+        console.log("Wallet", walletData);
 
         if (!walletData) {
-
-
             walletData = new Wallet({
                 user: req.session.userId,
-                balance: 0,  
-                transaction: []  
+                balance: 0,
+                transaction: [],
             });
 
             await walletData.save();
-
             console.log("New Wallet Created:", walletData);
-
         }
 
-        if (totalAmount <= walletData.balance) {
+        if (totalAmountNumber <= walletData.balance) {
             const orderId = uuidv4();
-            const parsedProducts = JSON.parse(products);
+            const parsedProducts = typeof products === 'string' ? JSON.parse(products) : products;
 
             const productTitles = parsedProducts.flatMap(product =>
                 product.items.map(item => item.title)
@@ -810,20 +849,21 @@ export const createWalletcheckout = async (req, res) => {
 
             const newOrder = new Order({
                 selectedAddressId,
-                totalAmount,
+                totalAmount: totalAmountNumber.toString(),
                 products: parsedProducts,
                 paymentMethod,
                 paymentStatus: "Paid",
                 orderId,
-                user: req.session.user
+                user: req.session.userId,
+                status: "Pending",
             });
 
             await newOrder.save();
             console.log("Successfully created an order", newOrder);
 
-            walletData.balance -= totalAmount;
+            walletData.balance -= totalAmountNumber;
             walletData.transaction.push({
-                amount: totalAmount,
+                amount: totalAmountNumber,
                 transactionId: `TXN${Date.now()}`,
                 productName: productTitles,
                 type: 'debit',
@@ -847,19 +887,18 @@ export const createWalletcheckout = async (req, res) => {
             }
 
 
-            const user= await User.findById(req.session.userId)
-        
-        if(user.redeemed){
-         const coupon = await Coupon.findOne({couponId:user.redeemed})
-         coupon.usedUsers.push(req.session.userId);
-         console.log("coupon added successfully");
-         
-          await coupon.save();
-          user.redeemed=null
-          await user.save()
-        }
+            const user = await User.findById(req.session.userId);
 
-
+            if (user?.redeemed) {
+                const coupon = await Coupon.findOne({ couponId: user.redeemed });
+                if (coupon) {
+                    coupon.usedUsers.push(req.session.userId);
+                    console.log("Coupon added successfully");
+                    await coupon.save();
+                }
+                user.redeemed = null;
+                await user.save();
+            }
 
             // Remove ordered items from the cart
             const userId = req.session.userId;
@@ -881,12 +920,15 @@ export const createWalletcheckout = async (req, res) => {
             }
 
             console.log("Order created successfully.");
-            res.redirect(`/ordersummery/${newOrder._id}`);
+            return res.status(200).json({
+                success: true,
+                orderId: newOrder._id,
+            });
 
         } else {
             console.log("Insufficient wallet balance.");
             return res.status(400).json({
-                status: "error",
+                success: false,
                 title: "Insufficient Balance",
                 text: "You don't have enough balance in your wallet to complete this transaction.",
             });

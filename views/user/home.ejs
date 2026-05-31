@@ -1,95 +1,724 @@
 <%- include('../layout/header.ejs') -%>
 
-    </head>
-   
+<style>
+    :root {
+        --fz-primary: #c9a96e;
+        --fz-primary-dark: #a8813d;
+        --fz-dark: #111827;
+        --fz-navy: #1a1a2e;
+        --fz-soft-dark: #16213e;
+        --fz-text: #6b7280;
+        --fz-light: #f8f7f4;
+        --fz-white: #ffffff;
+        --fz-border: rgba(17, 24, 39, 0.08);
+        --fz-shadow: 0 20px 50px rgba(17, 24, 39, 0.08);
+        --fz-shadow-hover: 0 28px 70px rgba(17, 24, 39, 0.14);
+    }
+
+    body {
+        background: #fafafa;
+        color: var(--fz-dark);
+        overflow-x: hidden;
+    }
+
+    .main {
+        background:
+            radial-gradient(circle at top left, rgba(201, 169, 110, 0.08), transparent 32%),
+            linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+    }
+
+    /* Hero */
+    .intro-slider-container {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .intro-slide {
+        min-height: 720px;
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+
+    .intro-slide::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+            linear-gradient(90deg, rgba(17, 24, 39, 0.82) 0%, rgba(17, 24, 39, 0.55) 45%, rgba(17, 24, 39, 0.18) 100%),
+            linear-gradient(180deg, rgba(17, 24, 39, 0.1) 0%, rgba(17, 24, 39, 0.25) 100%);
+        z-index: 1;
+    }
+
+    .intro-content {
+        text-align: left;
+        max-width: 720px;
+        position: relative;
+        z-index: 5;
+        padding-left: 12px;
+        animation: fzFadeUp 1s cubic-bezier(0.4, 0, 0.2, 1) both;
+    }
+
+    .intro-subtitle {
+        color: var(--fz-primary) !important;
+        font-weight: 700 !important;
+        letter-spacing: 5px !important;
+        font-size: 13px !important;
+        text-transform: uppercase !important;
+        margin-bottom: 18px !important;
+    }
+
+    .intro-title {
+        font-size: clamp(3rem, 6vw, 5.4rem) !important;
+        font-weight: 800 !important;
+        color: #fff !important;
+        line-height: 1.05 !important;
+        margin-bottom: 34px !important;
+        text-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+        letter-spacing: -1.5px;
+    }
+
+    .btn-discover {
+        background: linear-gradient(135deg, var(--fz-primary) 0%, var(--fz-primary-dark) 100%);
+        color: #111827 !important;
+        border: none !important;
+        font-weight: 800;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 1.4px;
+        padding: 17px 42px !important;
+        border-radius: 999px;
+        box-shadow: 0 14px 35px rgba(201, 169, 110, 0.35);
+        transition: all 0.35s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+    }
+
+    .btn-discover:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 48px rgba(201, 169, 110, 0.5);
+        color: #111827 !important;
+    }
+
+    /* Category Banners */
+    .gender-banners {
+        margin-top: -75px;
+        position: relative;
+        z-index: 10;
+        padding-bottom: 70px;
+    }
+
+    .gender-banner-card {
+        border-radius: 28px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: var(--fz-shadow);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 320px;
+        background: #111827;
+    }
+
+    .gender-banner-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 1s ease;
+    }
+
+    .gender-banner-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--fz-shadow-hover);
+    }
+
+    .gender-banner-card:hover img {
+        transform: scale(1.1);
+    }
+
+    .gender-banner-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(17, 24, 39, 0.92) 0%, rgba(17, 24, 39, 0.45) 58%, transparent 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 42px;
+    }
+
+    .gender-subtitle {
+        color: var(--fz-primary);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2.5px;
+        margin-bottom: 8px;
+    }
+
+    .gender-title {
+        font-family: 'Playfair Display', serif;
+        color: #fff;
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 16px;
+    }
+
+    .gender-link {
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .gender-banner-card:hover .gender-link {
+        color: var(--fz-primary);
+        gap: 13px;
+    }
+
+    /* Section Title */
+    .section-title-wrapper {
+        text-align: center;
+        margin-bottom: 42px;
+    }
+
+    .section-title-wrapper h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 800;
+        color: var(--fz-navy);
+        margin-bottom: 10px;
+        letter-spacing: -0.5px;
+    }
+
+    .section-title-wrapper p {
+        color: #7a7a9a;
+        font-size: 15px;
+        line-height: 1.8;
+        max-width: 620px;
+        margin: 0 auto;
+    }
+
+    /* Tabs */
+    .heading.heading-center {
+        margin-bottom: 34px !important;
+    }
+
+    .nav-pills {
+        gap: 10px;
+    }
+
+    .nav-pills .nav-link {
+        border-radius: 999px;
+        padding: 11px 26px;
+        color: #555;
+        font-weight: 700;
+        background: #fff;
+        border: 1px solid var(--fz-border);
+        box-shadow: 0 8px 24px rgba(17, 24, 39, 0.04);
+        transition: all 0.3s ease;
+    }
+
+    .nav-pills .nav-link:hover {
+        color: var(--fz-primary-dark);
+        transform: translateY(-2px);
+    }
+
+    .nav-pills .nav-link.active {
+        background: var(--fz-navy);
+        color: #fff;
+        border-color: var(--fz-navy);
+        box-shadow: 0 14px 34px rgba(17, 24, 39, 0.18);
+    }
+
+    /* Product Cards */
+    .product.product-7 {
+        background: #fff;
+        border-radius: 24px;
+        overflow: hidden;
+        border: 1px solid var(--fz-border);
+        box-shadow: 0 12px 32px rgba(17, 24, 39, 0.05);
+        transition: all 0.4s ease;
+    }
+
+    .product.product-7:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--fz-shadow-hover);
+    }
+
+    .product-media {
+        border-radius: 24px 24px 0 0;
+        overflow: hidden;
+        background: #f4f4f4;
+    }
+
+    .product-media img {
+        transition: transform 0.75s ease;
+    }
+
+    .product.product-7:hover .product-image {
+        transform: scale(1.08);
+    }
+
+    .product-body {
+        padding: 20px 18px 24px !important;
+    }
+
+    .product-cat a {
+        color: #9ca3af;
+        font-size: 12px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+
+    .product-title {
+        font-size: 15px !important;
+        font-weight: 700 !important;
+        line-height: 1.45 !important;
+        min-height: 42px;
+    }
+
+    .product-title a {
+        color: var(--fz-dark);
+        transition: color 0.3s ease;
+    }
+
+    .product-title a:hover {
+        color: var(--fz-primary-dark);
+    }
+
+    .product-price {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        font-size: 17px;
+        font-weight: 800;
+        color: var(--fz-navy);
+    }
+
+    .new-price {
+        color: var(--fz-navy);
+        font-weight: 800;
+    }
+
+    .old-price {
+        color: #9ca3af;
+        text-decoration: line-through;
+        font-size: 14px;
+    }
+
+    .product-label {
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-weight: 800;
+        font-size: 11px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    .product-action {
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(10px);
+    }
+
+    .btn-product.btn-cart span {
+        font-weight: 800;
+        letter-spacing: 0.8px;
+    }
+
+    .btn-product-icon.btn-wishlist {
+        width: 42px;
+        height: 42px;
+        border-radius: 50% !important;
+        background: #fff !important;
+        box-shadow: 0 10px 25px rgba(17, 24, 39, 0.12);
+        transition: all 0.3s ease;
+    }
+
+    .btn-product-icon.btn-wishlist:hover {
+        background: var(--fz-primary) !important;
+        color: var(--fz-navy) !important;
+        transform: scale(1.08);
+    }
+
+    /* Features Strip */
+    .features-strip {
+        background:
+            radial-gradient(circle at top left, rgba(201, 169, 110, 0.14), transparent 35%),
+            linear-gradient(135deg, var(--fz-navy) 0%, var(--fz-soft-dark) 100%);
+        border-top: 1px solid rgba(201, 169, 110, 0.15);
+        border-bottom: 1px solid rgba(201, 169, 110, 0.15);
+        padding: 58px 0;
+        margin: 85px 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-item {
+        text-align: center;
+        padding: 24px 18px;
+        transition: all 0.35s ease;
+    }
+
+    .feature-item:hover {
+        transform: translateY(-8px);
+    }
+
+    .feature-icon-wrapper {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: rgba(201, 169, 110, 0.11);
+        border: 1px solid rgba(201, 169, 110, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 22px;
+        font-size: 27px;
+        color: var(--fz-primary);
+        transition: all 0.35s ease;
+    }
+
+    .feature-item:hover .feature-icon-wrapper {
+        background: var(--fz-primary);
+        color: var(--fz-navy);
+        transform: translateY(-5px) rotate(4deg);
+        box-shadow: 0 12px 32px rgba(201, 169, 110, 0.35);
+    }
+
+    .feature-title {
+        color: #fff;
+        font-size: 15px;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+
+    .feature-desc {
+        color: rgba(255, 255, 255, 0.58);
+        font-size: 13px;
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    /* Brands */
+    .brands {
+        background: #fff;
+        border-radius: 28px;
+        padding: 46px 34px !important;
+        border: 1px solid var(--fz-border);
+        box-shadow: 0 12px 38px rgba(17, 24, 39, 0.05);
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 70px;
+        opacity: 0.58;
+        filter: grayscale(1);
+        transition: all 0.3s ease;
+    }
+
+    .brand:hover {
+        opacity: 1;
+        filter: grayscale(0);
+        transform: translateY(-4px);
+    }
+
+    /* Newsletter */
+    .newsletter .banner,
+    .newsletter .cta-box {
+        box-shadow: var(--fz-shadow);
+        border: 1px solid var(--fz-border);
+    }
+
+    .newsletter .banner {
+        transition: all 0.4s ease;
+    }
+
+    .newsletter .banner:hover {
+        transform: translateY(-6px);
+        box-shadow: var(--fz-shadow-hover);
+    }
+
+    .newsletter .banner img {
+        transition: transform 0.9s ease;
+    }
+
+    .newsletter .banner:hover img {
+        transform: scale(1.08);
+    }
+
+    .cta.cta-box {
+        background:
+            radial-gradient(circle at top right, rgba(201, 169, 110, 0.13), transparent 36%),
+            #fff;
+        padding: 54px;
+        display: flex;
+        align-items: center;
+    }
+
+    .cta-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: var(--fz-navy);
+        margin-bottom: 16px;
+    }
+
+    .newsletter-form .form-control {
+        height: 58px;
+        border: 1px solid rgba(17, 24, 39, 0.1);
+        padding-left: 22px;
+        box-shadow: none;
+    }
+
+    .newsletter-form .form-control:focus {
+        border-color: var(--fz-primary);
+    }
+
+    .newsletter-form .btn {
+        height: 58px;
+        font-weight: 800;
+        letter-spacing: 0.8px;
+        transition: all 0.3s ease;
+    }
+
+    .newsletter-form .btn:hover {
+        background: var(--fz-primary) !important;
+        color: var(--fz-navy) !important;
+    }
+
+    .more-container .btn {
+        border-radius: 999px;
+        padding: 14px 34px;
+        font-weight: 800;
+        letter-spacing: 0.8px;
+        transition: all 0.35s ease;
+    }
+
+    .more-container .btn:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 16px 35px rgba(17, 24, 39, 0.13);
+    }
+
+    /* Reveal Animation */
+    .fz-reveal {
+        opacity: 0;
+        transform: translateY(34px);
+        transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .fz-reveal.fz-show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    @keyframes fzFadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(35px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 991px) {
+        .intro-slide {
+            min-height: 620px;
+        }
+
+        .gender-banners {
+            margin-top: -45px;
+        }
+
+        .gender-banner-card {
+            height: 285px;
+        }
+
+        .features-strip {
+            margin: 65px 0;
+        }
+
+        .cta.cta-box {
+            padding: 42px;
+        }
+    }
+
+    @media (max-width: 575px) {
+        .intro-slide {
+            min-height: 560px;
+        }
+
+        .intro-content {
+            padding-left: 0;
+        }
+
+        .intro-subtitle {
+            letter-spacing: 3px !important;
+            font-size: 11px !important;
+        }
+
+        .intro-title {
+            font-size: 3rem !important;
+        }
+
+        .btn-discover {
+            padding: 14px 28px !important;
+            font-size: 12px;
+        }
+
+        .gender-banner-card {
+            height: 250px;
+            border-radius: 22px;
+        }
+
+        .gender-banner-overlay {
+            padding: 30px;
+        }
+
+        .section-title-wrapper {
+            margin-bottom: 30px;
+        }
+
+        .nav-pills .nav-link {
+            padding: 10px 18px;
+            font-size: 13px;
+        }
+
+        .cta.cta-box {
+            padding: 32px 24px;
+        }
+
+        .cta-title {
+            font-size: 1.8rem;
+        }
+
+        .newsletter-form .input-group {
+            display: block;
+        }
+
+        .newsletter-form .form-control {
+            border-radius: 50px !important;
+            margin-bottom: 12px;
+        }
+
+        .newsletter-form .input-group-append {
+            width: 100%;
+        }
+
+        .newsletter-form .btn {
+            width: 100%;
+            border-radius: 50px !important;
+        }
+    }
+</style>
+</head>
 
 <body>
     <div class="page-wrapper">
-       
         <%- include('../partials/navbar.ejs') -%>
-        
-       
-        
+
         <main class="main">
+            <!-- Hero Slider -->
             <div class="intro-slider-container">
                 <div class="intro-slider owl-carousel owl-theme owl-nav-inside owl-light" data-toggle="owl" data-owl-options='{
-                        "dots": false,
+                        "dots": true,
                         "nav": false, 
                         "responsive": {
                             "992": {
-                                "nav": true
+                                "nav": true,
+                                "dots": false
                             }
                         }
                     }'>
                     <div class="intro-slide" style="background-image: url(/static/images/banners/banner-fullwidth.jpg);">
-                        <div class="container intro-content text-center">
-                            <h3 class="intro-subtitle text-white">Explore the collections in </h3><!-- End .h3 intro-subtitle -->
-                            <h1 class="intro-title text-white">FashionZone</h1><!-- End .intro-title -->
-
-                            <a href="/shop" class="btn btn-outline-white-4">
-                                <span>Discover More</span>
-                            </a>
-                        </div><!-- End .intro-content -->
-                    </div><!-- End .intro-slide -->
+                        <div class="container d-flex align-items-center">
+                            <div class="intro-content">
+                                <h3 class="intro-subtitle">Summer Collection 2026</h3>
+                                <h1 class="intro-title">Explore Premium<br>Fashion Trends</h1>
+                                <a href="/shop" class="btn-discover">
+                                    <span>Discover Collection</span>
+                                    <i class="icon-long-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="intro-slide" style="background-image: url(/static/images/banners/mybanner1.jpg);">
-                        <div class="container intro-content text-center">
-                            <h3 class="intro-subtitle text-white">Don’t Miss The</h3><!-- End .h3 intro-subtitle -->
-                            <h1 class="intro-title text-white">Endless Style</h1><!-- End .intro-title -->
-
-                            <a href="/shop" class="btn btn-outline-white-4">
-                                <span>Discover More</span>
-                            </a>
-                        </div><!-- End .intro-content -->
-                    </div><!-- End .intro-slide -->
-                </div><!-- End .intro-slider owl-carousel owl-theme -->
-
-                <span class="slider-loader"></span><!-- End .slider-loader -->
-            </div><!-- End .intro-slider-container -->
-
-            <div class="pt-2 pb-3">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="banner banner-overlay">
-                                <a href="#">
-                                    <img src="/static/images/demos/demo-6/banners/banner-1.jpg" alt="Banner">
+                        <div class="container d-flex align-items-center">
+                            <div class="intro-content">
+                                <h3 class="intro-subtitle">Exclusive Accessories</h3>
+                                <h1 class="intro-title">Curated Pieces<br>For Every Style</h1>
+                                <a href="/shop" class="btn-discover">
+                                    <span>Discover More</span>
+                                    <i class="icon-long-arrow-right"></i>
                                 </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <span class="slider-loader"></span>
+            </div>
 
-                                <div class="banner-content banner-content-center">
-                                    <h4 class="banner-subtitle text-white"><a href="#">New in</a></h4><!-- End .banner-subtitle -->
-                                    <h3 class="banner-title text-white"><a href="#"><strong>Women’s</strong></h3><!-- End .banner-title -->
-                                    <a href="#" class="btn btn-outline-white banner-link underline">Shop Now</a>
-                                </div><!-- End .banner-content -->
-                            </div><!-- End .banner -->
-                        </div><!-- End .col-sm-6 -->
-
-                        <div class="col-sm-6">
-                            <div class="banner banner-overlay">
-                                <a href="#">
-                                    <img src="/static/images/demos/demo-6/banners/banner-2.jpg" alt="Banner">
+            <!-- Gender Categories Banners -->
+            <div class="container gender-banners fz-reveal">
+                <div class="row">
+                    <div class="col-sm-6 mb-4 mb-sm-0">
+                        <div class="gender-banner-card">
+                            <img src="/static/images/demos/demo-6/banners/banner-1.jpg" alt="Women's Fashion">
+                            <div class="gender-banner-overlay">
+                                <span class="gender-subtitle">New In Season</span>
+                                <h3 class="gender-title">Women’s Edit</h3>
+                                <a href="/shop/sort/women" class="gender-link">
+                                    <span>Shop Now</span>
+                                    <i class="icon-long-arrow-right"></i>
                                 </a>
+                            </div>
+                        </div>
+                    </div>
 
-                                <div class="banner-content banner-content-center">
-                                    <h4 class="banner-subtitle text-white"><a href="#">New in</a></h4><!-- End .banner-subtitle -->
-                                    <h3 class="banner-title text-white"><a href="#"><strong>Men’s</strong></a></h3><!-- End .banner-title -->
-                                    <a href="#" class="btn btn-outline-white banner-link underline">Shop Now</a>
-                                </div><!-- End .banner-content -->
-                            </div><!-- End .banner -->
-                        </div><!-- End .col-sm-6 -->
-                    </div><!-- End .row -->
-                    <hr class="mt-0 mb-0">
-                </div><!-- End .container -->
-            </div><!-- End .bg-gray -->
+                    <div class="col-sm-6">
+                        <div class="gender-banner-card">
+                            <img src="/static/images/demos/demo-6/banners/banner-2.jpg" alt="Men's Fashion">
+                            <div class="gender-banner-overlay">
+                                <span class="gender-subtitle">New In Season</span>
+                                <h3 class="gender-title">Men’s Essentials</h3>
+                                <a href="/shop/sort/men" class="gender-link">
+                                    <span>Shop Now</span>
+                                    <i class="icon-long-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <div class="mb-5"></div><!-- End .mb-5 -->
-            <div class="container">
-                <div class="heading heading-center mb-3">
-                    <h2 class="title">Trending</h2><!-- End .title -->
+            <!-- Trending Products Section -->
+            <div class="container mb-5 fz-reveal">
+                <div class="section-title-wrapper">
+                    <h2>Trending Products</h2>
+                    <p>Discover the most loved pieces from our current collection, curated carefully for your wardrobe.</p>
+                </div>
 
+                <div class="heading heading-center mb-3 border-0">
                     <ul class="nav nav-pills justify-content-center" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link active" id="trending-all-link" data-toggle="tab" href="#trending-all-tab" role="tab" aria-controls="trending-all-tab" aria-selected="true">All</a>
+                            <a class="nav-link active" id="trending-all-link" data-toggle="tab" href="#trending-all-tab" role="tab" aria-controls="trending-all-tab" aria-selected="true">All Collection</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="trending-women-link" data-toggle="tab" href="#trending-women-tab" role="tab" aria-controls="trending-women-tab" aria-selected="false">Women</a>
@@ -98,830 +727,400 @@
                             <a class="nav-link" id="trending-men-link" data-toggle="tab" href="#trending-men-tab" role="tab" aria-controls="trending-men-tab" aria-selected="false">Men</a>
                         </li>
                     </ul>
-                </div><!-- End .heading -->
+                </div>
 
                 <div class="tab-content tab-content-carousel">
+                    <!-- Tab All -->
                     <div class="tab-pane p-0 fade show active" id="trending-all-tab" role="tabpanel" aria-labelledby="trending-all-link">
-                        <div class="owl-carousel owl-simple carousel-equal-height carousel-with-shadow" data-toggle="owl" 
+                        <div class="owl-carousel owl-simple carousel-equal-height carousel-with-shadow" data-toggle="owl"
                             data-owl-options='{
                                 "nav": false, 
                                 "dots": true,
                                 "margin": 20,
                                 "loop": false,
                                 "responsive": {
-                                    "0": {
-                                        "items":2
-                                    },
-                                    "480": {
-                                        "items":2
-                                    },
-                                    "768": {
-                                        "items":3
-                                    },
-                                    "992": {
-                                        "items":4
-                                    },
-                                    "1200": {
-                                        "items":4,
-                                        "nav": true,
-                                        "dots": false
-                                    }
+                                    "0": {"items":2},
+                                    "480": {"items":2},
+                                    "768": {"items":3},
+                                    "992": {"items":4},
+                                    "1200": {"items":4, "nav": true, "dots": false}
                                 }
                             }'>
-
                             <% allProducts.forEach(product => { %>
-
-                            <div class="product product-7 text-center">
-                                <figure class="product-media">
-                                    <span class="product-label label-sale">sale</span>
-                                    <a href="<%= product.url || '/product/' + product._id %>">
-                                        <img src="<%= product.images[0] %>" alt="Product image" class="product-image">
-                                        <img src="<%= product.images[1] || product.images[0] %>" alt="Product image" class="product-image-hover">
-                                      </a>
-
-                                    <div class="product-action-vertical">
-                                        <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                    </div><!-- End .product-action-vertical -->
-
-                                    <div class="product-action">
-                                        <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                                    </div><!-- End .product-action -->
-                                </figure><!-- End .product-media -->
-
-                                <div class="product-body">
-                                    <div class="product-cat">
-                                        <a href="#"><%= product.category %></a>
-                                    </div><!-- End .product-cat -->
-                                    <h3 class="product-title"><a href=""><%= product.title %></a></h3><!-- End .product-title -->
-                                    <div class="product-price">
-                                        <span class="new-price">₹ <%= product.disPrice %></span>
-                                        <span class="old-price">₹ <%= product.price %></span>
-                                    </div><!-- End .product-price -->
-                                </div><!-- End .product-body -->
-                            </div>
-                              
-                              
-                            <% }); %>
-                              
-                              
-                              
-                              
-                              
-                              <!-- End .product -->
-
-                        </div><!-- End .owl-carousel -->
-                    </div><!-- .End .tab-pane -->
-                    <div class="tab-pane p-0 fade" id="trending-women-tab" role="tabpanel" aria-labelledby="trending-women-link">
-                        <div class="owl-carousel owl-simple carousel-equal-height carousel-with-shadow" data-toggle="owl" 
-                            data-owl-options='{
-                                "nav": false, 
-                                "dots": true,
-                                "margin": 20,
-                                "loop": false,
-                                "responsive": {
-                                    "0": {
-                                        "items":0
-                                    },
-                                    "480": {
-                                        "items":2
-                                    },
-                                    "768": {
-                                        "items":3
-                                    },
-                                    "992": {
-                                        "items":4
-                                    },
-                                    "1200": {
-                                        "items":4,
-                                        "nav": true,
-                                        "dots": false
-                                    }
-                                }
-                            }'>
-
-
-
-
-
-                            <% womenProducts.forEach(product => { %>
-
-                            <div class="product product-7 text-center">
-                                <figure class="product-media">
-                                    <span class="product-label label-sale">sale</span>
-                                    <a href="<%= product.url || '/product/' + product._id %>">
-                                        <img src="<%= product.images[0] %>" alt="Product image" class="product-image">
-                                        <img src="<%= product.images[1] || product.images[0] %>" alt="Product image" class="product-image-hover">
-                                      </a>
-
-                                    <div class="product-action-vertical">
-                                        <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                    </div><!-- End .product-action-vertical -->
-
-                                    <div class="product-action">
-                                        <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                                    </div><!-- End .product-action -->
-                                </figure><!-- End .product-media -->
-
-                                <div class="product-body">
-                                    <div class="product-cat">
-                                        <a href="#"><%= product.category %></a>
-                                    </div><!-- End .product-cat -->
-                                    <h3 class="product-title"><a href=""><%= product.title %></a></h3><!-- End .product-title -->
-                                    <div class="product-price">
-                                        <span class="new-price">₹ <%= product.disPrice %></span>
-                                        <span class="old-price">₹ <%= product.price %></span>
-                                    </div><!-- End .product-price -->
-                                </div><!-- End .product-body -->
-                            </div>
-                              
-                              
-                            <% }); %>
-
-
-                        
-                        </div><!-- End .owl-carousel -->
-                    </div><!-- .End .tab-pane -->
-
-                    <div class="tab-pane p-0 fade" id="trending-men-tab" role="tabpanel" aria-labelledby="trending-men-link">
-                        <div class="owl-carousel owl-simple carousel-equal-height carousel-with-shadow" data-toggle="owl" 
-                            data-owl-options='{
-                                "nav": false, 
-                                "dots": true,
-                                "margin": 20,
-                                "loop": false,
-                                "responsive": {
-                                    "0": {
-                                        "items":0
-                                    },
-                                    "480": {
-                                        "items":2
-                                    },
-                                    "768": {
-                                        "items":3
-                                    },
-                                    "992": {
-                                        "items":4
-                                    },
-                                    "1200": {
-                                        "items":4,
-                                        "nav": true,
-                                        "dots": false
-                                    }
-                                }
-                            }'>
-
-
-
-                            <% menProducts.forEach(product => { %>
-
                                 <div class="product product-7 text-center">
                                     <figure class="product-media">
-                                        <span class="product-label label-sale">sale</span>
+                                        <span class="product-label label-sale">Sale</span>
                                         <a href="<%= product.url || '/product/' + product._id %>">
-                                            <img src="<%= product.images[0] %>" alt="Product image" class="product-image">
-                                            <img src="<%= product.images[1] || product.images[0] %>" alt="Product image" class="product-image-hover">
-                                          </a>
-    
+                                            <img src="<%= product.images[0] %>" alt="<%= product.title %>" class="product-image">
+                                            <img src="<%= product.images[1] || product.images[0] %>" alt="<%= product.title %>" class="product-image-hover">
+                                        </a>
                                         <div class="product-action-vertical">
-                                            <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                        </div><!-- End .product-action-vertical -->
-    
+                                            <form action="/wishlist" method="POST" style="margin:0;">
+                                                <input type="hidden" name="productId" value="<%= product._id %>">
+                                                <button type="submit" class="btn-product-icon btn-wishlist" style="border:none; cursor:pointer;" title="Add to wishlist">
+                                                    <i class="icon-heart-o"></i>
+                                                </button>
+                                            </form>
+                                        </div>
                                         <div class="product-action">
-                                            <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                                        </div><!-- End .product-action -->
-                                    </figure><!-- End .product-media -->
-    
+                                            <form action="/cart/add/<%= product._id %>" method="POST" style="width:100%; margin:0;">
+                                                <button type="submit" class="btn-product btn-cart" style="width:100%; border:none; background:none; cursor:pointer;">
+                                                    <span>add to cart</span>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </figure>
                                     <div class="product-body">
                                         <div class="product-cat">
                                             <a href="#"><%= product.category %></a>
-                                        </div><!-- End .product-cat -->
-                                        <h3 class="product-title"><a href=""><%= product.title %></a></h3><!-- End .product-title -->
+                                        </div>
+                                        <h3 class="product-title"><a href="<%= product.url || '/product/' + product._id %>"><%= product.title %></a></h3>
                                         <div class="product-price">
-                                            <span class="new-price">₹ <%= product.disPrice %></span>
-                                            <span class="old-price">₹ <%= product.price %></span>
-                                        </div><!-- End .product-price -->
-                                    </div><!-- End .product-body -->
+                                            <span class="new-price">₹<%= product.disPrice %></span>
+                                            <span class="old-price">₹<%= product.price %></span>
+                                        </div>
+                                    </div>
                                 </div>
-                                  
-                                  
-                                <% }); %>
+                            <% }); %>
+                        </div>
+                    </div>
 
+                    <!-- Tab Women -->
+                    <div class="tab-pane p-0 fade" id="trending-women-tab" role="tabpanel" aria-labelledby="trending-women-link">
+                        <div class="owl-carousel owl-simple carousel-equal-height carousel-with-shadow" data-toggle="owl"
+                            data-owl-options='{
+                                "nav": false, 
+                                "dots": true,
+                                "margin": 20,
+                                "loop": false,
+                                "responsive": {
+                                    "0": {"items":2},
+                                    "480": {"items":2},
+                                    "768": {"items":3},
+                                    "992": {"items":4},
+                                    "1200": {"items":4, "nav": true, "dots": false}
+                                }
+                            }'>
+                            <% womenProducts.forEach(product => { %>
+                                <div class="product product-7 text-center">
+                                    <figure class="product-media">
+                                        <span class="product-label label-sale">Sale</span>
+                                        <a href="<%= product.url || '/product/' + product._id %>">
+                                            <img src="<%= product.images[0] %>" alt="<%= product.title %>" class="product-image">
+                                            <img src="<%= product.images[1] || product.images[0] %>" alt="<%= product.title %>" class="product-image-hover">
+                                        </a>
+                                        <div class="product-action-vertical">
+                                            <form action="/wishlist" method="POST" style="margin:0;">
+                                                <input type="hidden" name="productId" value="<%= product._id %>">
+                                                <button type="submit" class="btn-product-icon btn-wishlist" style="border:none; cursor:pointer;">
+                                                    <i class="icon-heart-o"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                        <div class="product-action">
+                                            <form action="/cart/add/<%= product._id %>" method="POST" style="width:100%; margin:0;">
+                                                <button type="submit" class="btn-product btn-cart" style="width:100%; border:none; background:none; cursor:pointer;">
+                                                    <span>add to cart</span>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </figure>
+                                    <div class="product-body">
+                                        <div class="product-cat">
+                                            <a href="#"><%= product.category %></a>
+                                        </div>
+                                        <h3 class="product-title"><a href="<%= product.url || '/product/' + product._id %>"><%= product.title %></a></h3>
+                                        <div class="product-price">
+                                            <span class="new-price">₹<%= product.disPrice %></span>
+                                            <span class="old-price">₹<%= product.price %></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </div>
 
+                    <!-- Tab Men -->
+                    <div class="tab-pane p-0 fade" id="trending-men-tab" role="tabpanel" aria-labelledby="trending-men-link">
+                        <div class="owl-carousel owl-simple carousel-equal-height carousel-with-shadow" data-toggle="owl"
+                            data-owl-options='{
+                                "nav": false, 
+                                "dots": true,
+                                "margin": 20,
+                                "loop": false,
+                                "responsive": {
+                                    "0": {"items":2},
+                                    "480": {"items":2},
+                                    "768": {"items":3},
+                                    "992": {"items":4},
+                                    "1200": {"items":4, "nav": true, "dots": false}
+                                }
+                            }'>
+                            <% menProducts.forEach(product => { %>
+                                <div class="product product-7 text-center">
+                                    <figure class="product-media">
+                                        <span class="product-label label-sale">Sale</span>
+                                        <a href="<%= product.url || '/product/' + product._id %>">
+                                            <img src="<%= product.images[0] %>" alt="<%= product.title %>" class="product-image">
+                                            <img src="<%= product.images[1] || product.images[0] %>" alt="<%= product.title %>" class="product-image-hover">
+                                        </a>
+                                        <div class="product-action-vertical">
+                                            <form action="/wishlist" method="POST" style="margin:0;">
+                                                <input type="hidden" name="productId" value="<%= product._id %>">
+                                                <button type="submit" class="btn-product-icon btn-wishlist" style="border:none; cursor:pointer;">
+                                                    <i class="icon-heart-o"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                        <div class="product-action">
+                                            <form action="/cart/add/<%= product._id %>" method="POST" style="width:100%; margin:0;">
+                                                <button type="submit" class="btn-product btn-cart" style="width:100%; border:none; background:none; cursor:pointer;">
+                                                    <span>add to cart</span>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </figure>
+                                    <div class="product-body">
+                                        <div class="product-cat">
+                                            <a href="#"><%= product.category %></a>
+                                        </div>
+                                        <h3 class="product-title"><a href="<%= product.url || '/product/' + product._id %>"><%= product.title %></a></h3>
+                                        <div class="product-price">
+                                            <span class="new-price">₹<%= product.disPrice %></span>
+                                            <span class="old-price">₹<%= product.price %></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-
-                        </div><!-- End .owl-carousel -->
-                    </div><!-- .End .tab-pane -->
-                </div><!-- End .tab-content -->
-            </div><!-- End .container -->
-
-            <div class="mb-5"></div><!-- End .mb-5 -->
-
-            <div class="pt-4 pb-3" style="background-color: #222;">
+            <!-- Features Bar -->
+            <div class="features-strip fz-reveal">
                 <div class="container">
-                    <div class="row justify-content-center">
+                    <div class="row">
                         <div class="col-lg-3 col-sm-6">
-                            <div class="icon-box text-center">
-                                <span class="icon-box-icon">
+                            <div class="feature-item">
+                                <div class="feature-icon-wrapper">
                                     <i class="icon-truck"></i>
-                                </span>
-                                <div class="icon-box-content">
-                                    <h3 class="icon-box-title">Payment & Delivery</h3><!-- End .icon-box-title -->
-                                    <p>Free shipping for orders over $50</p>
-                                </div><!-- End .icon-box-content -->
-                            </div><!-- End .icon-box -->
-                        </div><!-- End .col-lg-3 col-sm-6 -->
+                                </div>
+                                <h3 class="feature-title">Premium Delivery</h3>
+                                <p class="feature-desc">Free shipping on all premium orders over ₹1000</p>
+                            </div>
+                        </div>
 
                         <div class="col-lg-3 col-sm-6">
-                            <div class="icon-box text-center">
-                                <span class="icon-box-icon">
+                            <div class="feature-item">
+                                <div class="feature-icon-wrapper">
                                     <i class="icon-rotate-left"></i>
-                                </span>
-                                <div class="icon-box-content">
-                                    <h3 class="icon-box-title">Return & Refund</h3><!-- End .icon-box-title -->
-                                    <p>Free 100% money back guarantee</p>
-                                </div><!-- End .icon-box-content -->
-                            </div><!-- End .icon-box -->
-                        </div><!-- End .col-lg-3 col-sm-6 -->
+                                </div>
+                                <h3 class="feature-title">Flexible Returns</h3>
+                                <p class="feature-desc">10-day stress-free return and replacement policy</p>
+                            </div>
+                        </div>
 
                         <div class="col-lg-3 col-sm-6">
-                            <div class="icon-box text-center">
-                                <span class="icon-box-icon">
+                            <div class="feature-item">
+                                <div class="feature-icon-wrapper">
                                     <i class="icon-unlock"></i>
-                                </span>
-                                <div class="icon-box-content">
-                                    <h3 class="icon-box-title">Secure Payment</h3><!-- End .icon-box-title -->
-                                    <p>100% secure payment</p>
-                                </div><!-- End .icon-box-content -->
-                            </div><!-- End .icon-box -->
-                        </div><!-- End .col-lg-3 col-sm-6 -->
+                                </div>
+                                <h3 class="feature-title">Secure Checkout</h3>
+                                <p class="feature-desc">End-to-end encrypted secure Razorpay payment gateway</p>
+                            </div>
+                        </div>
 
                         <div class="col-lg-3 col-sm-6">
-                            <div class="icon-box text-center">
-                                <span class="icon-box-icon">
+                            <div class="feature-item">
+                                <div class="feature-icon-wrapper">
                                     <i class="icon-headphones"></i>
-                                </span>
-                                <div class="icon-box-content">
-                                    <h3 class="icon-box-title">Quality Support</h3><!-- End .icon-box-title -->
-                                    <p>Alway online feedback 24/7</p>
-                                </div><!-- End .icon-box-content -->
-                            </div><!-- End .icon-box -->
-                        </div><!-- End .col-lg-3 col-sm-6 -->
-                    </div><!-- End .row -->
-                </div><!-- End .container -->
-            </div><!-- End .bg-light pt-2 pb-2 -->
+                                </div>
+                                <h3 class="feature-title">24/7 Concierge Support</h3>
+                                <p class="feature-desc">Highly dedicated client service for all questions</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <div class="mb-6"></div><!-- End .mb-5 -->
-
-            <div class="container">
-                <h2 class="title text-center mb-4">New Arrivals</h2><!-- End .title text-center -->
+            <!-- New Arrivals Section -->
+            <div class="container mb-6 fz-reveal">
+                <div class="section-title-wrapper">
+                    <h2>New Arrivals</h2>
+                    <p>Stay ahead of the fashion curve with the freshest additions, dropping direct to your collection.</p>
+                </div>
 
                 <div class="products">
                     <div class="row justify-content-center">
-
-
                         <% newArrivals.forEach(product => { %>
-
-                        <div class="col-6 col-md-4 col-lg-3">
-                            <div class="product product-7 text-center">
-                                <figure class="product-media">
-                                    <span class="product-label label-sale">Sale</span>
-                                    <a href="<%= product.url || '/product/' + product._id %>">
-                                        <img src="<%= product.images[0] %>" alt="Product image" class="product-image">
-                                        <img src="<%= product.images[1] || product.images[0] %>" alt="Product image" class="product-image-hover">
-                                      </a>
-
-                                    <div class="product-action-vertical">
-                                        <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                    </div><!-- End .product-action-vertical -->
-
-                                    <div class="product-action">
-                                        <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                                    </div><!-- End .product-action -->
-                                </figure><!-- End .product-media -->
-
-                                <div class="product-body">
-                                    <div class="product-cat">
-                                        <a href="#"><%= product.category %></a>
-                                    </div><!-- End .product-cat -->
-                                    <h3 class="product-title"><a href="/"><%= product.title %></a></h3><!-- End .product-title -->
-                                    <div class="product-price">
-                                        <span class="new-price">₹ <%= product.disPrice %></span>
-                                        <span class="old-price">₹ <%= product.price %></span>
-                                    </div><!-- End .product-price -->
-                                </div><!-- End .product-body -->
-                            </div><!-- End .product -->
-                        </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
+                            <div class="col-6 col-md-4 col-lg-3 mb-4">
+                                <div class="product product-7 text-center">
+                                    <figure class="product-media">
+                                        <span class="product-label label-new">New</span>
+                                        <a href="<%= product.url || '/product/' + product._id %>">
+                                            <img src="<%= product.images[0] %>" alt="<%= product.title %>" class="product-image">
+                                            <img src="<%= product.images[1] || product.images[0] %>" alt="<%= product.title %>" class="product-image-hover">
+                                        </a>
+                                        <div class="product-action-vertical">
+                                            <form action="/wishlist" method="POST" style="margin:0;">
+                                                <input type="hidden" name="productId" value="<%= product._id %>">
+                                                <button type="submit" class="btn-product-icon btn-wishlist" style="border:none; cursor:pointer;">
+                                                    <i class="icon-heart-o"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                        <div class="product-action">
+                                            <form action="/cart/add/<%= product._id %>" method="POST" style="width:100%; margin:0;">
+                                                <button type="submit" class="btn-product btn-cart" style="width:100%; border:none; background:none; cursor:pointer;">
+                                                    <span>add to cart</span>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </figure>
+                                    <div class="product-body">
+                                        <div class="product-cat">
+                                            <a href="#"><%= product.category %></a>
+                                        </div>
+                                        <h3 class="product-title"><a href="<%= product.url || '/product/' + product._id %>"><%= product.title %></a></h3>
+                                        <div class="product-price">
+                                            <span class="new-price">₹<%= product.disPrice %></span>
+                                            <span class="old-price">₹<%= product.price %></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         <% }); %>
+                    </div>
+                </div>
 
+                <div class="more-container text-center mt-4">
+                    <a href="/shop" class="btn btn-outline-dark-2"><span>Shop Entire Catalog</span></a>
+                </div>
+            </div>
 
-                    </div><!-- End .row -->
-                </div><!-- End .products -->
-
-
-
-                <div class="more-container text-center mt-2">
-                    <a href="#" class="btn btn-outline-dark-2 btn-more"><span>show more</span></a>
-                </div><!-- End .more-container -->
-            </div><!-- End .container -->
-
-            <div class="pb-3">
-                <div class="container brands pt-5 pt-lg-7 ">
-
-                    <h2 class="title text-center mb-4">shop by brands</h2><!-- End .title text-center -->
-
-                    <div class="owl-carousel owl-simple" data-toggle="owl" 
+            <!-- Brand Logos -->
+            <div class="container mb-5 fz-reveal">
+                <div class="brands pt-5 pt-lg-7 border-top">
+                    <h2 class="title text-center mb-4 font-heading" style="font-size:1.75rem;">Premium Brand Partners</h2>
+                    <div class="owl-carousel owl-simple" data-toggle="owl"
                         data-owl-options='{
                             "nav": false, 
                             "dots": false,
                             "margin": 30,
-                            "loop": false,
+                            "loop": true,
+                            "autoplay": true,
+                            "autoplayTimeout": 3000,
                             "responsive": {
-                                "0": {
-                                    "items":2
-                                },
-                                "420": {
-                                    "items":3
-                                },
-                                "600": {
-                                    "items":4
-                                },
-                                "900": {
-                                    "items":5
-                                },
-                                "1024": {
-                                    "items":6
-                                }
+                                "0": {"items":2},
+                                "420": {"items":3},
+                                "600": {"items":4},
+                                "900": {"items":5},
+                                "1024": {"items":6}
                             }
                         }'>
-                        <a href="#" class="brand">
-                            <img src="/static/images/brands/1.png" alt="Brand Name">
-                        </a>
+                        <a href="#" class="brand"><img src="/static/images/brands/1.png" alt="Brand"></a>
+                        <a href="#" class="brand"><img src="/static/images/brands/2.png" alt="Brand"></a>
+                        <a href="#" class="brand"><img src="/static/images/brands/3.png" alt="Brand"></a>
+                        <a href="#" class="brand"><img src="/static/images/brands/4.png" alt="Brand"></a>
+                        <a href="#" class="brand"><img src="/static/images/brands/5.png" alt="Brand"></a>
+                        <a href="#" class="brand"><img src="/static/images/brands/6.png" alt="Brand"></a>
+                    </div>
+                </div>
+            </div>
 
-                        <a href="#" class="brand">
-                            <img src="/static/images/brands/2.png" alt="Brand Name">
-                        </a>
+            <!-- Newsletter Promo Banner -->
+            <div class="container mb-6 fz-reveal">
+                <div class="row newsletter align-items-stretch">
+                    <div class="col-lg-6 mb-4 mb-lg-0">
+                        <div class="banner banner-overlay" style="border-radius:24px; overflow:hidden; min-height:320px;">
+                            <img src="/static/images/demos/demo-6/banners/banner-3.jpg" alt="Limited Edition Promo" style="width:100%; height:100%; object-fit:cover;">
+                            <div class="banner-content banner-content-center">
+                                <h4 class="banner-subtitle text-white"><a href="#">Limited Season Exclusive</a></h4>
+                                <h3 class="banner-title text-white"><a href="#">End of Season Sale<br>Up to 50% Off</a></h3>
+                                <a href="/shop" class="btn btn-outline-white banner-link underline">Explore Now</a>
+                            </div>
+                        </div>
+                    </div>
 
-                        <a href="#" class="brand">
-                            <img src="/static/images/brands/3.png" alt="Brand Name">
-                        </a>
+                    <div class="col-lg-6">
+                        <div class="cta cta-box" style="border-radius:24px; height:100%;">
+                            <div class="cta-content w-100">
+                                <h3 class="cta-title">Unlock Exclusive Privileges</h3>
+                                <p class="mb-4">Become a member of the <span class="primary-color" style="font-weight:600;">FashionZone</span> inner circle. Sign up to receive notifications of limited product drops, early access sales, and editorial styling stories.</p>
+                                <form action="#" class="newsletter-form">
+                                    <div class="input-group">
+                                        <input type="email" class="form-control" placeholder="Enter your email address" aria-label="Email Address" required style="border-radius:50px 0 0 50px;">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-primary" type="submit" style="border-radius:0 50px 50px 0; background:#1a1a2e; border:none; padding: 12px 24px;">Subscribe</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
 
-                        <a href="#" class="brand">
-                            <img src="/static/images/brands/4.png" alt="Brand Name">
-                        </a>
+        <%- include('../partials/footer.ejs') -%>
+    </div>
 
-                        <a href="#" class="brand">
-                            <img src="/static/images/brands/5.png" alt="Brand Name">
-                        </a>
-
-                        <a href="#" class="brand">
-                            <img src="/static/images/brands/6.png" alt="Brand Name">
-                        </a>
-
-                        <a href="#" class="brand">
-                            <img src="/static/images/brands/7.png" alt="Brand Name">
-                        </a>
-                    </div><!-- End .owl-carousel -->
-                </div><!-- End .container -->
-
-                <div class="mb-5 mb-lg-7"></div><!-- End .mb-5 -->
-
-                <div class="container newsletter">
-                    <div class="row">
-                        <div class="col-lg-6 banner-overlay-div">
-                            <div class="banner banner-overlay">
-                                <a href="#">
-                                    <img src="/static/images/demos/demo-6/banners/banner-3.jpg" alt="Banner">
-                                </a>
-
-                                <div class="banner-content banner-content-center">
-                                    <h4 class="banner-subtitle text-white"><a href="#">Limited time only.</a></h4><!-- End .banner-subtitle -->
-                                    <h3 class="banner-title text-white"><a href="#">End of Season<br>save 50% off</a></h3><!-- End .banner-title -->
-                                    <a href="#" class="btn btn-outline-white banner-link underline">Shop Now</a>
-                                </div><!-- End .banner-content -->
-                            </div><!-- End .banner -->
-                        </div><!-- End .col-lg-6 -->
-
-                        <div class="col-lg-6 d-flex align-items-stretch subscribe-div">
-                            <div class="cta cta-box">
-                                <div class="cta-content">
-                                    <h3 class="cta-title">Let's Start Today</h3><!-- End .cta-title -->
-                                    <p>Sign up now in <span class="primary-color">FashionZone</span> The Ultimate Shopping Destination:</p>
-
-                                   
-                                </div><!-- End .cta-content -->
-                            </div><!-- End .cta -->
-                        </div><!-- End .col-lg-6 -->
-                    </div><!-- End .row -->
-                </div><!-- End .container -->
-            </div><!-- End .bg-gray -->
-
-            <div class="mb-2"></div><!-- End .mb-5 -->
-            
-            <div class="container">
-            </div><!-- End .container -->
-            
-            <div class="blog-posts mb-5">
-                <div class="container">
-                    <h2 class="title text-center mb-4">From Our Blog</h2><!-- End .title text-center -->
-
-                    <div class="owl-carousel owl-simple mb-3" data-toggle="owl" 
-                        data-owl-options='{
-                            "nav": false, 
-                            "dots": true,
-                            "items": 3,
-                            "margin": 20,
-                            "loop": false,
-                            "responsive": {
-                                "0": {
-                                    "items":1
-                                },
-                                "600": {
-                                    "items":2
-                                },
-                                "992": {
-                                    "items":3
-                                }
-                            }
-                        }'>
-                        <article class="entry">
-                            <figure class="entry-media">
-                                <a href="single.html">
-                                    <img src="/static/images/demos/demo-6/blog/post-1.jpg" alt="image desc">
-                                </a>
-                            </figure><!-- End .entry-media -->
-
-                            <div class="entry-body text-center">
-                                <div class="entry-meta">
-                                    <a href="#">Nov 22, 2018</a>, 1 Comments
-                                </div><!-- End .entry-meta -->
-
-                                <h3 class="entry-title">
-                                    <a href="single.html">Sed adipiscing ornare.</a>
-                                </h3><!-- End .entry-title -->
-
-                                <div class="entry-content">
-                                    <a href="single.html" class="read-more">Read More</a>
-                                </div><!-- End .entry-content -->
-                            </div><!-- End .entry-body -->
-                        </article><!-- End .entry -->
-
-                        <article class="entry">
-                            <figure class="entry-media">
-                                <a href="single.html">
-                                    <img src="/static/images/demos/demo-6/blog/post-2.jpg" alt="image desc">
-                                </a>
-                            </figure><!-- End .entry-media -->
-
-                            <div class="entry-body text-center">
-                                <div class="entry-meta">
-                                    <a href="#">Dec 12, 2018</a>, 0 Comments
-                                </div><!-- End .entry-meta -->
-
-                                <h3 class="entry-title">
-                                    <a href="single.html">Fusce lacinia arcuet nulla.</a>
-                                </h3><!-- End .entry-title -->
-
-                                <div class="entry-content">
-                                    <a href="single.html" class="read-more">Read More</a>
-                                </div><!-- End .entry-content -->
-                            </div><!-- End .entry-body -->
-                        </article><!-- End .entry -->
-
-                        <article class="entry">
-                            <figure class="entry-media">
-                                <a href="single.html">
-                                    <img src="/static/images/demos/demo-6/blog/post-3.jpg" alt="image desc">
-                                </a>
-                            </figure><!-- End .entry-media -->
-
-                            <div class="entry-body text-center">
-                                <div class="entry-meta">
-                                    <a href="#">Dec 19, 2018</a>, 2 Comments
-                                </div><!-- End .entry-meta -->
-
-                                <h3 class="entry-title">
-                                    <a href="single.html">Quisque volutpat mattis eros.</a>
-                                </h3><!-- End .entry-title -->
-
-                                <div class="entry-content">
-                                    <a href="single.html" class="read-more">Read More</a>
-                                </div><!-- End .entry-content -->
-                            </div><!-- End .entry-body -->
-                        </article><!-- End .entry -->
-                    </div><!-- End .owl-carousel -->
-                </div><!-- End .container -->
-            </div><!-- End .blog-posts -->
-        </main><!-- End .main -->
-
-  
-<%- include('../partials/footer.ejs')-%>
-
-
-
-
-
-
-
-
-    <!-- Mobile Menu -->
-    <div class="mobile-menu-overlay"></div><!-- End .mobil-menu-overlay -->
-
+    <!-- Mobile Menu Container -->
+    <div class="mobile-menu-overlay"></div>
     <div class="mobile-menu-container">
         <div class="mobile-menu-wrapper">
             <span class="mobile-menu-close"><i class="icon-close"></i></span>
-
-            <form action="#" method="get" class="mobile-search">
+            <form action="/shop" method="get" class="mobile-search">
                 <label for="mobile-search" class="sr-only">Search</label>
-                <input type="search" class="form-control" name="mobile-search" id="mobile-search" placeholder="Search in..." required>
+                <input type="search" class="form-control" name="q" id="mobile-search" placeholder="Search product..." required>
                 <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
             </form>
-            
             <nav class="mobile-nav">
                 <ul class="mobile-menu">
-                    <li class="active">
-                        <a href="index.html">Home</a>
-
-                        <ul>
-                            <li><a href="index-1.html">01 - furniture store</a></li>
-                            <li><a href="index-2.html">02 - furniture store</a></li>
-                            <li><a href="index-3.html">03 - electronic store</a></li>
-                            <li><a href="index-4.html">04 - electronic store</a></li>
-                            <li><a href="index-5.html">05 - fashion store</a></li>
-                            <li><a href="index-6.html">06 - fashion store</a></li>
-                            <li><a href="index-7.html">07 - fashion store</a></li>
-                            <li><a href="index-8.html">08 - fashion store</a></li>
-                            <li><a href="index-9.html">09 - fashion store</a></li>
-                            <li><a href="index-10.html">10 - shoes store</a></li>
-                            <li><a href="index-11.html">11 - furniture simple store</a></li>
-                            <li><a href="index-12.html">12 - fashion simple store</a></li>
-                            <li><a href="index-13.html">13 - market</a></li>
-                            <li><a href="index-14.html">14 - market fullwidth</a></li>
-                            <li><a href="index-15.html">15 - lookbook 1</a></li>
-                            <li><a href="index-16.html">16 - lookbook 2</a></li>
-                            <li><a href="index-17.html">17 - fashion store</a></li>
-                            <li><a href="index-18.html">18 - fashion store (with sidebar)</a></li>
-                            <li><a href="index-19.html">19 - games store</a></li>
-                            <li><a href="index-20.html">20 - book store</a></li>
-                            <li><a href="index-21.html">21 - sport store</a></li>
-                            <li><a href="index-22.html">22 - tools store</a></li>
-                            <li><a href="index-23.html">23 - fashion left navigation store</a></li>
-                            <li><a href="index-24.html">24 - extreme sport store</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="category.html">Shop</a>
-                        <ul>
-                            <li><a href="category-list.html">Shop List</a></li>
-                            <li><a href="category-2cols.html">Shop Grid 2 Columns</a></li>
-                            <li><a href="category.html">Shop Grid 3 Columns</a></li>
-                            <li><a href="category-4cols.html">Shop Grid 4 Columns</a></li>
-                            <li><a href="category-boxed.html"><span>Shop Boxed No Sidebar<span class="tip tip-hot">Hot</span></span></a></li>
-                            <li><a href="category-fullwidth.html">Shop Fullwidth No Sidebar</a></li>
-                            <li><a href="product-category-boxed.html">Product Category Boxed</a></li>
-                            <li><a href="product-category-fullwidth.html"><span>Product Category Fullwidth<span class="tip tip-new">New</span></span></a></li>
-                            <li><a href="cart.html">Cart</a></li>
-                            <li><a href="checkout.html">Checkout</a></li>
-                            <li><a href="wishlist.html">Wishlist</a></li>
-                            <li><a href="#">Lookbook</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="product.html" class="sf-with-ul">Product</a>
-                        <ul>
-                            <li><a href="product.html">Default</a></li>
-                            <li><a href="product-centered.html">Centered</a></li>
-                            <li><a href="product-extended.html"><span>Extended Info<span class="tip tip-new">New</span></span></a></li>
-                            <li><a href="product-gallery.html">Gallery</a></li>
-                            <li><a href="product-sticky.html">Sticky Info</a></li>
-                            <li><a href="product-sidebar.html">Boxed With Sidebar</a></li>
-                            <li><a href="product-fullwidth.html">Full Width</a></li>
-                            <li><a href="product-masonry.html">Masonry Sticky Info</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="#">Pages</a>
-                        <ul>
-                            <li>
-                                <a href="about.html">About</a>
-
-                                <ul>
-                                    <li><a href="about.html">About 01</a></li>
-                                    <li><a href="about-2.html">About 02</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <a href="contact.html">Contact</a>
-
-                                <ul>
-                                    <li><a href="contact.html">Contact 01</a></li>
-                                    <li><a href="contact-2.html">Contact 02</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="login.html">Login</a></li>
-                            <li><a href="faq.html">FAQs</a></li>
-                            <li><a href="404.html">Error 404</a></li>
-                            <li><a href="coming-soon.html">Coming Soon</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="blog.html">Blog</a>
-
-                        <ul>
-                            <li><a href="blog.html">Classic</a></li>
-                            <li><a href="blog-listing.html">Listing</a></li>
-                            <li>
-                                <a href="#">Grid</a>
-                                <ul>
-                                    <li><a href="blog-grid-2cols.html">Grid 2 columns</a></li>
-                                    <li><a href="blog-grid-3cols.html">Grid 3 columns</a></li>
-                                    <li><a href="blog-grid-4cols.html">Grid 4 columns</a></li>
-                                    <li><a href="blog-grid-sidebar.html">Grid sidebar</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <a href="#">Masonry</a>
-                                <ul>
-                                    <li><a href="blog-masonry-2cols.html">Masonry 2 columns</a></li>
-                                    <li><a href="blog-masonry-3cols.html">Masonry 3 columns</a></li>
-                                    <li><a href="blog-masonry-4cols.html">Masonry 4 columns</a></li>
-                                    <li><a href="blog-masonry-sidebar.html">Masonry sidebar</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <a href="#">Mask</a>
-                                <ul>
-                                    <li><a href="blog-mask-grid.html">Blog mask grid</a></li>
-                                    <li><a href="blog-mask-masonry.html">Blog mask masonry</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <a href="#">Single Post</a>
-                                <ul>
-                                    <li><a href="single.html">Default with sidebar</a></li>
-                                    <li><a href="single-fullwidth.html">Fullwidth no sidebar</a></li>
-                                    <li><a href="single-fullwidth-sidebar.html">Fullwidth with sidebar</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="elements-list.html">Elements</a>
-                        <ul>
-                            <li><a href="elements-products.html">Products</a></li>
-                            <li><a href="elements-typography.html">Typography</a></li>
-                            <li><a href="elements-titles.html">Titles</a></li>
-                            <li><a href="elements-banners.html">Banners</a></li>
-                            <li><a href="elements-product-category.html">Product Category</a></li>
-                            <li><a href="elements-video-banners.html">Video Banners</a></li>
-                            <li><a href="elements-buttons.html">Buttons</a></li>
-                            <li><a href="elements-accordions.html">Accordions</a></li>
-                            <li><a href="elements-tabs.html">Tabs</a></li>
-                            <li><a href="elements-testimonials.html">Testimonials</a></li>
-                            <li><a href="elements-blog-posts.html">Blog Posts</a></li>
-                            <li><a href="elements-portfolio.html">Portfolio</a></li>
-                            <li><a href="elements-cta.html">Call to Action</a></li>
-                            <li><a href="elements-icon-boxes.html">Icon Boxes</a></li>
-                        </ul>
-                    </li>
+                    <li class="active"><a href="/">Home</a></li>
+                    <li><a href="/shop">Shop</a></li>
+                    <li><a href="/wishlist">Wishlist</a></li>
+                    <li><a href="/profile">My Account</a></li>
                 </ul>
-            </nav><!-- End .mobile-nav -->
+            </nav>
+        </div>
+    </div>
 
-            <div class="social-icons">
-                <a href="#" class="social-icon" target="_blank" title="Facebook"><i class="icon-facebook-f"></i></a>
-                <a href="#" class="social-icon" target="_blank" title="Twitter"><i class="icon-twitter"></i></a>
-                <a href="#" class="social-icon" target="_blank" title="Instagram"><i class="icon-instagram"></i></a>
-                <a href="#" class="social-icon" target="_blank" title="Youtube"><i class="icon-youtube"></i></a>
-            </div><!-- End .social-icons -->
-        </div><!-- End .mobile-menu-wrapper -->
-    </div><!-- End .mobile-menu-container -->
-
-    <!-- Sign in / Register Modal -->
-    <div class="modal fade" id="signin-modal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true"><i class="icon-close"></i></span>
-                    </button>
-
-                    <div class="form-box">
-                        <div class="form-tab">
-                            <ul class="nav nav-pills nav-fill" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link active" id="signin-tab" data-toggle="tab" href="#signin" role="tab" aria-controls="signin" aria-selected="true">Sign In</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="register-tab" data-toggle="tab" href="#register" role="tab" aria-controls="register" aria-selected="false">Register</a>
-                                </li>
-                            </ul>
-                            <div class="tab-content" id="tab-content-5">
-                                <div class="tab-pane fade show active" id="signin" role="tabpanel" aria-labelledby="signin-tab">
-                                    <form action="#">
-                                        <div class="form-group">
-                                            <label for="singin-email">Username or email address *</label>
-                                            <input type="text" class="form-control" id="singin-email" name="singin-email" required>
-                                        </div><!-- End .form-group -->
-
-                                        <div class="form-group">
-                                            <label for="singin-password">Password *</label>
-                                            <input type="password" class="form-control" id="singin-password" name="singin-password" required>
-                                        </div><!-- End .form-group -->
-
-                                        <div class="form-footer">
-                                            <button type="submit" class="btn btn-outline-primary-2">
-                                                <span>LOG IN</span>
-                                                <i class="icon-long-arrow-right"></i>
-                                            </button>
-
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="signin-remember">
-                                                <label class="custom-control-label" for="signin-remember">Remember Me</label>
-                                            </div><!-- End .custom-checkbox -->
-
-                                            <a href="#" class="forgot-link">Forgot Your Password?</a>
-                                        </div><!-- End .form-footer -->
-                                    </form>
-                                    <div class="form-choice">
-                                        <p class="text-center">or sign in with</p>
-                                        <div class="row">
-                                            <div class="col-sm-6">
-                                                <a href="#" class="btn btn-login btn-g">
-                                                    <i class="icon-google"></i>
-                                                    Login With Google
-                                                </a>
-                                            </div><!-- End .col-6 -->
-                                            <div class="col-sm-6">
-                                                <a href="#" class="btn btn-login btn-f">
-                                                    <i class="icon-facebook-f"></i>
-                                                    Login With Facebook
-                                                </a>
-                                            </div><!-- End .col-6 -->
-                                        </div><!-- End .row -->
-                                    </div><!-- End .form-choice -->
-                                </div><!-- .End .tab-pane -->
-                                <div class="tab-pane fade" id="register" role="tabpanel" aria-labelledby="register-tab">
-                                    <form action="#">
-                                        <div class="form-group">
-                                            <label for="register-email">Your email address *</label>
-                                            <input type="email" class="form-control" id="register-email" name="register-email" required>
-                                        </div><!-- End .form-group -->
-
-                                        <div class="form-group">
-                                            <label for="register-password">Password *</label>
-                                            <input type="password" class="form-control" id="register-password" name="register-password" required>
-                                        </div><!-- End .form-group -->
-
-                                        <div class="form-footer">
-                                            <button type="submit" class="btn btn-outline-primary-2">
-                                                <span>SIGN UP</span>
-                                                <i class="icon-long-arrow-right"></i>
-                                            </button>
-
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="register-policy" required>
-                                                <label class="custom-control-label" for="register-policy">I agree to the <a href="#">privacy policy</a> *</label>
-                                            </div><!-- End .custom-checkbox -->
-                                        </div><!-- End .form-footer -->
-                                    </form>
-                                    <div class="form-choice">
-                                        <p class="text-center">or sign in with</p>
-                                        <div class="row">
-                                            <div class="col-sm-6">
-                                                <a href="#" class="btn btn-login btn-g">
-                                                    <i class="icon-google"></i>
-                                                    Login With Google
-                                                </a>
-                                            </div><!-- End .col-6 -->
-                                            <div class="col-sm-6">
-                                                <a href="#" class="btn btn-login  btn-f">
-                                                    <i class="icon-facebook-f"></i>
-                                                    Login With Facebook
-                                                </a>
-                                            </div><!-- End .col-6 -->
-                                        </div><!-- End .row -->
-                                    </div><!-- End .form-choice -->
-                                </div><!-- .End .tab-pane -->
-                            </div><!-- End .tab-content -->
-                        </div><!-- End .form-tab -->
-                    </div><!-- End .form-box -->
-                </div><!-- End .modal-body -->
-            </div><!-- End .modal-content -->
-        </div><!-- End .modal-dialog -->
-    </div><!-- End .modal -->
-
-    <!-- Plugins JS File -->
+    <!-- Plugins & Core JS Files -->
     <script src="/static/js/jquery.min.js"></script>
     <script src="/static/js/bootstrap.bundle.min.js"></script>
     <script src="/static/js/jquery.hoverIntent.min.js"></script>
     <script src="/static/js/jquery.waypoints.min.js"></script>
     <script src="/static/js/superfish.min.js"></script>
-    <script src="/static/js/bootstrap-input-spinner.js"></script>
     <script src="/static/js/owl.carousel.min.js"></script>
-    <script src="/static/js/jquery.plugin.min.js"></script>
-    <script src="/static/js/jquery.magnific-popup.min.js"></script>
-    <script src="/static/js/jquery.countdown.min.js"></script>
-    <!-- Main JS File -->
     <script src="/static/js/main.js"></script>
-    <script src="/static/js/demos/demo-7.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const revealElements = document.querySelectorAll(".fz-reveal");
+
+            if ("IntersectionObserver" in window) {
+                const observer = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add("fz-show");
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, {
+                    threshold: 0.15
+                });
+
+                revealElements.forEach(function (element) {
+                    observer.observe(element);
+                });
+            } else {
+                revealElements.forEach(function (element) {
+                    element.classList.add("fz-show");
+                });
+            }
+        });
+    </script>
 </body>
 </html>

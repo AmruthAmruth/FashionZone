@@ -34,15 +34,15 @@ export const getOrderList = async (req, res) => {
         const orderId = req.params.id;
 
         const orderDetails = await Order.findById(orderId);
-        const userAddress = await Address.findById(orderDetails.selectedAddressId);
-
-        console.log("Order Address", userAddress);
-        console.log("Order Details", orderDetails);
 
         if (!orderDetails) {
-            console.log("Order cannot be found");
-            return res.status(404).send("Order not found");
+            req.flash('error', 'Order not found');
+            return res.redirect('/admin/orderlist');
         }
+
+        const userAddress = orderDetails.selectedAddressId
+            ? await Address.findById(orderDetails.selectedAddressId)
+            : null;
 
         res.render('admin/orderdetails', { order: orderDetails, address: userAddress });
     } catch (err) {
@@ -112,7 +112,7 @@ export const getSalesChartReport = async (req, res, next) => {
     const yearlyPending = getOrdersCountByStatus(allOrders, 'Pending', yearlyRange.start, yearlyRange.end);
     const yearlyDelivered = getOrdersCountByStatus(allOrders, 'Delivered', yearlyRange.start, yearlyRange.end);
     const yearlyCancelled = getOrdersCountByStatus(allOrders, 'Cancelled', yearlyRange.start, yearlyRange.end);
-    const yearlyReturned = getOrdersCountByStatus(allOrders, 'Returned', monthlyRange.start, monthlyRange.end);
+    const yearlyReturned = getOrdersCountByStatus(allOrders, 'Returned', yearlyRange.start, yearlyRange.end);
 
     const salesChartData = {
       total: {

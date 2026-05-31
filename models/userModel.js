@@ -17,10 +17,6 @@ const userSchema=mongoose.Schema({
     refCode:{
         type:String,
     },
-    myCode:{
-        type:String,
-        require:true
-    },
     redeemed:{
         type:String
     },

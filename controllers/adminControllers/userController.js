@@ -6,10 +6,11 @@ import User  from "../../models/userModel.js";
 export const getUserListPage=async(req,res)=>{
     try{
         const users = await User.find();
-        res.render('admin/userlist',{users,message:req.flash()})
+        res.render('admin/userlist', { users, message: req.flash() })
     }catch(err){
         console.log(err);
-        
+        req.flash('error', 'Failed to load users');
+        res.render('admin/userlist', { users: [], message: req.flash() });
     }
 }
 

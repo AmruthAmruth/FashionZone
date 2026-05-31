@@ -49,91 +49,80 @@
         <!-- Content -->
         
 
- <!-- Dashboard Heading Card -->
- <div class="card mb-3">
-  <div class="card-widget-separator-wrapper">
+  <!-- Dashboard Heading Card -->
+ <div class="card mb-4" style="background: linear-gradient(135deg, var(--fz-dark) 0%, var(--fz-dark-2) 100%) !important; border: 1px solid rgba(201,169,110,0.2) !important; border-radius: var(--fz-radius-lg) !important; box-shadow: var(--fz-shadow) !important;">
+   <div class="card-body text-center" style="padding: 24px !important;">
+     <h2 style="font-family: var(--font-heading) !important; font-weight: 700 !important; color: var(--fz-gold) !important; margin: 0; font-size: 2rem; background: linear-gradient(135deg, var(--fz-gold-light), var(--fz-gold-dark)) !important; -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important; background-clip: text !important;">Control Panel & Analytics</h2>
+     <p style="color: rgba(255,255,255,0.5) !important; margin: 6px 0 0 0; font-size: 13px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;">FashionZone Business Insights</p>
+   </div>
+ </div>
 
-    <div class="row gy-4 gy-sm-1">
-      <div class="col-sm-6 col-lg-12">
-        <div class="card-body text-center">
-          <h2 class="fw-bold mb-0">Dashboard</h2>
-        </div>
-
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-
-<!--/ Card Border Shadow -->
+<!--/ Charts Section -->
 <div class="row">
   <!-- Doughnut Chart Card -->
-  <div class="col-md-6 col-12 d-flex flex-column">
-    <div class="card flex-grow-1">
-      <div class="card-header d-flex align-items-center justify-content-between">
-        <div>
-          <h5 class="card-title mb-0">Sales Chart</h5>
-        </div>
+  <div class="col-md-6 col-12 d-flex flex-column mb-4">
+    <div class="card flex-grow-1" style="background: #fff !important; border-radius: var(--fz-radius-lg) !important; border: 1px solid var(--fz-border) !important; box-shadow: var(--fz-shadow-sm) !important; overflow: hidden; transition: var(--fz-transition);">
+      <div class="card-header d-flex align-items-center justify-content-between" style="background: var(--fz-gray) !important; border-bottom: 1px solid var(--fz-border) !important; padding: 18px 24px !important;">
+        <h5 class="card-title mb-0" style="font-family: var(--font-heading) !important; font-weight: 700; color: var(--fz-dark) !important; font-size: 15px;">Sales Performance Distribution</h5>
       </div>
-      <div class="card-body">
-        <canvas id="salesReportDoughnut"></canvas>
+      <div class="card-body" style="padding: 24px !important; min-height: 300px; display: flex; align-items: center; justify-content: center;">
+        <canvas id="salesReportDoughnut" style="max-height: 280px;"></canvas>
       </div>
     </div>
   </div>
 
   <!-- Bar Chart Card -->
-  <div class="col-md-6 col-12 d-flex flex-column">
-    <div class="card flex-grow-1">
-      <div class="card-header d-flex align-items-center justify-content-between">
+  <div class="col-md-6 col-12 d-flex flex-column mb-4">
+    <div class="card flex-grow-1" style="background: #fff !important; border-radius: var(--fz-radius-lg) !important; border: 1px solid var(--fz-border) !important; box-shadow: var(--fz-shadow-sm) !important; overflow: hidden; transition: var(--fz-transition);">
+      <div class="card-header d-flex align-items-center justify-content-between" style="background: var(--fz-gray) !important; border-bottom: 1px solid var(--fz-border) !important; padding: 18px 24px !important;">
         <div>
-          <h5 class="card-title mb-0" id="salesStatusHeading">Sales Overview</h5> <!-- Heading updated dynamically -->
-          <p class="text-body mb-0">Weekly, Monthly, Yearly, and Custom Sales</p>
+          <h5 class="card-title mb-0" id="salesStatusHeading" style="font-family: var(--font-heading) !important; font-weight: 700; color: var(--fz-dark) !important; font-size: 15px;">Sales Overview</h5>
+          <p style="color: var(--fz-text-muted) !important; font-size: 11px; margin: 4px 0 0 0; font-weight: 500;">Filter by Weekly, Monthly, or Yearly Sales Data</p>
         </div>
       </div>
-      <div class="card-body">
-        <canvas id="salesReportBar"></canvas>
+      <div class="card-body" style="padding: 24px !important; min-height: 250px; display: flex; align-items: center; justify-content: center;">
+        <canvas id="salesReportBar" style="max-height: 220px;"></canvas>
       </div>
-      <div class="card-footer">
-        <button id="weeklyBtn" class="btn btn-primary">Weekly</button>
-        <button id="monthlyBtn" class="btn btn-secondary">Monthly</button>
-        <button id="yearlyBtn" class="btn btn-success">Yearly</button>
-    
-       
+      <div class="card-footer d-flex justify-content-center" style="background: var(--fz-gray) !important; border-top: 1px solid var(--fz-border) !important; padding: 14px 24px !important; gap: 8px;">
+        <button id="weeklyBtn" class="btn btn-primary" style="background: linear-gradient(135deg, var(--fz-gold), var(--fz-gold-dark)) !important; color: var(--fz-dark) !important; border: none !important; border-radius: var(--fz-radius-pill) !important; padding: 6px 20px !important; font-weight: 700 !important; font-size: 11.5px !important; text-transform: uppercase !important; box-shadow: 0 4px 12px rgba(201,169,110,0.15) !important; transition: var(--fz-transition);">Weekly</button>
+        <button id="monthlyBtn" class="btn btn-secondary" style="background: var(--fz-dark) !important; color: #fff !important; border: none !important; border-radius: var(--fz-radius-pill) !important; padding: 6px 20px !important; font-weight: 700 !important; font-size: 11.5px !important; text-transform: uppercase !important; transition: var(--fz-transition);">Monthly</button>
+        <button id="yearlyBtn" class="btn btn-success" style="background: #e2e2ec !important; color: var(--fz-dark) !important; border: none !important; border-radius: var(--fz-radius-pill) !important; padding: 6px 20px !important; font-weight: 700 !important; font-size: 11.5px !important; text-transform: uppercase !important; transition: var(--fz-transition);">Yearly</button>
       </div>
     </div>
   </div>
 </div>
 
-
-
-
-
-<div class="row mt-4">
-  <!-- Top 10 Products Card -->
-  <div class="col-md-6 col-12">
-    <div class="card" style="height: 400px;">
-      <div class="card-header">
-        <h5 class="card-title mb-0">Top 10 Brands</h5>
+<!--/ Tables Section -->
+<div class="row">
+  <!-- Top 10 Brands Card -->
+  <div class="col-md-6 col-12 mb-4">
+    <div class="card" style="border-radius: var(--fz-radius-lg) !important; border: 1px solid var(--fz-border) !important; box-shadow: var(--fz-shadow-sm) !important; overflow: hidden; height: 400px;">
+      <div class="card-header" style="background: var(--fz-gray) !important; border-bottom: 1px solid var(--fz-border) !important; padding: 18px 24px !important;">
+        <h5 class="card-title mb-0" style="font-family: var(--font-heading) !important; font-weight: 700; color: var(--fz-dark) !important; font-size: 15px;"><i class="ri-bookmark-3-line text-gold me-1"></i> Top 10 Brands</h5>
       </div>
       <div class="card-body p-0" style="overflow-y: auto; max-height: 330px;">
         <div class="table-responsive">
-          <table class="table table-striped table-hover mb-0">
-            <thead class="thead-light">
+          <table class="table table-hover align-middle mb-0" style="margin: 0;">
+            <thead style="background: rgba(26,26,46,0.02) !important;">
               <tr>
-                <th>No</th>
-                <th>Brand Name</th>
-                <th>Quantity Sold</th>
+                <th style="padding: 14px 20px !important; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--fz-text-muted);">Rank</th>
+                <th style="padding: 14px 20px !important; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--fz-text-muted);">Brand</th>
+                <th style="padding: 14px 20px !important; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--fz-text-muted);">Quantity Sold</th>
               </tr>
             </thead>
             <tbody>
-              <% for (const [brandName, quantitySold] of Object.entries(brand)) { %>
-                <tr>
-                  <td><%= Object.keys(brand).indexOf(brandName) + 1 %></td>
-                  <td><%= brandName %></td>
-                  <td><%= quantitySold %></td>
+              <% let brandCounter = 1; %>
+              <% const brandEntries = Object.entries(brand || {}); %>
+              <% if (brandEntries.length > 0) { %>
+              <% for (const [brandName, quantitySold] of brandEntries) { %>
+                <tr style="transition: var(--fz-transition-fast);">
+                  <td style="padding: 14px 20px !important; font-weight: 700; color: var(--fz-gold-dark);"><%= brandCounter++ %></td>
+                  <td style="padding: 14px 20px !important; font-weight: 600; color: var(--fz-dark);"><%= brandName %></td>
+                  <td style="padding: 14px 20px !important; font-weight: 600;"><span class="badge" style="background: rgba(201,169,110,0.12) !important; color: var(--fz-gold-dark) !important; font-size: 12px; font-weight: 700; border-radius: var(--fz-radius-pill) !important; padding: 4px 12px !important;"><%= quantitySold %> units</span></td>
                 </tr>
+              <% } %>
+              <% } else { %>
+                <tr><td colspan="3" class="text-center py-4 admin-empty-state">No sales data yet</td></tr>
               <% } %>
             </tbody>
           </table>
@@ -141,34 +130,36 @@
       </div>
     </div>
   </div>
-
-
-  
 
   <!-- Top 10 Categories Card -->
-  <div class="col-md-6 col-12">
-    <div class="card" style="height: 400px;">
-      <div class="card-header">
-        <h5 class="card-title mb-0">Top 10 Categories</h5>
+  <div class="col-md-6 col-12 mb-4">
+    <div class="card" style="border-radius: var(--fz-radius-lg) !important; border: 1px solid var(--fz-border) !important; box-shadow: var(--fz-shadow-sm) !important; overflow: hidden; height: 400px;">
+      <div class="card-header" style="background: var(--fz-gray) !important; border-bottom: 1px solid var(--fz-border) !important; padding: 18px 24px !important;">
+        <h5 class="card-title mb-0" style="font-family: var(--font-heading) !important; font-weight: 700; color: var(--fz-dark) !important; font-size: 15px;"><i class="ri-folder-line text-gold me-1"></i> Top 10 Categories</h5>
       </div>
       <div class="card-body p-0" style="overflow-y: auto; max-height: 330px;">
         <div class="table-responsive">
-          <table class="table table-striped table-hover mb-0">
-            <thead class="thead-light">
+          <table class="table table-hover align-middle mb-0" style="margin: 0;">
+            <thead style="background: rgba(26,26,46,0.02) !important;">
               <tr>
-                <th>No</th>
-                <th>Category Name</th>
-                <th>Quantity Sold</th>
+                <th style="padding: 14px 20px !important; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--fz-text-muted);">Rank</th>
+                <th style="padding: 14px 20px !important; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--fz-text-muted);">Category</th>
+                <th style="padding: 14px 20px !important; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--fz-text-muted);">Quantity Sold</th>
               </tr>
             </thead>
             <tbody>
-              <% let counter = 1; %> <!-- Initialize a counter for numbering -->
-              <% for (const [category, quantity] of Object.entries(categoriesDetails)) { %>
-                <tr>
-                  <td><%= counter++ %></td> <!-- Increment and display the counter -->
-                  <td><%= category %></td>
-                  <td><%= quantity %></td>
+              <% let catCounter = 1; %>
+              <% const catEntries = Object.entries(categoriesDetails || {}); %>
+              <% if (catEntries.length > 0) { %>
+              <% for (const [category, quantity] of catEntries) { %>
+                <tr style="transition: var(--fz-transition-fast);">
+                  <td style="padding: 14px 20px !important; font-weight: 700; color: var(--fz-gold-dark);"><%= catCounter++ %></td>
+                  <td style="padding: 14px 20px !important; font-weight: 600; color: var(--fz-dark);"><%= category %></td>
+                  <td style="padding: 14px 20px !important; font-weight: 600;"><span class="badge" style="background: rgba(201,169,110,0.12) !important; color: var(--fz-gold-dark) !important; font-size: 12px; font-weight: 700; border-radius: var(--fz-radius-pill) !important; padding: 4px 12px !important;"><%= quantity %> units</span></td>
                 </tr>
+              <% } %>
+              <% } else { %>
+                <tr><td colspan="3" class="text-center py-4 admin-empty-state">No category sales yet</td></tr>
               <% } %>
             </tbody>
           </table>
@@ -177,41 +168,40 @@
     </div>
   </div>
 
-
   <!-- Top 10 Products Card -->
-  <div class="col-md-12 mt-5 px-5  col-12">
-    <div class="card" style="height: 400px;">
-      <div class="card-header">
-        <h5 class="card-title mb-0">Top 10 Products</h5>
+  <div class="col-md-12 col-12 mb-4 mt-2">
+    <div class="card" style="border-radius: var(--fz-radius-lg) !important; border: 1px solid var(--fz-border) !important; box-shadow: var(--fz-shadow-sm) !important; overflow: hidden; height: 400px;">
+      <div class="card-header" style="background: var(--fz-gray) !important; border-bottom: 1px solid var(--fz-border) !important; padding: 18px 24px !important;">
+        <h5 class="card-title mb-0" style="font-family: var(--font-heading) !important; font-weight: 700; color: var(--fz-dark) !important; font-size: 15px;"><i class="ri-shirt-line text-gold me-1"></i> Top 10 Products</h5>
       </div>
       <div class="card-body p-0" style="overflow-y: auto; max-height: 330px;">
         <div class="table-responsive">
-          <table class="table table-striped table-hover mb-0">
-            <thead class="thead-light">
+          <table class="table table-hover align-middle mb-0" style="margin: 0;">
+            <thead style="background: rgba(26,26,46,0.02) !important;">
               <tr>
-                <th>No</th>
-                <th>Product Name</th>
-                <th>Quantity Sold</th>
+                <th style="padding: 14px 20px !important; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--fz-text-muted);">Rank</th>
+                <th style="padding: 14px 20px !important; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--fz-text-muted);">Product Name</th>
+                <th style="padding: 14px 20px !important; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--fz-text-muted);">Quantity Sold</th>
               </tr>
             </thead>
             <tbody>
+              <% if (mostSoldDetails && mostSoldDetails.length > 0) { %>
               <% mostSoldDetails.forEach((product, index) => { %>
-                <tr>
-                  <td><%= index + 1 %></td>
-                  <td><%= product.title %></td>
-                  <td><%= product.totalQuantity %></td>
+                <tr style="transition: var(--fz-transition-fast);">
+                  <td style="padding: 14px 20px !important; font-weight: 700; color: var(--fz-gold-dark);"><%= index + 1 %></td>
+                  <td style="padding: 14px 20px !important; font-weight: 600; color: var(--fz-dark);"><%= product.title %></td>
+                  <td style="padding: 14px 20px !important; font-weight: 600;"><span class="badge" style="background: rgba(26,26,46,0.95) !important; color: var(--fz-gold) !important; font-size: 12px; font-weight: 700; border-radius: var(--fz-radius-pill) !important; padding: 4px 12px !important;"><%= product.totalQuantity %> sold</span></td>
                 </tr>
               <% }) %>
+              <% } else { %>
+                <tr><td colspan="3" class="text-center py-4 admin-empty-state">No product sales yet</td></tr>
+              <% } %>
             </tbody>
           </table>
         </div>
       </div>
     </div>
   </div>
-
-
-
-
 </div>
 
 
@@ -288,12 +278,12 @@
   });
 
   // Bar Chart Data (dynamically update the sales data for weekly, monthly, and yearly)
-  const weeklyData = [<%= salseChart && salseChart.weekly ? salseChart.weekly.deliveredProducts : 0 %>, <%= salseChart && salseChart.weekly ? salseChart.weekly.cancelledProducts : 0 %>, <%= salseChart && salseChart.weekly ? salseChart.weekly.pendingProducts : 0 %>, <%= salseChart && salseChart.yearly ? salseChart.yearly.returnedProducts : 0 %>];
-  const monthlyData = [<%= salseChart && salseChart.monthly ? salseChart.monthly.deliveredProducts : 0 %>, <%= salseChart && salseChart.monthly ? salseChart.monthly.cancelledProducts : 0 %>, <%= salseChart && salseChart.monthly ? salseChart.monthly.pendingProducts : 0 %>, <%= salseChart && salseChart.yearly ? salseChart.yearly.returnedProducts : 0 %>];
+  const weeklyData = [<%= salseChart && salseChart.weekly ? salseChart.weekly.deliveredProducts : 0 %>, <%= salseChart && salseChart.weekly ? salseChart.weekly.cancelledProducts : 0 %>, <%= salseChart && salseChart.weekly ? salseChart.weekly.pendingProducts : 0 %>, <%= salseChart && salseChart.weekly ? salseChart.weekly.returnedProducts : 0 %>];
+  const monthlyData = [<%= salseChart && salseChart.monthly ? salseChart.monthly.deliveredProducts : 0 %>, <%= salseChart && salseChart.monthly ? salseChart.monthly.cancelledProducts : 0 %>, <%= salseChart && salseChart.monthly ? salseChart.monthly.pendingProducts : 0 %>, <%= salseChart && salseChart.monthly ? salseChart.monthly.returnedProducts : 0 %>];
   const yearlyData = [<%= salseChart && salseChart.yearly ? salseChart.yearly.deliveredProducts : 0 %>, <%= salseChart && salseChart.yearly ? salseChart.yearly.cancelledProducts : 0 %>, <%= salseChart && salseChart.yearly ? salseChart.yearly.pendingProducts : 0 %>, <%= salseChart && salseChart.yearly ? salseChart.yearly.returnedProducts : 0 %>];
 
   const barData = {
-    labels: ['Delivered', 'Cancelled', 'Pending','Retuned'],
+    labels: ['Delivered', 'Cancelled', 'Pending', 'Returned'],
     datasets: [{
       label: 'Total Sales',
       data: [totalDelivered, totalCancelled, totalPending,totalReturned], // Using the total data
@@ -374,47 +364,18 @@
   buttonHandler('monthlyBtn', monthlyData, 'Monthly');
   buttonHandler('yearlyBtn', yearlyData, 'Yearly');
 
-  // Function to handle custom date range sales report
-  const filterDataByDateRange = (startDate, endDate) => {
-    // Placeholder for your data filtering logic (either fetch from server or filter locally)
-    // You should replace this part with an actual API call to the backend to get filtered data
-    fetch(`/admin/dashboard?startDate=${startDate}&endDate=${endDate}`)
-      .then(response => response.json())
-      .then(filteredData => {
-        // Update the bar chart with filtered data
-        const data = [
-          filteredData.delivered,
-          filteredData.cancelled,
-          filteredData.pending,
-        filteredData.reutrned
-        ];
-
-        // Update the chart with the filtered data
-        salesReportBar.data.datasets[0].data = data;
-
-        // Update the heading with the custom date range
-        document.getElementById('salesStatusHeading').innerText = `Sales Report from ${startDate} to ${endDate}`;
-
-        // Update the chart
-        salesReportBar.update();
-      })
-      .catch(error => {
-        console.error('Error fetching sales data:', error);
+  // Highlight active period button
+  const periodButtons = { weeklyBtn: 'weeklyBtn', monthlyBtn: 'monthlyBtn', yearlyBtn: 'yearlyBtn' };
+  Object.keys(periodButtons).forEach(btnId => {
+    document.getElementById(btnId).addEventListener('click', () => {
+      Object.keys(periodButtons).forEach(id => {
+        const btn = document.getElementById(id);
+        btn.style.background = id === btnId
+          ? 'linear-gradient(135deg, var(--fz-gold), var(--fz-gold-dark))'
+          : '#e2e2ec';
+        btn.style.color = id === btnId ? 'var(--fz-dark)' : 'var(--fz-dark)';
       });
-  };
-
-  // Add event listener for custom date range button
-  document.getElementById('customDateBtn').addEventListener('click', () => {
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
-
-    if (!startDate || !endDate) {
-      alert('Please select both start and end dates.');
-      return;
-    }
-
-    // Filter data based on the selected date range
-    filterDataByDateRange(startDate, endDate);
+    });
   });
 </script>
 
@@ -483,27 +444,18 @@
 
   <!-- Core JS -->
   <!-- build:js assets/vendor/js/core.js -->
-  <script src="../../assets/vendor/libs/jquery/jquery.js"></script>
-  <script src="../../assets/vendor/libs/popper/popper.js"></script>
-  <script src="../../assets/vendor/js/bootstrap.js"></script>
-  <script src="../../assets/vendor/libs/node-waves/node-waves.js"></script>
-  <script src="../../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
-  <script src="../../assets/vendor/libs/hammer/hammer.js"></script>
-  <script src="../../assets/vendor/libs/i18n/i18n.js"></script>
-  <script src="../../assets/vendor/libs/typeahead-js/typeahead.js"></script>
-  <script src="../../assets/vendor/js/menu.js"></script>
-  
-  <!-- endbuild -->
-
-  <!-- Vendors JS -->
-  <script src="../../assets/vendor/libs/apex-charts/apexcharts.js"></script>
-
-  <!-- Main JS -->
-  <script src="../../assets/js/main.js"></script>
-  
-
-  <!-- Page JS -->
-  <script src="../../assets/js/app-ecommerce-dashboard.js"></script>
+  <script src="/assets/vendor/libs/jquery/jquery.js"></script>
+  <script src="/assets/vendor/libs/popper/popper.js"></script>
+  <script src="/assets/vendor/js/bootstrap.js"></script>
+  <script src="/assets/vendor/libs/node-waves/node-waves.js"></script>
+  <script src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+  <script src="/assets/vendor/libs/hammer/hammer.js"></script>
+  <script src="/assets/vendor/libs/i18n/i18n.js"></script>
+  <script src="/assets/vendor/libs/typeahead-js/typeahead.js"></script>
+  <script src="/assets/vendor/js/menu.js"></script>
+  <script src="/assets/vendor/libs/apex-charts/apexcharts.js"></script>
+  <script src="/assets/js/main.js"></script>
+  <script src="/assets/js/app-ecommerce-dashboard.js"></script>
   
 </body>
 

@@ -8,7 +8,7 @@ export const getCoupenspage=async(req,res)=>{
 const coupons  = await Coupon.find()
 
 
-res.render('admin/coupens',{coupons})
+res.render('admin/coupens', { coupons, message: req.flash() })
     }catch(err){
         console.log("Error while tring to get coupens page",err);
         
@@ -25,33 +25,44 @@ export const addCoupon = async (req, res) => {
             description,
             expiryDate,
             minPurchaseAmount,
-            isActive
+            isActive,
+            status,
         } = req.body;
 
-        
-        const existingCoupon = await Coupon.findOne({ couponId });
-        if (existingCoupon) {
-            return res.status(400).json({ message: 'Coupon ID already exists' });
+        if (!couponId || !discount || !description || !expiryDate || !minPurchaseAmount) {
+            req.flash('error', 'All coupon fields are required');
+            return res.redirect('/admin/coupones');
         }
 
-     
+        const existingCoupon = await Coupon.findOne({ couponId });
+        if (existingCoupon) {
+            req.flash('error', 'Coupon ID already exists');
+            return res.redirect('/admin/coupones');
+        }
+
+        const activeStatus = isActive !== undefined
+            ? isActive === true || isActive === 'true'
+            : status === 'true';
+
         const newCoupon = new Coupon({
             couponId,
             discount,
             description,
             expiryDate,
             minPurchaseAmount,
-            isActive
+            isActive: activeStatus,
         });
 
         
         await newCoupon.save();
 
        
-        res.redirect('/admin/coupones')
+        req.flash('success', 'Coupon added successfully');
+        res.redirect('/admin/coupones');
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: 'Server Error', error: error.message });
+        req.flash('error', 'Failed to add coupon');
+        return res.redirect('/admin/coupones');
     }
 };
 

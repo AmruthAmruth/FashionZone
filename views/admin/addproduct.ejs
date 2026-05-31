@@ -1,854 +1,267 @@
-<!DOCTYPE html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- =========================================================
-* Materio - Bootstrap Material Design Admin Template | v2.0.1
-==============================================================
-
-* Product Page: https://themeselection.com/item/materio-bootstrap-html-admin-template/
-* Created by: ThemeSelection
-* License: You must have a valid license purchased in order to legally use the theme for your project.
-* Copyright ThemeSelection (https://themeselection.com)
-
-=========================================================
- -->
-<!-- beautify ignore:start -->
-
-
-<html lang="en" class="light-style layout-navbar-fixed layout-menu-fixed layout-compact " dir="ltr" data-theme="theme-default" data-assets-path="../../assets/" data-template="vertical-menu-template" data-style="light">
-
-  
-<!-- Mirrored from demos.themeselection.com/materio-bootstrap-html-admin-template/html/vertical-menu-template/app-ecommerce-product-add.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 25 Jun 2024 05:50:30 GMT -->
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-
-    <title>FashionZone Admin Panel</title>
-
-    
-    <meta name="description" content="Start your development with a Dashboard for Bootstrap 5" />
-    <meta name="keywords" content="dashboard, material, material design, bootstrap 5 dashboard, bootstrap 5 design, bootstrap 5">
-    <!-- Canonical SEO -->
-    <link rel="canonical" href="https://themeselection.com/item/materio-bootstrap-html-admin-template/">
-    
-    
-    <!-- ? PROD Only: Google Tag Manager (Default ThemeSelection: GTM-5DDHKGP, PixInvent: GTM-5J3LMKC) -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-      '../../../../www.googletagmanager.com/gtm5445.html?id='+i+dl;f.parentNode.insertBefore(j,f);
-      })(window,document,'script','dataLayer','GTM-5DDHKGP');</script>
-    <!-- End Google Tag Manager -->
-    
-    <!-- Favicon -->
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com/">
-    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;ampdisplay=swap" rel="stylesheet">
-
-    <!-- Icons -->
-    <link rel="stylesheet" href="../../assets/vendor/fonts/remixicon/remixicon.css" />
-    <link rel="stylesheet" href="../../assets/vendor/fonts/flag-icons.css" />
-    
-    <!-- Menu waves for no-customizer fix -->
-    <link rel="stylesheet" href="../../assets/vendor/libs/node-waves/node-waves.css" />
-
-    <!-- Core CSS -->
-    <link rel="stylesheet" href="../../assets/vendor/css/rtl/core.css" class="template-customizer-core-css" />
-    <link rel="stylesheet" href="../../assets/vendor/css/rtl/theme-default.css" class="template-customizer-theme-css" />
-    <link rel="stylesheet" href="../../assets/css/demo.css" />
-    
-    <!-- Vendors CSS -->
-    <link rel="stylesheet" href="../../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
-    <link rel="stylesheet" href="../../assets/vendor/libs/typeahead-js/typeahead.css" /> 
-    <link rel="stylesheet" href="../../assets/vendor/libs/quill/typography.css">
-<link rel="stylesheet" href="../../assets/vendor/libs/quill/katex.css">
-<link rel="stylesheet" href="../../assets/vendor/libs/quill/editor.css">
-<link rel="stylesheet" href="../../assets/vendor/libs/select2/select2.css">
-<link rel="stylesheet" href="../../assets/vendor/libs/dropzone/dropzone.css">
-<link rel="stylesheet" href="../../assets/vendor/libs/flatpickr/flatpickr.css">
-<link rel="stylesheet" href="../../assets/vendor/libs/tagify/tagify.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
-
-    <!-- Page CSS -->
-    
-
-    <!-- Helpers -->
-    <script src="../../assets/vendor/js/helpers.js"></script>
-    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
-    <!--? Template customizer: To hide customizer set displayCustomizer value false in config.js.  -->
-    <script src="../../assets/vendor/js/template-customizer.js"></script>
-    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
-    <script src="../../assets/js/config.js"></script>
-    
+<%- include('../layout/adminheader.ejs') -%>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css">
 </head>
-
-
-
 <body>
-
-  
-  <!-- ?PROD Only: Google Tag Manager (noscript) (Default ThemeSelection: GTM-5DDHKGP, PixInvent: GTM-5J3LMKC) -->
-  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5DDHKGP" height="0" width="0" style="display: none; visibility: hidden"></iframe></noscript>
-  <!-- End Google Tag Manager (noscript) -->
-  
-  <!-- Layout wrapper -->
-<div class="layout-wrapper layout-content-navbar  ">
+<div class="layout-wrapper layout-content-navbar">
   <div class="layout-container">
-
-    
-    
-
-
-
-
-<!-- Menu -->
-<%- include('../partials/adminsidebar.ejs') -%>
-<!-- / Menu -->
-
-    
-
-    <!-- Layout container -->
+    <%- include('../partials/adminsidebar.ejs') -%>
     <div class="layout-page">
-      
-      
+      <%- include('../partials/adminnavbar.ejs') -%>
+      <div class="content-wrapper">
+        <div class="container-xxl flex-grow-1 container-p-y">
 
-
-
-
-
-<!-- Navbar -->
-
-
-<%- include('../partials/adminnavbar.ejs') -%>
-
-<!-- / Navbar -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- Content wrapper -->
-<div class="content-wrapper">
-          
-        
-        <!-- Content -->
-        
-          <div class="container-xxl flex-grow-1 container-p-y">
-            
-            
-<div class="app-ecommerce">
-
-  <!-- Add Product -->
-  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-6 gap-4 gap-md-0">
-
-    <div class="d-flex flex-column justify-content-center">
-      <h4 class="mb-1">Add a new Product</h4>
-      <p class="mb-0">Orders placed across your store</p>
-      <p class="text-success"><%= messages.success[0] %></p>
-    </div>
-  
-  </div>
-
-  <form id="addProductForm" action="/admin/addproduct" method="post" enctype="multipart/form-data" onsubmit="validateForm(event)">
- 
-  <div class="row">
-    <!-- First column-->
-    <div class="col-12 col-lg-8">
-     
-     
-        <!-- Product Information -->
-      <div class="card mb-6">
-        <div class="card-header">
-          <h5 class="card-tile mb-0">Product information</h5>
-        </div>
-        <div class="card-body">
-          
-          
-          <div class="form-floating form-floating-outline mb-5 mt-5">
-            <input type="text" class="form-control" id="ecommerce-product-name" placeholder="Product Brand" name="brand" >
-            <label for="ecommerce-product-name">Brand</label>
-            <div id="error-brand" class="text-danger" style="display:none;"></div>
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+            <div>
+              <h4 class="mb-1">Add New Product</h4>
+              <p class="text-muted mb-0">Fill in the details and upload four images (crop each before publishing).</p>
+            </div>
+            <a href="/admin/products" class="btn btn-outline-secondary btn-sm">
+              <i class="ri-arrow-left-line me-1"></i> Back to products
+            </a>
           </div>
 
-          
-<!-- Title Field -->
-<div class="form-floating form-floating-outline mb-5">
-  <input type="text" class="form-control" id="ecommerce-product-brand" placeholder="Product Title" name="title" >
-  <label for="ecommerce-product-name">Title</label>
-  <div id="error-title" class="text-danger" style="display:none;"></div>
-</div>
+          <% if (flash && flash.success) { %>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              <%= flash.success %>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          <% } %>
+          <% if (flash && flash.message) { %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <%= flash.message %>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          <% } %>
+          <% if (flash && flash.image) { %>
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+              <%= flash.image %>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          <% } %>
+          <% if (flash && (flash.price || flash.disPrice || flash.tags)) { %>
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+              <%= flash.price || flash.disPrice || flash.tags %>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          <% } %>
 
-<!-- Description Field -->
-<div class="form-floating form-floating-outline mb-5">
-  <input type="text" class="form-control" id="ecommerce-product-title" placeholder="Product Description" name="description" >
-  <label for="ecommerce-product-name">Description</label>
-  <div id="error-description" class="text-danger" style="display:none;"></div>
-</div>
-          
-          
+          <form id="addProductForm" action="/admin/addproduct" method="post" enctype="multipart/form-data" novalidate onsubmit="validateAddProductForm(event)">
+            <div class="row g-4">
 
-        </div>
-      </div>
-      <!-- /Product Information -->
+              <div class="col-12 col-lg-8">
+                <div class="card mb-4">
+                  <div class="card-header">
+                    <h5 class="card-title mb-0">Product information</h5>
+                  </div>
+                  <div class="card-body">
+                    <div class="form-floating form-floating-outline mb-4">
+                      <input type="text" class="form-control" id="product-brand" name="brand" placeholder="Brand" maxlength="80" required>
+                      <label for="product-brand">Brand</label>
+                      <div id="error-brand" class="form-error text-danger small mt-1" style="display:none;"></div>
+                    </div>
+                    <div class="form-floating form-floating-outline mb-4">
+                      <input type="text" class="form-control" id="product-title" name="title" placeholder="Title" maxlength="120" required>
+                      <label for="product-title">Title</label>
+                      <div id="error-title" class="form-error text-danger small mt-1" style="display:none;"></div>
+                    </div>
+                    <div class="form-floating form-floating-outline mb-0">
+                      <textarea class="form-control" id="product-description" name="description" placeholder="Description" style="height: 100px;" maxlength="500" required></textarea>
+                      <label for="product-description">Description</label>
+                      <div id="error-description" class="form-error text-danger small mt-1" style="display:none;"></div>
+                    </div>
+                  </div>
+                </div>
 
-
-
-
-      <!-- Media -->
-      <div class="card mb-6 shadow-sm">
-        <div class="card-header bg-white text-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Product Images</h5>
-            <div id="imagesErr" class="text-danger" style="display: none;">Please upload all four images.</div>
-            <p class="text-danger"><%= messages.image[0] %></p>
-        </div>
-        <div class="card-body">
-            <div class="form-group">
-                <div class="row g-3">
-                    <% for (let i = 1; i <= 4; i++) { %>
-                    <!-- Image Input and Preview -->
-                    <div class="col-lg-6 col-md-6">
-                        <div class="border rounded p-3 text-center mt-4">
-                            <label for="imageInput<%= i %>" class="file-upload d-block mb-2 mt-2 ">
-                                <span class="file-select btn btn-outline-primary btn-sm">Choose Image <%= i %></span>
-                                <input name="images[]" type="file" accept="image/jpeg, image/png" id="imageInput<%= i %>" class="imageInput d-none" onchange="showPreview(this, 'imagePreview<%= i %>'); openCropModal(this, <%= i %>)">
+                <div class="card mb-4">
+                  <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <h5 class="card-title mb-0">Product images</h5>
+                    <span class="text-muted small">JPG or PNG · 1:1 crop · 4 required</span>
+                  </div>
+                  <div class="card-body">
+                    <p id="imagesErr" class="form-error text-danger small mb-3" style="display:none;"></p>
+                    <div class="row g-3">
+                      <% for (let i = 1; i <= 4; i++) { %>
+                        <div class="col-sm-6">
+                          <div class="border rounded p-3 text-center h-100">
+                            <label for="imageInput<%= i %>" class="btn btn-outline-primary btn-sm mb-2">
+                              <i class="ri-image-add-line me-1"></i> Image <%= i %>
                             </label>
-                            <img id="imagePreview<%= i %>" class="img-preview img-fluid rounded" alt="Preview" style="display:none; max-height: 150px; object-fit: cover;">
-                            <p id="error<%= i %>" class="text-danger mt-2" style="display:none;">Only JPG and PNG files are allowed.</p>
+                            <input
+                              name="images[]"
+                              type="file"
+                              accept="image/jpeg,image/png"
+                              id="imageInput<%= i %>"
+                              class="product-image-input d-none"
+                              onchange="showPreview(this, 'imagePreview<%= i %>'); openCropModal(this, <%= i %>)"
+                            >
+                            <div class="mt-2">
+                              <img id="imagePreview<%= i %>" class="img-fluid rounded" alt="Preview <%= i %>" style="display:none; max-height: 140px; object-fit: cover;">
+                            </div>
+                            <p id="imageError<%= i %>" class="image-slot-error text-danger small mt-2 mb-0" style="display:none;"></p>
+                          </div>
                         </div>
+                      <% } %>
                     </div>
-                    <% } %>
+                  </div>
                 </div>
-                <p id="imagesErr" class="text-danger mt-3" style="display: none;">Please upload all four images.</p>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal for Cropping (Bootstrap 5) -->
-    <div class="modal fade" id="cropperModal" tabindex="-1" aria-labelledby="cropperModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="cropperModalLabel">Crop Image</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                <div class="text-center mb-4">
+                  <button type="submit" class="btn btn-primary px-5">
+                    <i class="ri-check-line me-1"></i> Publish product
+                  </button>
                 </div>
-                <div class="modal-body p-2">
-                    <div class="cropper-wrap" style="max-height: 70vh; min-height: 280px; width: 100%;">
-                        <img id="imageForCrop" src="" alt="Image to crop" style="max-width: 100%; display: block;">
+              </div>
+
+              <div class="col-12 col-lg-4">
+                <div class="card mb-4">
+                  <div class="card-header">
+                    <h5 class="card-title mb-0">Pricing</h5>
+                  </div>
+                  <div class="card-body">
+                    <div class="form-floating form-floating-outline mb-4">
+                      <input type="number" class="form-control" id="product-price" name="price" min="0" step="0.01" placeholder="Price" required>
+                      <label for="product-price">Best price (₹)</label>
+                      <div id="error-price" class="form-error text-danger small mt-1" style="display:none;"></div>
                     </div>
+                    <div class="form-floating form-floating-outline mb-0">
+                      <input type="number" class="form-control" id="product-discount-price" name="disPrice" min="0" step="0.01" placeholder="Discounted price">
+                      <label for="product-discount-price">Discounted price (optional)</label>
+                      <div id="error-discount-price" class="form-error text-danger small mt-1" style="display:none;"></div>
+                    </div>
+                  </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="applyCropBtn">Apply Crop</button>
+
+                <div class="card mb-4">
+                  <div class="card-header">
+                    <h5 class="card-title mb-0">Details</h5>
+                  </div>
+                  <div class="card-body">
+                    <div class="mb-3">
+                      <label for="color" class="form-label">Color</label>
+                      <select id="color" name="color" class="form-select" required>
+                        <option value="">Select color</option>
+                        <option value="Black">Black</option>
+                        <option value="White">White</option>
+                        <option value="Gray">Gray</option>
+                        <option value="Red">Red</option>
+                        <option value="Yellow">Yellow</option>
+                        <option value="Blue">Blue</option>
+                        <option value="Green">Green</option>
+                      </select>
+                      <div id="error-color" class="form-error text-danger small mt-1" style="display:none;"></div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="size" class="form-label">Size</label>
+                      <select id="size" name="size" class="form-select" required>
+                        <option value="">Select size</option>
+                        <option value="S">S</option>
+                        <option value="M">M</option>
+                        <option value="L">L</option>
+                        <option value="XL">XL</option>
+                        <option value="XXL">XXL</option>
+                      </select>
+                      <div id="error-size" class="form-error text-danger small mt-1" style="display:none;"></div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="category" class="form-label">Category</label>
+                      <select id="category" name="category" class="form-select" required>
+                        <option value="">Select category</option>
+                        <% if (categories && categories.length) { %>
+                          <% categories.forEach(function(cat) { %>
+                            <option value="<%= cat %>"><%= cat %></option>
+                          <% }); %>
+                        <% } %>
+                      </select>
+                      <div id="error-category" class="form-error text-danger small mt-1" style="display:none;"></div>
+                      <% if (!categories || !categories.length) { %>
+                        <p class="text-warning small mt-1 mb-0">No categories found. <a href="/admin/categories">Add a category</a> first.</p>
+                      <% } %>
+                    </div>
+                    <div class="mb-3">
+                      <label for="gender" class="form-label">Gender</label>
+                      <select id="gender" name="gender" class="form-select" required>
+                        <option value="">Select gender</option>
+                        <option value="men">Men</option>
+                        <option value="women">Women</option>
+                      </select>
+                      <div id="error-gender" class="form-error text-danger small mt-1" style="display:none;"></div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="status" class="form-label">Status</label>
+                      <select id="status" name="status" class="form-select" required>
+                        <option value="">Select status</option>
+                        <option value="Published" selected>Published</option>
+                        <option value="Scheduled">Scheduled</option>
+                        <option value="Inactive">Inactive</option>
+                      </select>
+                      <div id="error-status" class="form-error text-danger small mt-1" style="display:none;"></div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="stock" class="form-label">Stock</label>
+                      <select id="stock" name="stock" class="form-select" required>
+                        <option value="">Select stock</option>
+                        <% for (let s = 1; s <= 10; s++) { %>
+                          <option value="<%= s %>"><%= s %></option>
+                        <% } %>
+                      </select>
+                      <div id="error-stock" class="form-error text-danger small mt-1" style="display:none;"></div>
+                    </div>
+                    <div class="mb-0">
+                      <label for="product-tags" class="form-label">Tags</label>
+                      <input type="text" class="form-control" id="product-tags" name="tags" placeholder="e.g. summer, casual, cotton" required>
+                      <div class="form-text">Separate multiple tags with commas.</div>
+                      <div id="error-tags" class="form-error text-danger small mt-1" style="display:none;"></div>
+                    </div>
+                  </div>
                 </div>
+              </div>
+
             </div>
+          </form>
+
         </div>
-    </div>
-      <!-- /Media -->
-     
-     
 
-      
-
-      <div class="d-flex align-content-center mt-5 flex-wrap gap-4">
-        <button type="submit" class="btn btn-primary mx-auto">Publish product</button>
-      </div>
-
-
-
-    </div>
-
-
-
-
-    <div class="col-12 col-lg-4">
-      <!-- Pricing Card -->
-      <div class="card mb-6">
-        <div class="card-header">
-          <h5 class="card-title mb-0">Pricing</h5>
-        </div>
-        <div class="card-body">
-         <!-- Price Field -->
-<div class="form-floating form-floating-outline mb-5">
-  <input type="number"  class="form-control" id="ecommerce-product-price" placeholder="Price" name="price" aria-label="Product price">
-  <label for="ecommerce-product-price">Best Price</label>
-  <div id="error-price" class="text-danger" style="display:none;"></div>
-</div>
-
-<!-- Discounted Price Field -->
-<div class="form-floating form-floating-outline mb-5">
-  <input type="number"  class="form-control" id="ecommerce-product-discount-price" placeholder="Discounted Price" name="disPrice" aria-label="Product discounted price">
-  <label for="ecommerce-product-discount-price">Discounted Price</label>
-  <div id="error-discount-price" class="text-danger" style="display:none;"></div>
-</div>
-         
-         
-        </div>
-      </div>
-      <!-- /Pricing Card -->
-
-
-
-      <!-- Details Card -->
-      <div class="card mb-6">
-        <div class="card-header">
-          <h5 class="card-title mb-0">Details</h5>
-        </div>
-        <div class="card-body mt-5">
-          
-          
-            <!-- Color -->
-<div class="mb-5 col ecommerce-select2-dropdown">
-  <select id="color" name="color" class="form-select form-select-sm" data-placeholder="Select Vendor">
-    <option value="">Select Color</option>
-    <option value="Black">Black</option>
-    <option value="White">White</option>
-    <option value="Gray">Gray</option>
-    <option value="Red">Red</option>
-    <option value="Yellow">Yellow</option>
-    <option value="Blue">Blue</option>
-    <option value="Green">Green</option>
-  </select>
-  <div id="error-color" class="text-danger" style="display:none;"></div>
-</div>
-
-<!-- Size -->
-<div class="mb-5 col ecommerce-select2-dropdown">
-  <select id="size" name="size" class="form-select form-select-sm" data-placeholder="Select Size">
-    <option value="">Select Size</option>
-    <option value="S">S</option>
-    <option value="M">M</option>
-    <option value="L">L</option>
-    <option value="XL">XL</option>
-    <option value="XXL">XXL</option>
-  </select>
-  <div id="error-size" class="text-danger" style="display:none;"></div>
-</div>
-
-<!-- Category -->
-<div class="mb-5 col ecommerce-select2-dropdown">
-  <select id="category" name="category" class="form-select form-select-sm" data-placeholder="Select Category">
-    <option value="">Select Category</option>
-    <% categories.forEach(function(category) { %>
-      <option value="<%= category %>"><%= category %></option>
-    <% }); %>
-  </select>
-  <div id="error-category" class="text-danger" style="display:none;"></div>
-</div>
-
-<!-- Gender -->
-<div class="mb-5 col ecommerce-select2-dropdown">
-  <select id="gender" name="gender" class="form-select form-select-sm" data-placeholder="Select Gender">
-    <option value="">Select Gender</option>
-    <option value="men">Men's Clothing</option>
-    <option value="women">Women's Clothing</option>
-  </select>
-  <div id="error-gender" class="text-danger" style="display:none;"></div>
-</div>
-
-<!-- Status -->
-<div class="mb-5 col ecommerce-select2-dropdown">
-  <select id="status" name="status" class="form-select form-select-sm" data-placeholder="Select Status">
-    <option value="">Select Status</option>
-    <option value="Published">Published</option>
-    <option value="Scheduled">Scheduled</option>
-    <option value="Inactive">Inactive</option>
-  </select>
-  <div id="error-status" class="text-danger" style="display:none;"></div>
-</div>
-
-<!-- Stock -->
-<div class="mb-5 col ecommerce-select2-dropdown">
-  <select id="stock" name="stock" class="form-select form-select-sm" data-placeholder="Select Stock">
-    <option value="">Select Stock</option>
-    <option value="1">1</option>
-    <option value="2">2</option>
-    <option value="3">3</option>
-    <option value="4">4</option>
-    <option value="5">5</option>
-    <option value="6">6</option>
-    <option value="7">7</option>
-    <option value="8">8</option>
-    <option value="9">9</option>
-    <option value="10">10</option>
-  </select>
-  <div id="error-stock" class="text-danger" style="display:none;"></div>
-</div>
-
-
-
-          <!-- Tags -->
-          <div class="mb-4">
-            <div class="form-floating form-floating-outline">
-              <input id="ecommerce-product-tags" class="form-control h-auto" name="tags"  aria-label="Product Tags" />
-              <label for="ecommerce-product-tags">Tags</label>
-              <p class="text-danger"><%= messages.tags[0] %></p>
+        <footer class="content-footer footer bg-footer-theme">
+          <div class="container-xxl">
+            <div class="footer-container d-flex align-items-center justify-content-between py-3 flex-md-row flex-column">
+              <span class="text-body mb-0">© FashionZone Admin</span>
             </div>
           </div>
-
-
-        </div>
+        </footer>
+        <div class="content-backdrop fade"></div>
       </div>
-      <!-- /Details Card -->
-
     </div>
-    <!-- /Second column -->
-
-
   </div>
-
-
-</form>
-
-
-
-
-
-
-
-<!-- SweetAlert CDN -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script>
-  // Function to validate form fields
-function validateForm(event) {
-    // Prevent form from submitting
-    event.preventDefault();
-
-    // Get the form elements
-    const brand = document.getElementById("ecommerce-product-name");
-    const title = document.getElementById("ecommerce-product-brand");
-    const description = document.getElementById("ecommerce-product-title");
-    const price = document.getElementById("ecommerce-product-price");
-    const discountPrice = document.getElementById("ecommerce-product-discount-price");
-    const color = document.getElementById("color");
-    const size = document.getElementById("size");
-    const category = document.getElementById("category");
-    const gender = document.getElementById("gender");
-    const status = document.getElementById("status");
-    const stock = document.getElementById("stock");
-
-    // Flags to check if validation passes
-    let isValid = true;
-
-    // Reset all error messages
-    document.querySelectorAll('.text-danger').forEach((errorElement) => {
-        errorElement.style.display = 'none';
-    });
-
-    // Helper function to validate required fields
-    const validateField = (field, errorId, errorMessage, regex = null) => {
-        const value = field.value.trim();
-        if (!value || (regex && !regex.test(value))) {
-            document.getElementById(errorId).style.display = "block";
-            document.getElementById(errorId).textContent = errorMessage;
-            isValid = false;
-        }
-    };
-
-    // Regular expression for valid input (letters, numbers, and spaces only)
-    const validInputRegex = /^[a-zA-Z0-9\s]+$/;
-
-    // Validate fields
-    validateField(brand, "error-brand", "Brand is required and cannot contain special characters.", validInputRegex);
-    validateField(title, "error-title", "Title is required and cannot contain special characters.", validInputRegex);
-    validateField(description, "error-description", "Description is required and cannot contain special characters.", validInputRegex);
-    validateField(price, "error-price", "Price must be greater than 0.", /^\d+(\.\d{1,2})?$/);
-    validateField(discountPrice, "error-discount-price", "Discount Price must be less than the regular price and greater than 0.", /^\d+(\.\d{1,2})?$/);
-    validateField(color, "error-color", "Color is required.");
-    validateField(size, "error-size", "Size is required.");
-    validateField(category, "error-category", "Category is required.");
-    validateField(gender, "error-gender", "Gender is required.");
-    validateField(status, "error-status", "Status is required.");
-    validateField(stock, "error-stock", "Stock is required.");
-
-    // Additional validations for numeric and logical constraints
-    if (price.value <= 0) {
-        document.getElementById("error-price").style.display = "block";
-        document.getElementById("error-price").textContent = "Price must be greater than 0.";
-        isValid = false;
-    }
-
-    if (discountPrice.value && parseFloat(discountPrice.value) >= parseFloat(price.value)) {
-        document.getElementById("error-discount-price").style.display = "block";
-        document.getElementById("error-discount-price").textContent = "Discount Price must be less than the regular price.";
-        isValid = false;
-    }
-
-    // Validate that all image inputs are filled
-    const imageInputs = document.querySelectorAll("input[type='file']");
-    let allImagesUploaded = true;
-    imageInputs.forEach((input, index) => {
-        const errorElement = document.getElementById(`error${index + 1}`);
-        if (!input.value) {
-            errorElement.style.display = "block";
-            errorElement.textContent = "This image is required.";
-            allImagesUploaded = false;
-        } else {
-            errorElement.style.display = "none";
-        }
-    });
-
-    if (!allImagesUploaded) {
-        isValid = false;
-        document.getElementById("imagesErr").style.display = "block";
-        document.getElementById("imagesErr").textContent = "Please upload all four images.";
-    } else {
-        document.getElementById("imagesErr").style.display = "none";
-    }
-
-    // If form is valid, submit the form
-    if (isValid) {
-        Swal.fire({
-            title: 'Success!',
-            text: 'Product added successfully.',
-            icon: 'success',
-            confirmButtonText: 'OK'
-        }).then(() => {
-            document.getElementById("addProductForm").submit();
-        });
-    }
-}
-
-</script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  <div class="layout-overlay layout-menu-toggle"></div>
+  <div class="drag-target"></div>
 </div>
 
-          </div>
-          
-          <!-- / Content -->
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          <!-- Show the image on the input filed after selecting -->
-
-          <script>
-            /**
-             * Shows a preview of the selected image
-             * @param {HTMLInputElement} input - The file input element
-             * @param {string} previewId - The ID of the img element to display the preview
-             */
-            function showPreview(input, previewId) {
-                const file = input.files[0]; // Get the selected file
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        const preview = document.getElementById(previewId);
-                        preview.src = e.target.result; // Set the image preview source
-                        preview.style.display = 'block'; // Show the image
-                    };
-                    reader.readAsDataURL(file); // Read the file as a Data URL
-                }
-            }
-        </script>
-
-
-<!-- Image only allowed jpg and png others are restriced  -->
-
-
-<script>
-    // Image Preview Function
-    function showPreview(input, previewId) {
-        const file = input.files[0];
-        const reader = new FileReader();
-
-        reader.onload = function(e) {
-            const preview = document.getElementById(previewId);
-            preview.src = e.target.result;
-            preview.style.display = 'block';
-        };
-
-        reader.readAsDataURL(file);
-    }
-
-    // Validate Image Type
-    function validateImage(input) {
-        const file = input.files[0];
-        const allowedTypes = ['image/jpeg', 'image/png'];
-
-        if (file && !allowedTypes.includes(file.type)) {
-            document.getElementById('error' + input.id.slice(-1)).style.display = 'block';
-            input.value = ''; // Clear the file input
-            document.getElementById('imagePreview' + input.id.slice(-1)).style.display = 'none'; // Hide the preview
-        } else {
-            document.getElementById('error' + input.id.slice(-1)).style.display = 'none';
-        }
-    }
-</script>
-
-
-
-
-
-
-
-
-
-
-          
-
-<!-- Footer -->
-<footer class="content-footer footer bg-footer-theme">
-  <div class="container-xxl">
-    <div class="footer-container d-flex align-items-center justify-content-between py-4 flex-md-row flex-column">
-      <div class="text-body mb-2 mb-md-0">
-        © <script>
-        document.write(new Date().getFullYear())
-
-        </script>, made with <span class="text-danger"><i class="tf-icons ri-heart-fill"></i></span> by <a href="https://themeselection.com/" target="_blank" class="footer-link">ThemeSelection</a>
+<!-- Crop modal -->
+<div class="modal fade" id="cropperModal" tabindex="-1" aria-labelledby="cropperModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cropperModalLabel">Crop image</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="d-none d-lg-inline-block">
-        
-        <a href="https://themeselection.com/license/" class="footer-link me-4" target="_blank">License</a>
-        <a href="https://themeselection.com/" target="_blank" class="footer-link me-4">More Themes</a>
-        
-        <a href="https://demos.themeselection.com/materio-bootstrap-html-admin-template/documentation/" target="_blank" class="footer-link me-4">Documentation</a>
-        
-        
-        <a href="https://themeselection.com/support/" target="_blank" class="footer-link d-none d-sm-inline-block">Support</a>
-        
-      </div>
-    </div>
-  </div>
-</footer>
-<!-- / Footer -->
-
-          
-          <div class="content-backdrop fade"></div>
+      <div class="modal-body p-2">
+        <div style="max-height: 70vh; min-height: 280px; width: 100%;">
+          <img id="imageForCrop" alt="Image to crop" style="max-width: 100%; display: block;">
         </div>
-
-
-    </form>
-        <!-- Content wrapper -->
       </div>
-      <!-- / Layout page -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="applyCropBtn">Apply crop</button>
+      </div>
     </div>
-
-    
-    
-    <!-- Overlay -->
-    <div class="layout-overlay layout-menu-toggle"></div>
-    
-    
-    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
-    <div class="drag-target"></div>
-    
   </div>
-  <!-- / Layout wrapper -->
+</div>
 
-  
-
-  
-
-  <!-- Core JS -->
-  <!-- build:js assets/vendor/js/core.js -->
-  <script src="../../assets/vendor/libs/jquery/jquery.js"></script>
-  <script src="../../assets/vendor/libs/popper/popper.js"></script>
-  <script src="../../assets/vendor/js/bootstrap.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
-  <script>
-  (function () {
-    let cropper = null;
-    let currentImageIndex = null;
-    let cropperModal = null;
-    const cropperModalEl = document.getElementById('cropperModal');
-    const imageForCrop = document.getElementById('imageForCrop');
-
-    function initCropperModal() {
-      if (!cropperModalEl || typeof bootstrap === 'undefined') return;
-      cropperModal = bootstrap.Modal.getOrCreateInstance(cropperModalEl);
-
-      cropperModalEl.addEventListener('shown.bs.modal', function () {
-        if (cropper) {
-          cropper.destroy();
-          cropper = null;
-        }
-        cropper = new Cropper(imageForCrop, {
-          aspectRatio: 1,
-          viewMode: 1,
-          autoCropArea: 0.8,
-          responsive: true,
-          zoomable: true,
-          scalable: true,
-          rotatable: true,
-        });
-      });
-
-      cropperModalEl.addEventListener('hidden.bs.modal', function () {
-        if (cropper) {
-          cropper.destroy();
-          cropper = null;
-        }
-        imageForCrop.src = '';
-      });
-    }
-
-    window.openCropModal = function (inputElement, index) {
-      if (!cropperModal) initCropperModal();
-      const file = inputElement.files[0];
-      if (!file || !cropperModal) return;
-
-      currentImageIndex = index;
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        imageForCrop.src = e.target.result;
-        cropperModal.show();
-      };
-      reader.readAsDataURL(file);
-    };
-
-    document.getElementById('applyCropBtn').addEventListener('click', function () {
-      if (!cropper) {
-        console.error('Cropper instance not found!');
-        return;
-      }
-      const croppedCanvas = cropper.getCroppedCanvas({
-        width: 800,
-        height: 800,
-        imageSmoothingQuality: 'high',
-      });
-      if (!croppedCanvas) return;
-
-      const croppedImageDataURL = croppedCanvas.toDataURL('image/jpeg', 0.92);
-      croppedCanvas.toBlob(function (blob) {
-        if (!blob) return;
-        const croppedFile = new File([blob], 'cropped-' + Date.now() + '.jpeg', { type: 'image/jpeg' });
-        const dataTransfer = new DataTransfer();
-        dataTransfer.items.add(croppedFile);
-        const fileInput = document.getElementById('imageInput' + currentImageIndex);
-        if (fileInput) fileInput.files = dataTransfer.files;
-        const preview = document.getElementById('imagePreview' + currentImageIndex);
-        if (preview) {
-          preview.src = croppedImageDataURL;
-          preview.style.display = 'block';
-        }
-        cropperModal.hide();
-      }, 'image/jpeg', 0.92);
-    });
-
-    initCropperModal();
-  })();
-  </script>
-  <script src="../../assets/vendor/libs/node-waves/node-waves.js"></script>
-  <script src="../../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
-  <script src="../../assets/vendor/libs/hammer/hammer.js"></script>
-  <script src="../../assets/vendor/libs/i18n/i18n.js"></script>
-  <script src="../../assets/vendor/libs/typeahead-js/typeahead.js"></script>
-  <script src="../../assets/vendor/js/menu.js"></script>
-  
-  <!-- endbuild -->
-
-  <!-- Vendors JS -->
-  <script src="../../assets/vendor/libs/quill/katex.js"></script>
-<script src="../../assets/vendor/libs/quill/quill.js"></script>
-<script src="../../assets/vendor/libs/select2/select2.js"></script>
-<script src="../../assets/vendor/libs/dropzone/dropzone.js"></script>
-<script src="../../assets/vendor/libs/jquery-repeater/jquery-repeater.js"></script>
-<script src="../../assets/vendor/libs/flatpickr/flatpickr.js"></script>
-<script src="../../assets/vendor/libs/tagify/tagify.js"></script>
-
-  <!-- Main JS -->
-  <script src="../../assets/js/main.js"></script>
-  
-
-  <!-- Page JS -->
-  <script src="../../assets/js/app-ecommerce-product-add.js"></script>
-  
+<script src="/assets/vendor/libs/jquery/jquery.js"></script>
+<script src="/assets/vendor/js/bootstrap.js"></script>
+<script src="/assets/vendor/js/menu.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
+<script src="/assets/js/admin-add-product.js"></script>
+<script src="/assets/js/main.js"></script>
 </body>
-
-
-<!-- Mirrored from demos.themeselection.com/materio-bootstrap-html-admin-template/html/vertical-menu-template/app-ecommerce-product-add.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 25 Jun 2024 05:50:31 GMT -->
 </html>
-
-<!-- beautify ignore:end -->
-

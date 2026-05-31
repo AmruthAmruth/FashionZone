@@ -97,6 +97,8 @@ export const CreateAccount = async (req, res) => {
       return res.redirect('/verifyotp');
   } catch (err) {
       console.log("Error While Creating the Account:", err);
+      req.flash('message', 'An error occurred during sign up. Please try again.');
+      return res.redirect('/login');
   }
 };
 
@@ -173,6 +175,8 @@ export const VerifyOTP = async (req, res) => {
       return res.redirect('/');
   } catch (err) {
       console.log("Error Verifying OTP:", err);
+      req.flash('message', 'An error occurred during verification. Please try again.');
+      return res.redirect('/login');
   }
 };
 
@@ -195,9 +199,10 @@ export const resentOTP=async(req,res)=>{
     req.flash('message',"New OTP sent to your email .please verify")
     return res.redirect('/verifyotp')
 
-  }catch(err){
-    console.log("Error while ResentOTP");
-    
+  } catch (err) {
+    console.log("Error while ResentOTP:", err);
+    req.flash('message', 'An error occurred during resending OTP. Please try again.');
+    return res.redirect('/login');
   }
 }
 

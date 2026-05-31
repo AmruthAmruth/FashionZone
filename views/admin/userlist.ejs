@@ -58,12 +58,18 @@
     <div class="card-header">
       <h5 class="mb-0">User List</h5>
       
-      <% if (messages.success) { %>
-        <div class="alert alert-success"><%= messages.success %></div>
-    <% } %>
-    <% if (messages.error) { %>
-        <div class="alert alert-danger"><%= messages.error %></div>
-    <% } %>
+      <% if (message && message.success && message.success.length) { %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <%= message.success[0] %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
+      <% if (message && message.error && message.error.length) { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <%= message.error[0] %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
 
       <div class="d-flex justify-content-between align-items-center row pt-4 gap-4 gap-md-0">
         <div class="col-md-4 product_status"></div>
@@ -90,7 +96,7 @@
                         <td><%= index + 1 %></td> <!-- Adding 1 to make index 1-based -->
                         <td><%= user.name %></td>
                         <td><%= user.email %></td>
-                        <td><%= user.isActive ? 'UnBlock' : 'Block' %></td> <!-- Show Listed or Unlisted -->
+                        <td><%= user.isActive ? 'Active' : 'Blocked' %></td>
                         <td>
                            
                             <!-- Toggle Unlist/List button based on user's isActive status -->

@@ -96,38 +96,35 @@ export const AdminLogin = async (req, res) => {
 };
 
 
-export const AdminLogout=async(req,res)=>{
-  try{
-  
-    
-        req.session.destroy((err)=>{
-          if(err){
-           
-            return res.redirect('/')
-            
-          }
-        
-          return res.redirect('/')
-          
-        })
-  }catch(err){
-    console.log("Error during logout",err);
-    
+export const AdminLogout = async (req, res) => {
+  try {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.redirect('/admin/dashboard');
+      }
+      return res.redirect('/admin');
+    });
+  } catch (err) {
+    console.log("Error during logout", err);
+    return res.redirect('/admin');
   }
-}
+};
 
 
 
 
 export const AdminDashboard = async (req, res) => {
-  const salseChart = req.salesChart;  
-  const categoriesDetails= req.categoriesDetails
- const brand=req.brand
- const mostSoldDetails=req.mostSoldDetails
-  if (!salseChart) {
-    return res.status(500).send("Sales chart data is missing.");
-  }
-  
-  
-  res.render('admin/dashboard', { salseChart ,mostSoldDetails,categoriesDetails,brand});
+  const emptyChart = {
+    total: { pendingProducts: 0, deliveredProducts: 0, cancelledProducts: 0, returnedProducts: 0 },
+    weekly: { pendingProducts: 0, deliveredProducts: 0, cancelledProducts: 0, returnedProducts: 0 },
+    monthly: { pendingProducts: 0, deliveredProducts: 0, cancelledProducts: 0, returnedProducts: 0 },
+    yearly: { pendingProducts: 0, deliveredProducts: 0, cancelledProducts: 0, returnedProducts: 0 },
+  };
+
+  res.render('admin/dashboard', {
+    salseChart: req.salesChart || emptyChart,
+    mostSoldDetails: req.mostSoldDetails || [],
+    categoriesDetails: req.categoriesDetails || {},
+    brand: req.brand || {},
+  });
 };

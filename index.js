@@ -12,9 +12,10 @@ import methodOverride from 'method-override'
 import adminRouter from './routes/adminRoutes.js';
 import userRouter from './routes/userRoutes.js'; 
 import bodyParser from 'body-parser';
+import { seedAdmin } from './config/adminSeeder.js';
 
 dotenv.config();
-const app = express();
+const app = express(); 
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -30,7 +31,6 @@ app.use("/static", express.static(path.join(__dirname, "public/assets")));
 app.use("/assets", express.static(path.join(__dirname, "public/admin/assets")));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
- 
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -62,8 +62,9 @@ app.use('*', (req, res) => {
 const PORT = process.env.PORT || 7000;
 
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
+  .then(async () => {
     console.log("MongoDB Database Connected Successfully");
+    await seedAdmin(); // Auto-create admin account from .env if not exists
     app.listen(PORT, () => {
       console.log(`Server Running on Port ${PORT}`);
     });

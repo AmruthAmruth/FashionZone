@@ -1,506 +1,196 @@
-
 <%- include('../layout/header.ejs') -%>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
 
-<style>
-    .btn-custom {
-    padding: 5px 10px;
-    font-size: 12px;
-}
-</style>
-
-    </head>
-
-    
-        <div class="page-wrapper">
+<div class="page-wrapper">
     <%- include('../partials/navbar.ejs') -%>
 
+    <main class="main">
+        <div class="page-header text-center" style="background-image: url('/static/images/page-header-bg.jpg')">
+            <div class="container">
+                <h1 class="page-title">Your Bag<span>Your curated fashion selections.</span></h1>
+            </div>
+        </div>
 
+        <nav aria-label="breadcrumb" class="breadcrumb-nav mb-4">
+            <div class="container">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/shop">Shop</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Shopping Bag</li>
+                </ol>
+            </div>
+        </nav>
 
-
-  
-
-        <main class="main">
-        	<div class="page-header text-center" style="background-image: url('/static/images/page-header-bg.jpg')">
-        		<div class="container">
-        			<h1 class="page-title">Shopping Cart<span>Cart</span></h1>
-        		</div><!-- End .container -->
-        	</div><!-- End .page-header -->
-            <nav aria-label="breadcrumb" class="breadcrumb-nav">
+        <div class="page-content">
+            <div class="cart">
                 <div class="container">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                        <li class="breadcrumb-item"><a href="#">Shop</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Shopping Cart</li>
-                    </ol>
-                </div><!-- End .container -->
-            </nav><!-- End .breadcrumb-nav -->
-
-            <div class="page-content">
-            	<div class="cart">
-	                <div class="container">
-	                	<div class="row">
-	                		<div class="col-lg-9">
-
-	                			<table class="table table-striped table-hover table-cart table-mobile">
-									<thead class="t">
-										<tr>
-											<th class="text-center">Image</th>
-											<th class="text-center">Product</th>
-											<th class="text-center">Quantity</th>
-											<th class="text-center">Price</th>
-											<th class="text-center">Total</th>
-											<th class="text-center">Action</th>
-										</tr>
-									</thead>
-								
-									<tbody>
-										<% if (userCart && userCart.items && userCart.items.length > 0) { %> 
-											<% userCart.items.forEach(item => { %>
-												
-												<tr>
-													
-													<td>
-														<img src="<%= item.image %>" alt="<%= item.title %>" class="img-fluid" style="max-width: 80px; height: auto; object-fit: cover;">
-													</td>
-													<td class="align-middle" style="max-width: 100px;"><%= item.title %></td>
-											
-													<td class="align-middle text-center">
-														<form id="update-cart-form-<%= item.productId %>" action="/cart/update/<%= item.productId %>" method="POST" data-product-id="<%= item.productId %>">
-                                                            <button type="button" class="btn-outline-secondary update-cart-btn" style="width: 35px;" data-action="decrease">-</button>
-                                                            <input type="text" value="<%= item.quantity %>" disabled class="quantity-input mx-2" style="width: 40px; text-align: center;">
-                                                            <button type="button" class="btn-outline-secondary update-cart-btn" style="width: 35px;" data-action="increase">+</button>
+                    <div class="row">
+                        <div class="col-lg-9">
+                            <div class="cart-table-container">
+                                <table class="table table-cart m-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Product Details</th>
+                                            <th class="text-center">Quantity</th>
+                                            <th class="text-center">Price</th>
+                                            <th class="text-center">Subtotal</th>
+                                            <th class="text-center">Remove</th>
+                                        </tr>
+                                    </thead>
+                                
+                                    <tbody>
+                                        <% if (userCart && userCart.items && userCart.items.length > 0) { %> 
+                                            <% userCart.items.forEach(item => { %>
+                                                <tr>
+                                                    <td>
+                                                        <div class="product-col" style="display:flex; align-items:center; gap:16px;">
+                                                            <div class="product-media" style="width:70px; height:70px; border-radius:8px; overflow:hidden; border:1px solid #e2e2ec; flex-shrink:0;">
+                                                                <img src="<%= item.image %>" alt="<%= item.title %>" style="width:100%; height:100%; object-fit:cover;">
+                                                            </div>
+                                                            <h3 class="product-title" style="font-size:14px; font-weight:600; margin:0;"><%= item.title %></h3>
+                                                        </div>
+                                                    </td>
+                                            
+                                                    <td class="text-center">
+                                                        <div style="display:inline-flex; align-items:center; border:1.5px solid #e2e2ec; border-radius:50px; padding:3px; background:#f8f9fa;">
+                                                            <form id="update-cart-form-<%= item.productId %>" action="/cart/update/<%= item.productId %>" method="POST" data-product-id="<%= item.productId %>" class="d-flex align-items-center m-0">
+                                                                <button type="button" class="btn-outline-secondary update-cart-btn" style="width:28px; height:28px; border:none; background:none; border-radius:50%; font-weight:700; cursor:pointer;" data-action="decrease">-</button>
+                                                                <input type="text" value="<%= item.quantity %>" disabled class="quantity-input mx-2" style="width:30px; border:none; background:transparent; text-align:center; font-weight:600; font-size:14px; color:#1a1a2e;">
+                                                                <button type="button" class="btn-outline-secondary update-cart-btn" style="width:28px; height:28px; border:none; background:none; border-radius:50%; font-weight:700; cursor:pointer;" data-action="increase">+</button>
+                                                            </form>
+                                                        </div>
+                                                    </td>
+                                            
+                                                    <td class="text-center" style="font-weight:500;">₹<%= item.price %></td>
+                                                    <td class="text-center" style="font-weight:600; color:#1a1a2e;">₹<%= item.price * item.quantity %></td>
+                                                    <td class="text-center">
+                                                        <form action="/cart/remove/<%= item.productId %>" method="POST" class="m-0">
+                                                            <button type="submit" class="btn-remove" style="border:none; cursor:pointer; background:none; margin:0 auto;"><i class="icon-close"></i></button>
                                                         </form>
-                                                        
-													</td>
-											
-													<td class="align-middle text-center">₹<%= item.price %></td>
-													<td class="align-middle text-center">₹<%= item.price * item.quantity %></td>
-													<td class="align-middle text-center">
-														<form action="/cart/remove/<%= item.productId %>" method="POST">
-															<button type="submit" class="btn btn-sm btn-danger">Remove</button>
-														</form>
-													</td>
-												</tr>
-										
-											<% }); %>
-										<% } else { %>
-											<tr>
-												<td colspan="6" class="text-center">Your cart is empty.</td>
-											</tr>
-										<% } %>
-									</tbody>
-								</table>
-                                
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        <% } else { %>
+                                            <tr>
+                                                <td colspan="5" class="text-center py-5">
+                                                    <i class="icon-shopping-cart mb-3" style="font-size:3rem; color:#c9a96e; display:block;"></i>
+                                                    <h3 style="font-family:'Playfair Display', serif; font-weight:600; color:#1a1a2e; margin-bottom:8px;">Your Bag is Empty</h3>
+                                                    <p style="color:#777; font-size:14px; margin-bottom:20px;">Explore our catalog to find premium selections for your style.</p>
+                                                    <a href="/shop" class="btn-fz-primary" style="display:inline-block; padding:12px 28px !important;">Shop Catalog</a>
+                                                </td>
+                                            </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
 
-                                <!-- End .table table-wishlist -->
+                        <aside class="col-lg-3">
+                            <div class="cart-summary" style="background:#fafafa; border:1px solid #e2e2ec; padding:28px; border-radius:18px;">
+                                <h3 class="summary-title" style="font-family:'Playfair Display', serif; font-size:1.3rem; font-weight:700; color:#1a1a2e; border-bottom:2px solid #c9a96e; padding-bottom:10px; margin-bottom:24px; display:inline-block;">Bag Summary</h3>
+                                <form action="/checkoutfromcart" method="post" class="m-0">
+                                    <table class="table table-summary m-0">
+                                        <tbody>
+                                            <tr class="summary-total" style="border:none;">
+                                                <td style="font-size:14px; font-weight:600; color:#1a1a2e; padding:10px 0;">Total Amount:</td>
+                                                <td style="font-size:18px; font-weight:700; color:#27ae60; text-align:right; padding:10px 0;">
+                                                    ₹<span id="total-price"><%= cartPrice.total %></span>
+                                                    <input type="hidden" name="totalPrice" value="<%= cartPrice.total %>">
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <button type="submit" class="btn-fz-primary w-100 text-center mt-4" style="display:block; width:100% !important; padding:14px !important; margin:0 !important; cursor:pointer;">
+                                        Proceed To Checkout
+                                    </button>
+                                </form>
+                            </div>
 
-	                			
+                            <a href="/shop" class="clear-link w-100 text-center" style="display:block; margin: 16px 0 0 0 !important; padding:11px !important; border-radius:50px !important; border:1.5px solid #e2e2ec !important; background:#fff !important; color:#555 !important; font-size:13px; font-weight:600; text-decoration:none; text-transform:uppercase; letter-spacing:0.5px; transition:all 0.25s ease;">
+                                <i class="icon-refresh" style="margin-right:6px;"></i> Continue Shopping
+                            </a>
+                        </aside>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 
+    <%- include('../partials/footer.ejs') -%>
+</div>
 
-
-
-                                
-
-
-
-
-
-
-	                		</div><!-- End .col-lg-9 -->
-
-
-	                		<aside class="col-lg-3">
-
-
-
-
-
-
-	                			<div class="summary summary-cart">
-    <h3 class="summary-title">Cart Total</h3>
-    <form action="/checkoutfromcart" method="post">
-        <table class="table table-summary">
-            <tbody>
-                <!-- Total -->
-                <tr class="summary-total">
-                    <td>Total:</td>
-                    <td>
-                        ₹<span id="total-price"><%= cartPrice.total %></span>
-                        <input type="hidden" name="totalPrice" value="<%= cartPrice.total %>">
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
-            PROCEED TO CHECKOUT
-        </button>
-    </form>
-    
-                                </div><!-- End .summary -->
-
-
-
-
-
-
-		            			<a href="/shop" class="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUE SHOPPING</span><i class="icon-refresh"></i></a>
-	                		</aside><!-- End .col-lg-3 -->
-
-
-
-
-	                	</div><!-- End .row -->
-	                </div><!-- End .container -->
-                </div><!-- End .cart -->
-            </div><!-- End .page-content -->
-        </main><!-- End .main -->
-
-        <footer class="footer">
-        	<div class="footer-middle">
-	            <div class="container">
-	            	<div class="row">
-	            		<div class="col-sm-6 col-lg-3">
-	            			<div class="widget widget-about">
-	            				<img src="/static/images/logo.png" class="footer-logo" alt="Footer Logo" width="105" height="25">
-	            				<p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. </p>
-
-	            				<div class="social-icons">
-	            					<a href="#" class="social-icon" target="_blank" title="Facebook"><i class="icon-facebook-f"></i></a>
-	            					<a href="#" class="social-icon" target="_blank" title="Twitter"><i class="icon-twitter"></i></a>
-	            					<a href="#" class="social-icon" target="_blank" title="Instagram"><i class="icon-instagram"></i></a>
-	            					<a href="#" class="social-icon" target="_blank" title="Youtube"><i class="icon-youtube"></i></a>
-	            					<a href="#" class="social-icon" target="_blank" title="Pinterest"><i class="icon-pinterest"></i></a>
-	            				</div><!-- End .soial-icons -->
-	            			</div><!-- End .widget about-widget -->
-	            		</div><!-- End .col-sm-6 col-lg-3 -->
-
-	            		<div class="col-sm-6 col-lg-3">
-	            			<div class="widget">
-	            				<h4 class="widget-title">Useful Links</h4><!-- End .widget-title -->
-
-	            				<ul class="widget-list">
-	            					<li><a href="about.html">About Molla</a></li>
-	            					<li><a href="#">How to shop on Molla</a></li>
-	            					<li><a href="#">FAQ</a></li>
-	            					<li><a href="contact.html">Contact us</a></li>
-	            					<li><a href="login.html">Log in</a></li>
-	            				</ul><!-- End .widget-list -->
-	            			</div><!-- End .widget -->
-	            		</div><!-- End .col-sm-6 col-lg-3 -->
-
-	            		<div class="col-sm-6 col-lg-3">
-	            			<div class="widget">
-	            				<h4 class="widget-title">Customer Service</h4><!-- End .widget-title -->
-
-	            				<ul class="widget-list">
-	            					<li><a href="#">Payment Methods</a></li>
-	            					<li><a href="#">Money-back guarantee!</a></li>
-	            					<li><a href="#">Returns</a></li>
-	            					<li><a href="#">Shipping</a></li>
-	            					<li><a href="#">Terms and conditions</a></li>
-	            					<li><a href="#">Privacy Policy</a></li>
-	            				</ul><!-- End .widget-list -->
-	            			</div><!-- End .widget -->
-	            		</div><!-- End .col-sm-6 col-lg-3 -->
-
-	            		<div class="col-sm-6 col-lg-3">
-	            			<div class="widget">
-	            				<h4 class="widget-title">My Account</h4><!-- End .widget-title -->
-
-	            				<ul class="widget-list">
-	            					<li><a href="#">Sign In</a></li>
-	            					<li><a href="cart.html">View Cart</a></li>
-	            					<li><a href="#">My Wishlist</a></li>
-	            					<li><a href="#">Track My Order</a></li>
-	            					<li><a href="#">Help</a></li>
-	            				</ul><!-- End .widget-list -->
-	            			</div><!-- End .widget -->
-	            		</div><!-- End .col-sm-6 col-lg-3 -->
-	            	</div><!-- End .row -->
-	            </div><!-- End .container -->
-	        </div><!-- End .footer-middle -->
-
-	        <div class="footer-bottom">
-	        	<div class="container">
-	        		<p class="footer-copyright">Copyright © 2019 Molla Store. All Rights Reserved.</p><!-- End .footer-copyright -->
-	        		<figure class="footer-payments">
-	        			<img src="/static/images/payments.png" alt="Payment methods" width="272" height="20">
-	        		</figure><!-- End .footer-payments -->
-	        	</div><!-- End .container -->
-	        </div><!-- End .footer-bottom -->
-        </footer><!-- End .footer -->
-    </div>
-</body>
-
-
-
-
-
-
-<!-- ------------coupeon section script -->
-
-<!-- Include SweetAlert2 -->
+<!-- SweetAlert & Dynamic Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const couponForm = document.getElementById('couponForm');
-        const couponButton = document.getElementById('couponButton');
-        const couponInput = document.getElementById('couponcode');
-        const totalPriceSpan = document.getElementById('total-price');
-        const totalPriceInput = document.querySelector('input[name="totalPrice"]');
+    document.addEventListener("DOMContentLoaded", function () {
+        const updateButtons = document.querySelectorAll('.update-cart-btn');
+        
+        updateButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const action = this.getAttribute('data-action');
+                const form = this.closest('form');
+                const productId = form.getAttribute('data-product-id');
+                updateCartQuantity(productId, action);
+            });
+        });
 
-        couponForm.addEventListener('submit', async function (event) {
-            event.preventDefault(); // Prevent the form from submitting the default way
-
-            const couponcode = couponInput.value.trim();
-            const totalAmount = document.querySelector('input[name="totalAmount"]').value;
-
-            if (!couponcode) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Please enter a coupon code.',
-                    confirmButtonText: 'Close',
-                });
-                return;
-            }
-
-            try {
-                let response, data;
-
-                if (couponButton.dataset.applied === 'true') {
-                    // Remove coupon
-                    response = await fetch('/removecoupon', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ couponcode, totalAmount }),
+        function updateCartQuantity(productId, action) {
+            fetch(`/cart/update/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ action: action }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Cart Updated',
+                        text: `Quantity has been successfully updated.`,
+                        confirmButtonText: 'Ok'
+                    }).then(() => {
+                        window.location.reload(); 
                     });
                 } else {
-                    // Apply coupon
-                    response = await fetch('/applycouoponcode', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ couponcode, totalAmount }),
-                    });
-                }
-
-                data = await response.json();
-
-                if (response.ok) {
-                    if (couponButton.dataset.applied === 'true') {
-                        // Coupon removed successfully
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Coupon Removed!',
-                            text: `Coupon has been removed. Your total is ₹${data.totalAmount}`,
-                            confirmButtonText: 'Okay',
-                        });
-
-                        // Update total price
-                        totalPriceSpan.textContent = `${data.totalAmount}`;
-                        totalPriceInput.value = data.totalAmount;
-
-                        // Reset the form for applying a new coupon
-                        couponInput.disabled = false;
-                        couponButton.textContent = 'Apply';
-                        couponButton.dataset.applied = 'false';
-                    } else {
-                        // Coupon applied successfully
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Coupon Applied!',
-                            text: `You saved ₹${data.discountAmount}! Your total is ₹${data.finalAmount}`,
-                            confirmButtonText: 'Cool',
-                        });
-
-                        // Update total price
-                        const displayedAmount = data.finalAmount || totalAmount;
-                        totalPriceSpan.textContent = `${displayedAmount}`;
-                        totalPriceInput.value = displayedAmount;
-
-                        // Disable the input to prevent changes and switch button to "Remove"
-                        couponInput.disabled = true;
-                        couponButton.textContent = 'Remove';
-                        couponButton.dataset.applied = 'true';
-                    }
-                } else {
-                    // Show error popup
                     Swal.fire({
                         icon: 'error',
-                        title: 'Oops...',
-                        text: data.message,
-                        confirmButtonText: 'Try Again',
+                        title: 'Limit Exceeded',
+                        text: data.message || 'Error occurred while updating the cart.',
+                        confirmButtonText: 'Ok'
                     });
                 }
-            } catch (error) {
-                console.log("Error while processing coupon", error);
+            })
+            .catch(err => {
+                console.error("Error updating cart:", err);
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
-                    text: 'There was an error processing your request. Please try again later.',
-                    confirmButtonText: 'Close',
+                    text: 'An error occurred while updating the cart.',
+                    confirmButtonText: 'Ok'
                 });
-            }
-        });
-    });
-</script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<script>
- document.addEventListener("DOMContentLoaded", function () {
-    // Add event listeners to all the update buttons
-    const updateButtons = document.querySelectorAll('.update-cart-btn');
-    
-    updateButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const action = this.getAttribute('data-action');
-            const form = this.closest('form');
-            const productId = form.getAttribute('data-product-id');
-            
-            // Send an AJAX request to update the cart
-            updateCartQuantity(productId, action);
-        });
-    });
-
-    // Function to handle AJAX cart update
-    function updateCartQuantity(productId, action) {
-        fetch(`/cart/update/${productId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ action: action }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // If successful, update the quantity in the DOM
-                const quantityInput = document.querySelector(`form[data-product-id='${productId}'] .quantity-input`);
-                quantityInput.value = data.newQuantity;  // Update the quantity field
-                
-                // Success sweet alert
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Quantity updated!',
-                    text: `The quantity has been updated to ${data.newQuantity}.`,
-                    confirmButtonText: 'Ok',
-                }).then(()=>{
-                    window.location.reload(); 
-                })
-            } else {
-                // Error sweet alert
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: data.message || 'An error occurred while updating the cart.',
-                    confirmButtonText: 'Ok',
-                });
-            }
-        })
-        .catch(err => {
-            console.error("Error updating cart:", err);
-            // Error sweet alert in case of failure in AJAX request
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'An error occurred while updating the cart.',
-                confirmButtonText: 'Ok',
             });
-        });
-    }
-});
+        }
 
-
-</script>
-
-
-
-
-
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    document.querySelector('.btn-order').addEventListener('click', function(e) {
-        // Get the cart items passed from the server
-        const userCartItems = <%= JSON.stringify(userCart.items) %>;  // Now userCart.items is available
-
-        if (userCartItems.length === 0) {
-            e.preventDefault(); // Prevent navigation to checkout
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Your cart is empty! Please add items to the cart before proceeding to checkout.',
-                confirmButtonText: 'OK'
+        const checkoutBtn = document.querySelector('.btn-fz-primary');
+        if (checkoutBtn) {
+            checkoutBtn.addEventListener('click', function(e) {
+                const userCartItems = <% if (userCart && userCart.items) { %> <%= JSON.stringify(userCart.items) %> <% } else { %> [] <% } %>;
+                if (userCartItems.length === 0) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Empty Bag',
+                        text: 'Your bag is empty. Add items before proceeding to checkout.',
+                        confirmButtonText: 'OK'
+                    });
+                }
             });
         }
     });
 </script>
-
-
-
-
-
-
-
-
-<script>
-    // Calculate the total price dynamically
-    document.addEventListener('DOMContentLoaded', function () {
-        const radioButtons = document.querySelectorAll('input[name="shipping"]');
-        const totalPriceElement = document.getElementById('total-price');
-        const basePrice = <%= cartPrice.subtotal %>; // Base price passed from the server
-
-        function updatePrice() {
-            let shippingCost = 0;
-            const selected = document.querySelector('input[name="shipping"]:checked');
-            if (selected) {
-                shippingCost = parseFloat(selected.getAttribute('data-cost'));
-            }
-            const total = basePrice + shippingCost;
-            totalPriceElement.textContent = total.toFixed(2); // Update the total price
-        }
-
-        // Add event listeners to all shipping radio buttons
-        radioButtons.forEach(radio => {
-            radio.addEventListener('change', updatePrice);
-        });
-
-        // Initial calculation
-        updatePrice();
-    });
-</script>
-
-
-
-
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     <% if (messages.error) { %>
         Swal.fire({
@@ -510,8 +200,5 @@
         });
     <% } %>
 </script>
-
-
-
-
+</body>
 </html>

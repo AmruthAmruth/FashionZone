@@ -1,65 +1,143 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - Page Not Found</title>
-    <link rel="stylesheet" href="/styles.css"> 
+    <title>404 — Page Not Found | FashionZone</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --fz-gold: #c9a96e;
+            --fz-gold-hover: #b8985d;
+            --fz-dark: #1a1a2e;
+            --fz-dark-2: #16213e;
+            --fz-white: #fafafa;
+        }
+
         body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f4f4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    color: #333;
-}
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--fz-dark) 0%, var(--fz-dark-2) 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: var(--fz-white);
+            overflow: hidden;
+            position: relative;
+        }
 
-/* Container for the Error Message */
-.error-container {
-    text-align: center;
-    background-color: white;
-    padding: 50px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    width: 80%;
-    max-width: 600px;
-}
+        body::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(201, 169, 110, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
 
-.error-title {
-    font-size: 3em;
-    color: #e74c3c;
-    margin-bottom: 20px;
-}
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(201, 169, 110, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
 
-.error-message {
-    font-size: 1.2em;
-    color: #555;
-    margin-bottom: 30px;
-}
+        .error-container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 60px 40px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.25);
+            max-width: 500px;
+            width: 90%;
+            animation: fadeIn 0.8s ease-out;
+        }
 
-.home-link {
-    display: inline-block;
-    padding: 12px 30px;
-    background-color: #3498db;
-    color: white;
-    font-size: 1.1em;
-    text-decoration: none;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-}
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-.home-link:hover {
-    background-color: #2980b9;
-}
+        .error-code {
+            font-family: 'Playfair Display', serif;
+            font-size: 8rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--fz-gold);
+            margin: 0 0 10px 0;
+            background: linear-gradient(135deg, #fff 30%, var(--fz-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -2px;
+        }
+
+        .error-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--fz-white);
+            margin-bottom: 16px;
+        }
+
+        .error-message {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 35px;
+            line-height: 1.6;
+        }
+
+        .home-link {
+            display: inline-block;
+            padding: 14px 36px;
+            background-color: var(--fz-gold);
+            color: #1a1a2e;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+            border-radius: 50px;
+            box-shadow: 0 8px 20px rgba(201, 169, 110, 0.25);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .home-link:hover {
+            background-color: var(--fz-gold-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(201, 169, 110, 0.35);
+            color: #1a1a2e;
+        }
+
+        .home-link:active {
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
     <div class="error-container">
-        <h1 class="error-title">Oops! Page Not Found</h1>
-        <p class="error-message">The page you're looking for doesn't exist or has been moved.</p>
-        <a href="/" class="home-link">Go to Homepage</a>
+        <h1 class="error-code">404</h1>
+        <h2 class="error-title">Page Not Found</h2>
+        <p class="error-message">The curated collection or page you are looking for has either been moved or is temporarily unavailable.</p>
+        <a href="/" class="home-link">Back to Homepage</a>
     </div>
 </body>
 </html>

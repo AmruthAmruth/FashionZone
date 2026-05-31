@@ -63,6 +63,18 @@
 
         <div class="container ">
 
+        <% if (message && message.success && message.success.length) { %>
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <%= message.success[0] %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        <% } %>
+        <% if (message && message.error && message.error.length) { %>
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= message.error[0] %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        <% } %>
             
         <div class="card ">
             <div class="card-widget-separator-wrapper">
@@ -83,7 +95,7 @@
 
 
         <div class="row mt-5" id="coupon-container">
-            <!-- Loop through each coupon in the array -->
+            <% if (coupons && coupons.length > 0) { %>
             <% coupons.forEach(function(coupon) { %>
               <div class="col-12 col-lg-4 coupon-card">
                 <div class="card">
@@ -130,6 +142,15 @@
                 </div>
               </div>
             <% }); %>
+            <% } else { %>
+              <div class="col-12">
+                <div class="admin-empty-state text-center py-5">
+                  <i class="ri-coupon-line d-block mb-2" style="font-size: 2.5rem; color: var(--fz-gold);"></i>
+                  <p class="mb-3">No coupons yet. Create your first coupon to get started.</p>
+                  <button type="button" class="btn btn-admin-primary" data-bs-toggle="modal" data-bs-target="#addCouponModal">Add Coupon</button>
+                </div>
+              </div>
+            <% } %>
           </div>
           
           </div>
@@ -476,7 +497,7 @@ document.addEventListener('DOMContentLoaded', function() {
           const formData = new FormData(form);
           const formDataObj = Object.fromEntries(formData.entries());
   
-          fetch('/admin/editCoupon', {
+          fetch('/admin/editcoupon', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

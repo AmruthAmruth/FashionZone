@@ -1,5 +1,5 @@
 import express from 'express'
-import { AdminDashboard, AdminLogin, AdminLogout, createAccount, getLoginPage } from '../controllers/adminControllers/authController.js'
+import { AdminDashboard, AdminLogin, AdminLogout, getLoginPage } from '../controllers/adminControllers/authController.js'
 import { addProduct, deleteProduct, getAddProductPage, getAllProductPage, getCategory, getUpdateProductPage, updateProduct } from '../controllers/adminControllers/productController.js'
 import upload from '../middileware/multer.js'
 import { blockAndUnblock, getUserListPage } from '../controllers/adminControllers/userController.js'
@@ -10,95 +10,62 @@ import { addOfferForCategory, addOfferForProduct, deleteCategoryOffer, deletePro
 import { addCoupon, couponSoftDelete, editCoupon, getCoupenspage } from '../controllers/adminControllers/coupenController.js'
 import { getSalesReportPage } from '../controllers/adminControllers/salesReportController.js'
 
-const adminRouter=express() 
+const adminRouter = express()
 
+// Public admin routes (login only)
+adminRouter.get('/', isAdminAuthenticated, getLoginPage)
+adminRouter.post('/adminlogin', AdminLogin)
 
+// All routes below require admin authentication
+adminRouter.use(adminAutherization)
 
+adminRouter.post('/adminlogout', AdminLogout)
 
-// ------------------------Admin Authentication------------------------------------------------
+// Dashboard
+adminRouter.get('/dashboard', getSalesChartReport, mostSoldProductsCatagorysAndBrands, AdminDashboard)
 
-adminRouter.get('/',isAdminAuthenticated,getLoginPage)
-adminRouter.post('/adminlogin',AdminLogin)
-adminRouter.post('/signup',createAccount)
-adminRouter.post('/adminlogout',AdminLogout)
+// Products
+adminRouter.get('/addproduct', getCategory, getAddProductPage)
+adminRouter.get('/products', getAllProductPage)
+adminRouter.post('/addproduct', upload.array('images[]', 4), addProduct)
+adminRouter.get('/updateproduct/:id', getUpdateProductPage)
+adminRouter.post('/updateproduct/:id', upload.array('images[]', 4), updateProduct)
+adminRouter.post('/toggleproduct/:id', deleteProduct)
 
+// Users
+adminRouter.get('/userlist', getUserListPage)
+adminRouter.post('/toggleusers/:id', blockAndUnblock)
 
-
-
-
-// ------------------------ Product Section ------------------------------------------------------
- 
-adminRouter.get('/dashboard',adminAutherization, getSalesChartReport,mostSoldProductsCatagorysAndBrands,AdminDashboard)
-adminRouter.get('/addproduct',adminAutherization,getCategory,getAddProductPage)
-adminRouter.get('/products',adminAutherization,getAllProductPage)
-adminRouter.post('/addproduct',upload.array('images[]',4),addProduct)
-adminRouter.get('/updateproduct/:id',adminAutherization,getUpdateProductPage)
-adminRouter.post('/updateproduct/:id', upload.array('images[]', 4), updateProduct);
-
-
-
-
-
-// -----------Soft delete section for user and product--------------------------
-
-adminRouter.post('/toggleproduct/:id',deleteProduct)
-adminRouter.get('/userlist',adminAutherization,getUserListPage)
-adminRouter.post('/toggleusers/:id',blockAndUnblock)
-
-
-//  ---------------------Category Management------------------------------------
-
-adminRouter.get('/categories',adminAutherization,getCategoryPage)
-adminRouter.post('/addcategory',adminAutherization,createCategory)
+// Categories
+adminRouter.get('/categories', getCategoryPage)
+adminRouter.post('/addcategory', createCategory)
 adminRouter.post('/togglecategory/:id', showAndHideCategory)
-adminRouter.post('/editcategory/:id',editCategory)
+adminRouter.post('/editcategory/:id', editCategory)
 
+// Orders
+adminRouter.get('/orderlist', getOrderList)
+adminRouter.get('/orderdetails/:id', getOrderDetails)
+adminRouter.post('/changestatus/:id', changeTheOrderStatus)
 
-// -----------Order Management------------------------------
-
-adminRouter.get('/orderlist',getOrderList)
-adminRouter.get('/orderdetails/:id',getOrderDetails)
-adminRouter.post('/changestatus/:id',changeTheOrderStatus)
-
-
-
-// --------------Offer section=------------------------
-
-
-adminRouter.get('/offers',adminAutherization,getOfferPage)
-adminRouter.post('/addofferforproduct',addOfferForProduct)
-adminRouter.post('/editofferforproduct',upload.none(),editOfferForProduct)
-adminRouter.post('/deleteproductoffer',deleteProductOffer)
+// Offers
+adminRouter.get('/offers', getOfferPage)
+adminRouter.post('/addofferforproduct', addOfferForProduct)
+adminRouter.post('/editofferforproduct', upload.none(), editOfferForProduct)
+adminRouter.post('/deleteproductoffer', deleteProductOffer)
 adminRouter.post('/addofferforcategory', addOfferForCategory)
-adminRouter.get('/categoryoffer',adminAutherization,getCategoryOffer)
-adminRouter.post('/editcategoryoffer',editCategoryOffer)
-adminRouter.post('/deletecategoryoffer',deleteCategoryOffer)
-adminRouter.post('/updateofferstatus/:id', updateProductOfferStatus);
-adminRouter.post('/categoryofferstatus',updateCategoryOfferStatus)
+adminRouter.get('/categoryoffer', getCategoryOffer)
+adminRouter.post('/editcategoryoffer', editCategoryOffer)
+adminRouter.post('/deletecategoryoffer', deleteCategoryOffer)
+adminRouter.post('/updateofferstatus/:id', updateProductOfferStatus)
+adminRouter.post('/categoryofferstatus', updateCategoryOfferStatus)
 
+// Coupons
+adminRouter.get('/coupones', getCoupenspage)
+adminRouter.post('/addcoupon', addCoupon)
+adminRouter.post('/editcoupon', editCoupon)
+adminRouter.post('/couponsoftdelete', couponSoftDelete)
 
+// Sales report
+adminRouter.get('/salesReport', getSalesReportPage)
 
-// -------------------Coupens management ----------------------------------
-adminRouter.get('/coupones',adminAutherization,getCoupenspage)
-adminRouter.post('/addcoupon',addCoupon)
-adminRouter.post('/editcoupon',editCoupon)
-adminRouter.post('/couponsoftdelete',couponSoftDelete)
-
-
-
-
-// -------------------Salse report management section-------------------------------------------------
-
-adminRouter.get('/salesReport',adminAutherization,getSalesReportPage)
-
-
-
-
-
-
-
-
-
-
-
-export default adminRouter   
+export default adminRouter

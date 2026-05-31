@@ -1,396 +1,259 @@
 <%- include('../layout/header.ejs') -%>
-<!-- Include SweetAlert2 CSS and JS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+</head>
 
-    </head>
 <body>
     <div class="page-wrapper">
-          <%- include('../partials/navbar.ejs') -%>
+        <%- include('../partials/navbar.ejs') -%>
 
-          <main class="main">
-        	<div class="page-header text-center" style="background-image: url('/assets/images/page-header-bg.jpg')">
-        		<div class="container">
-        			<h1 class="page-title">Order Summary<span>FashionZone</span></h1>
-        		</div><!-- End .container -->
-        	</div><!-- End .page-header -->
-            <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+        <main class="main">
+            <div class="page-header text-center" style="background-image: url('/assets/images/page-header-bg.jpg')">
+                <div class="container">
+                    <h1 class="page-title">Order Invoice Summary<span>Thank you for shopping with us!</span></h1>
+                </div>
+            </div>
+
+            <nav aria-label="breadcrumb" class="breadcrumb-nav mb-4">
                 <div class="container">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Order Summary</li>
+                        <li class="breadcrumb-item active" aria-current="page">Invoice Details</li>
                     </ol>
-                </div><!-- End .container -->
-            </nav><!-- End .breadcrumb-nav -->
+                </div>
+            </nav>
 
+            <div class="container order-summary-container p-5" style="max-width:850px; background:#fff; border-radius:24px; border:1px solid #e2e2ec; box-shadow:0 12px 40px rgba(0,0,0,0.04); margin-bottom:50px;">
+                <div class="text-center mb-5">
+                    <div style="width:72px; height:72px; border-radius:50%; background:rgba(39,174,96,0.1); color:#27ae60; font-size:2rem; display:inline-flex; align-items:center; justify-content:center; margin-bottom:18px;">
+                        <i class="icon-check"></i>
+                    </div>
+                    <h2 class="font-heading" style="font-size:2.2rem; font-weight:700; color:#1a1a2e; margin:0 0 6px 0;">Order Placed Successfully</h2>
+                    <p style="color:#777; font-size:14px; margin:0;">Your purchase receipt and shipping invoice are detailed below.</p>
+                </div>
 
-            <div class="container order-summary-container p-5">
-                <h1 class="text-center mb-4">Order Summary</h1>
-                <div class="order-summary">
-                    <div class="order-details d-flex justify-content-between">
-                        <!-- Dynamic order details -->
-                        <div class="order-info">
-                            <h2 class="mb-3">Order Details</h2>
-                            <p><strong>Order ID:</strong> <%= order.orderId %></p>
-                            <p><strong>Total Amount:</strong> ₹ <%= order.totalAmount %></p>
-                            <p><strong>Ordered Date:</strong> <%= new Date(order.createdAt).toLocaleDateString("en-US", { 
-                                year: "numeric", 
-                                month: "long", 
-                                day: "numeric", 
-                                hour: "2-digit", 
-                                minute: "2-digit" 
-                            }) %></p>
-                            <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
-                         
-                            <p>
-                                <strong>Payment Status:</strong> 
-                                <span 
-                                  class="fw-bold 
-                                    <%= order.paymentStatus === 'Paid' 
-                                      ? 'text-success' 
-                                      : order.paymentStatus === 'Failed' 
-                                      ? 'text-danger' 
-                                      : 'text-warning' %>">
-                                  <%= order.paymentStatus %>
-                                </span>
-                              </p>
-                              
-                              <p>
-                                <strong>Order Status:</strong> 
-                                <span 
-                                  class="fw-bold 
-                                    <%= order.status === 'Delivered' 
-                                      ? 'text-success' 
-                                      : order.status === 'Pending' 
-                                      ? 'text-warning' 
-                                      : 'text-danger' %>">
-                                  <%= order.status %>
-                                </span>
-                              </p>
+                <div class="row mb-5" style="border-top:1.5px solid #e2e2ec; border-bottom:1.5px solid #e2e2ec; padding:30px 0;">
+                    <!-- Order Info Column -->
+                    <div class="col-md-6 mb-4 mb-md-0">
+                        <h4 class="font-heading mb-3" style="font-size:1.2rem; font-weight:700; color:#1a1a2e;">Invoice Information</h4>
+                        <p style="font-size:13.5px; line-height:1.7; color:#555; margin:0;">
+                            <strong>Order ID:</strong> <span style="color:#1a1a2e; font-weight:600;"><%= order.orderId %></span><br>
+                            <strong>Purchase Date:</strong> <%= new Date(order.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) %><br>
+                            <strong>Payment Method:</strong> <%= order.paymentMethod %><br>
+                            <strong>Payment Status:</strong> 
+                            <span class="status-badge <%= order.paymentStatus === 'Paid' ? 'status-active' : order.paymentStatus === 'Failed' ? 'status-blocked' : 'status-pending' %>" style="text-transform:uppercase; margin-left:6px;"><%= order.paymentStatus %></span><br>
+                            <strong>Order Status:</strong> 
+                            <span class="status-badge <%= order.status === 'Delivered' ? 'status-active' : order.status === 'Pending' ? 'status-pending' : 'status-blocked' %>" style="text-transform:uppercase; margin-left:6px;"><%= order.status %></span>
+                        </p>
 
-                       
-                            <div class="text-center mt-4" style="margin-left: -170px;">
-                                <form id="payment-form">
+                        <% if (order.paymentStatus !== "Paid") { %>
+                            <div class="mt-4">
+                                <form id="payment-form" class="m-0">
                                     <input type="hidden" name="totalAmount" value="<%= order.totalAmount %>">
                                     <input type="hidden" name="orderId" value="<%= order.orderId %>">
-                                    <button type="button" id="payNow" class="btn btn-primary">Pay Now</button>
+                                    <button type="button" id="payNow" class="btn-fz-primary" style="padding:10px 28px !important; font-size:12.5px !important; cursor:pointer;">Pay Outstanding Balance</button>
                                 </form>
                             </div>
-
-
-                            <script>
-                                document.addEventListener("DOMContentLoaded", function () {
-                                    const paymentStatus = "<%= order.paymentStatus %>";
-                                    const payNowButton = document.getElementById("payNow");
-                            
-                                    if (paymentStatus === "Paid") {
-                                        payNowButton.style.display = "none";
-                                    }
-                                });
-                            </script>
-
-                        </div>
-                        <div class="address-details">
-                            <!-- Dynamic shipping address -->
-                            <p><strong>Ship to:</strong> <%= shippedAddress.name %></p>
-                            <p><strong>Delivery Address:</strong><br>
-                                <%= shippedAddress.street %>, <%= shippedAddress.city %>, <%= shippedAddress.state %>, <%= shippedAddress.country %>
-                                <br>Pin code : <%= shippedAddress.pincode %><br>
-                                Phone: <%= shippedAddress.phone %>
-                            </p>
-                        </div>
+                        <% } %>
                     </div>
-            
-                    <h3 class="mt-4 mb-3">Products</h3>
-                    <table class="table table-striped table-bordered text-center">
-                        <thead class="thead-dark">
+
+                    <!-- Shipping Address Column -->
+                    <div class="col-md-6">
+                        <h4 class="font-heading mb-3" style="font-size:1.2rem; font-weight:700; color:#1a1a2e;">Delivery Destination</h4>
+                        <p style="font-size:13.5px; line-height:1.7; color:#555; margin:0;">
+                            <strong style="color:#1a1a2e;"><%= shippedAddress.name %></strong><br>
+                            <%= shippedAddress.phone %><br>
+                            <%= shippedAddress.house %>, <%= shippedAddress.city %><br>
+                            <%= shippedAddress.state %>, <%= shippedAddress.country %> — <%= shippedAddress.pincode %>
+                        </p>
+                    </div>
+                </div>
+
+                <h3 class="font-heading mb-3" style="font-size:1.2rem; font-weight:700; color:#1a1a2e;">Ordered Shortlist</h3>
+                <div class="cart-table-container mb-4">
+                    <table class="table table-cart m-0">
+                        <thead>
                             <tr>
-                                <th>Image</th>
-                                <th>Product</th>
-                                <th>Quantity</th>
-                                <th>Price</th>
-                                <th>Total</th>
+                                <th>Product Details</th>
+                                <th class="text-center">Quantity</th>
+                                <th class="text-center">Unit Price</th>
+                                <th class="text-center">Subtotal</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Dynamic product details -->
                             <% if (order.products && order.products.length > 0) { %>
                                 <% order.products.forEach(product => { %>
                                     <% if (product.items && product.items.length > 0) { %>
                                         <% product.items.forEach(item => { %>
                                             <tr style="<%= item.display ? '' : 'opacity: 0.5;' %>">
                                                 <td>
-                                                    <img src="/<%= item.image %>" alt="<%= item.title %>" class="variant-image" style="width: 150px; margin: auto;">
+                                                    <div class="d-flex align-items-center gap-3">
+                                                        <div style="width:50px; height:50px; border-radius:6px; overflow:hidden; border:1px solid #e2e2ec; flex-shrink:0;">
+                                                            <img src="/<%= item.image %>" alt="<%= item.title %>" style="width:100%; height:100%; object-fit:cover;">
+                                                        </div>
+                                                        <span style="font-weight:600; font-size:13.5px; color:#1a1a2e;"><%= item.title %></span>
+                                                    </div>
                                                 </td>
-                                                <td><%= item.title %></td>
-                                                <td><%= item.quantity %></td>
-                                                <td>₹ <%= item.price %></td>
-                                                <td>₹ <%= (item.quantity * item.price) %></td>
+                                                <td class="text-center" style="font-weight:600;"><%= item.quantity %></td>
+                                                <td class="text-center" style="font-weight:500;">₹<%= item.price %></td>
+                                                <td class="text-center" style="font-weight:600; color:#1a1a2e;">₹<%= (item.quantity * item.price) %></td>
                                             </tr>
                                         <% }); %>
-                                    <% } else { %>
-                                        <tr><td colspan="5">No items found for this product.</td></tr>
                                     <% } %>
                                 <% }); %>
-                            <% } else { %>
-                                <tr><td colspan="5">No products found in this order.</td></tr>
                             <% } %>
                         </tbody>
                     </table>
-            
-                    <div class="order-summary-footer">
-                        <div class="row">
-                            <div class="col-md-12 text-right">
-                                <!-- Grand total calculation -->
-                                <h6>Final Price after all discount: <span>₹ <%= order.totalAmount %></span></h6>
-                                
-                                <h3 class="mt-4">Grand Total: <span>₹ <%= order.totalAmount %></span></h3>
-                            </div>
+                </div>
+
+                <div class="d-flex justify-content-end mb-5">
+                    <div style="background:#fafafa; border-radius:16px; border:1px solid #e2e2ec; padding:24px; min-width:300px;">
+                        <div class="d-flex justify-content-between py-2 border-bottom" style="border-color:#f1f1f5 !important; font-size:13.5px;">
+                            <span style="color:#777;">Promo Price Discounts:</span>
+                            <span style="font-weight:600; color:#eb5e55;">₹<%= order.totalAmount %></span>
                         </div>
-                    </div>
-            
-                    <div class="text-center mt-4">
-                        <a href="/shop" class="btn btn-primary btn-lg mr-2">Continue Shopping</a>
-                        <a href="/profile" class="btn btn-secondary btn-lg">View Orders</a>
-                        <div class="text-center mt-4">
-                            <button id="downloadInvoice" class="btn btn-success btn-lg">Download Invoice</button>
+                        <div class="d-flex justify-content-between pt-3" style="font-size:15px;">
+                            <strong style="color:#1a1a2e;">Grand Total Paid:</strong>
+                            <strong style="color:#27ae60; font-size:1.2rem;">₹<%= order.totalAmount %></strong>
                         </div>
-                        
                     </div>
                 </div>
-            </div>
-            
-            <!-- Include the Razorpay script -->
-            <!-- Include the Razorpay script -->
 
-
- 
-
-
-
-
-              
-
-
-
-
-
-
-
-
-
-
-            
+                <div class="text-center buttons-wrapper mt-4 d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="/shop" class="clear-link" style="display:inline-block; padding:12px 28px !important; border-radius:50px !important; border:1.5px solid #e2e2ec !important; background:#fff !important; color:#555 !important; font-size:13px; font-weight:600; text-decoration:none; text-transform:uppercase; letter-spacing:0.5px; margin:0;">Continue Shopping</a>
+                    <a href="/profile" class="clear-link" style="display:inline-block; padding:12px 28px !important; border-radius:50px !important; border:1.5px solid #e2e2ec !important; background:#fff !important; color:#555 !important; font-size:13px; font-weight:600; text-decoration:none; text-transform:uppercase; letter-spacing:0.5px; margin:0;">View Order List</a>
+                    <button id="downloadInvoice" class="btn-fz-primary" style="padding:12px 28px !important; font-size:13px !important; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; cursor:pointer;">Download Invoice PDF</button>
+                </div>
             </div>
         </main>
-        
-<%- include('../partials/footer.ejs')-%>
-        </div>
 
+        <%- include('../partials/footer.ejs')-%>
+    </div>
 
+    <!-- Razorpay payment continuation script -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        const payNowButton = document.getElementById("payNow");
+        if (payNowButton) {
+            payNowButton.addEventListener("click", function() {
+                const totalAmount = document.querySelector('input[name="totalAmount"]').value;
+                const orderId = document.querySelector('input[name="orderId"]').value;
 
-<!-- Razorpay payment oparation  -->
+                Swal.fire({
+                    title: 'Confirm Payment',
+                    text: "You are about to securely initiate payment verification.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Pay Now',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch('/ordersummany/continerazorpaypayment', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ totalAmount, orderId })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                var options = {
+                                    key: "rzp_test_SsN3kF1vkA34wm",
+                                    amount: data.amount,
+                                    currency: data.currency,
+                                    name: "FashionZone",
+                                    description: "Continuation Payment",
+                                    order_id: data.orderId,
+                                    handler: function(response) {
+                                        const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = response;
+                                        fetch('/verifyorderpayment', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({
+                                                razorpay_order_id,
+                                                razorpay_payment_id,
+                                                razorpay_signature,
+                                                orderId
+                                            })
+                                        })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if (data.success) {
+                                                Swal.fire({
+                                                    title: 'Success!',
+                                                    text: 'Your payment was successful!',
+                                                    icon: 'success'
+                                                }).then(() => {
+                                                    window.location.reload();
+                                                });
+                                            } else {
+                                                Swal.fire({
+                                                    title: 'Error!',
+                                                    text: 'Payment verification failed.',
+                                                    icon: 'error'
+                                                });
+                                            }
+                                        });
+                                    },
+                                    prefill: {
+                                        name: "Customer",
+                                        email: "customer@example.com",
+                                        contact: "1234567890"
+                                    },
+                                    theme: {
+                                        color: "#1a1a2e"
+                                    }
+                                };
+                                var rzp1 = new Razorpay(options);
+                                rzp1.open();
+                            } else {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Failed to create Razorpay order.',
+                                    icon: 'error'
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+        }
+    </script>
 
+    <!-- PDF Invoice Generation Script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        document.getElementById('downloadInvoice').addEventListener('click', function () {
+            const orderSummary = document.querySelector('.order-summary-container');
+            const buttonsDiv = document.querySelector('.buttons-wrapper');
 
+            if (buttonsDiv) buttonsDiv.style.display = 'none';
 
+            html2canvas(orderSummary, {
+                scale: 2,
+                useCORS: true,
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
 
+                pdf.setFontSize(22);
+                pdf.setFont('playfair', 'bold');
+                pdf.setTextColor(201, 169, 110);
+                pdf.text('FashionZone', pdf.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
 
-<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.12/dist/sweetalert2.min.css" rel="stylesheet">
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
-<!-- SweetAlert2 JS -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.12/dist/sweetalert2.min.js"></script>
+                pdf.addImage(imgData, 'PNG', 0, 22, pdfWidth, pdfHeight);
+                pdf.save('FashionZone-Invoice.pdf');
 
-<!-- Razorpay Checkout Script -->
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
-
-
-<script>
-document.getElementById("payNow").addEventListener("click", function() {
-const totalAmount = document.querySelector('input[name="totalAmount"]').value;
-const orderId = document.querySelector('input[name="orderId"]').value;
-
-// Show SweetAlert confirmation
-Swal.fire({
-title: 'Are you sure?',
-text: "You are about to make a payment!",
-icon: 'warning',
-showCancelButton: true,
-confirmButtonText: 'Yes, Pay Now!',
-cancelButtonText: 'No, Cancel'
-}).then((result) => {
-if (result.isConfirmed) {
-// Create the Razorpay order on the server
-fetch('/ordersummany/continerazorpaypayment', {
-method: 'POST',
-headers: {
-'Content-Type': 'application/json',
-},
-body: JSON.stringify({
-totalAmount: totalAmount,
-orderId: orderId,
-}),
-})
-.then(response => response.json())
-.then(data => {
-if (data.success) {
-// Initialize Razorpay Payment
-var options = {
-key: "rzp_test_SsN3kF1vkA34wm",  // Your Razorpay key
-amount: data.amount,  // Amount in paise
-currency: data.currency,
-name: "FashionZone",
-description: "Payment for Order",
-image: "https://example.com/logo.png",  // Your company logo
-order_id: data.orderId,  // Order ID received from your backend
-handler: function(response) {
-// Handle the Razorpay payment response
-const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = response;
-
-// Send payment details to the backend for verification
-fetch('/verifyorderpayment', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-        razorpay_order_id: razorpay_order_id,
-        razorpay_payment_id: razorpay_payment_id,
-        razorpay_signature: razorpay_signature,
-        orderId
-    }),
-})
-.then(response => response.json())
-.then(data => {
-    if (data.success) {
-        Swal.fire({
-            title: 'Success!',
-            text: 'Your payment was successful!',
-            icon: 'success',
-            confirmButtonText: 'OK'
+                if (buttonsDiv) buttonsDiv.style.display = 'flex';
+            }).catch(error => {
+                console.error('Error generating PDF:', error);
+                if (buttonsDiv) buttonsDiv.style.display = 'flex';
+            });
         });
-    } else {
-        Swal.fire({
-            title: 'Error!',
-            text: 'Payment verification failed. Please try again.',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-    }
-})
-.catch(error => {
-    console.error('Error:', error);
-    Swal.fire({
-        title: 'Error!',
-        text: 'An error occurred while verifying the payment.',
-        icon: 'error',
-        confirmButtonText: 'OK'
-    });
-});
-},
-prefill: {
-name: "Customer Name",
-email: "customer@example.com",
-contact: "1234567890"
-},
-notes: {
-address: "Customer address"
-},
-theme: {
-color: "#F37254"
-}
-};
-
-var rzp1 = new Razorpay(options);
-rzp1.open();  // Open Razorpay checkout
-} else {
-Swal.fire({
-title: 'Error!',
-text: 'Failed to create Razorpay order. Please try again.',
-icon: 'error',
-confirmButtonText: 'OK'
-});
-}
-})
-.catch(error => {
-console.error('Error:', error);
-Swal.fire({
-title: 'Error!',
-text: 'An error occurred while creating the payment order.',
-icon: 'error',
-confirmButtonText: 'OK'
-});
-});
-}
-});
-});
-</script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-        
-        <script>
-  document.getElementById('downloadInvoice').addEventListener('click', function () {
-    const orderSummary = document.querySelector('.order-summary-container');
-    const downloadButton = document.querySelector('#downloadInvoice');
-    const buttonsDiv = document.querySelector('.text-center.mt-4'); // Target the div containing all buttons
-
-    // Hide the download button and the buttons container
-    downloadButton.style.display = 'none';
-    buttonsDiv.style.display = 'none';
-
-    // Use html2canvas to capture the content as an image
-    html2canvas(orderSummary, {
-        scale: 2, // Increase scale for better quality
-        useCORS: true, // Enable cross-origin
-    }).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const { jsPDF } = window.jspdf; // Access jsPDF from the module
-        const pdf = new jsPDF('p', 'mm', 'a4'); // Portrait, millimeters, A4 size
-
-        // Add the e-commerce name to the top of the PDF
-        pdf.setFontSize(20); // Set font size
-        pdf.setFont('helvetica', 'bold'); // Set font to bold
-        pdf.setTextColor(255, 215, 0); // Set text color to yellow (RGB for gold)
-        pdf.text('FashionZone', pdf.internal.pageSize.getWidth() / 2, 15, { align: 'center' }); // Center the text at the top
-
-        // Calculate dimensions for the PDF content
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-        // Add the image below the name
-        pdf.addImage(imgData, 'PNG', 0, 20, pdfWidth, pdfHeight);
-
-        // Save the PDF
-        pdf.save('OrderSummary.pdf');
-
-        // Show the download button and buttons container again after the PDF is generated
-        downloadButton.style.display = 'inline-block';
-        buttonsDiv.style.display = 'block';
-    }).catch(error => {
-        console.error('Error generating PDF:', error);
-        // Make sure to show the buttons again in case of an error
-        downloadButton.style.display = 'inline-block';
-        buttonsDiv.style.display = 'block';
-    });
-});
-
-
-        </script>
-        
-
-
+    </script>
 </body>
 </html>

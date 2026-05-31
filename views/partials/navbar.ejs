@@ -1,5 +1,4 @@
 <%- include('../layout/header.ejs') -%>
-
 </head>
 
 <header class="header header-7">
@@ -7,139 +6,116 @@
         <div class="container-fluid">
             <div class="header-left">
                 <div class="header-dropdown">
-                    <a href="#">Usd</a>
-                    <div class="header-menu">
-                        <ul>
-                            <li><a href="#">Eur</a></li>
-                            <li><a href="#">Usd</a></li>
-                        </ul>
-                    </div><!-- End .header-menu -->
-                </div><!-- End .header-dropdown -->
-
-                <div class="header-dropdown">
-                    <a href="#">Eng</a>
-                    <div class="header-menu">
-                        <ul>
-                            <li><a href="#">English</a></li>
-                            <li><a href="#">French</a></li>
-                            <li><a href="#">Spanish</a></li>
-                        </ul>
-                    </div><!-- End .header-menu -->
-                </div><!-- End .header-dropdown -->
-            </div><!-- End .header-left -->
+                    <a href="tel:+918590797504"><i class="icon-phone"></i> +91 8590797504</a>
+                </div>
+            </div>
 
             <div class="header-right">
                 <ul class="top-menu">
                     <li>
                         <a href="#">Links</a>
                         <ul>
-                            <li><a href="tel:#"><i class="icon-phone"></i>Call: +91 8590797504</a></li>
-                            <li><a href="wishlist.html"><i class="fa-brands fa-instagram"></i> Instagram</a></li>
-                            <li><a href="about.html"><i class="fa-brands fa-twitter"></i> Twitter</a></li>
-                            <li><a href="contact.html"><i class="fa-brands fa-facebook"></i> Facebook</a></li>
-                            <li><a href="/profile"><i class="icon-user"></i> Profile</a></li>
-
+                            <li><a href="#"><i class="fa-brands fa-instagram"></i> Instagram</a></li>
+                            <li><a href="#"><i class="fa-brands fa-twitter"></i> Twitter</a></li>
+                            <li><a href="#"><i class="fa-brands fa-facebook"></i> Facebook</a></li>
+                            <li><a href="/profile"><i class="icon-user"></i> My Account</a></li>
                             <li>
                                 <% if (user) { %>
-                                  <form action="/logout" method="post" id="logout-form">
-                                    <button type="button" class="btn btn-link p-0 text-danger" id="logout-button">LOGOUT</button>
+                                  <form action="/logout" method="post" id="logout-form" style="display:inline;">
+                                    <button type="button" class="btn btn-link p-0" id="logout-button" style="color:#c9a96e; font-size:12px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;">
+                                        <i class="icon-power-off"></i> Logout
+                                    </button>
                                   </form>
                                 <% } else { %>
-                                  <a href="/login"><i class="icon-user"></i> Login</a>
+                                  <a href="/login"><i class="icon-user"></i> Sign In</a>
                                 <% } %>
-                              </li>
+                            </li>
                         </ul>
                     </li>
-                </ul><!-- End .top-menu -->
-            </div><!-- End .header-right -->
-        </div><!-- End .container-fluid -->
-    </div><!-- End .header-top -->
+                </ul>
+            </div>
+        </div>
+    </div>
 
     <div class="header-middle sticky-header">
         <div class="container-fluid">
             <div class="header-left">
-                <button class="mobile-menu-toggler">
-                    <span class="sr-only">Toggle mobile menu</span>
+                <button class="mobile-menu-toggler" aria-label="Toggle mobile menu">
                     <i class="icon-bars"></i>
                 </button>
-                
-                <a href="" class="logo">
-                    <h3 class="text-warning">FashionZone</h3>
+
+                <a href="/" class="logo">
+                    <h3>FashionZone</h3>
                 </a>
 
                 <nav class="main-nav">
                     <ul class="menu sf-arrows">
-                        <li class="megamenu-container active">
-                            <a href="/" class=""> Home</a>
-                        </li>
-
-                        <li>
-                            <a href="/shop" class="">Shop</a>
-
-                            
+                        <li class="megamenu-container">
+                            <a href="/">Home</a>
                         </li>
                         <li>
-                            <a href="product.html" class="">About Us</a>
-
+                            <a href="/shop">Shop</a>
                         </li>
                         <li>
-                            <a href="/wishlist" class=""><i class="icon-heart-o"></i> My Wishlist</a>
-
+                            <a href="/wishlist"><i class="icon-heart-o"></i> Wishlist</a>
                         </li>
                         <li>
-                            <a href="blog.html" class=""><i class="icon-phone"></i> Contact Us</a>
-
-                            
+                            <a href="/profile"><i class="icon-user"></i> My Account</a>
                         </li>
-                        
-                    </ul><!-- End .menu -->
-                </nav><!-- End .main-nav -->
-            </div><!-- End .header-left -->
+                    </ul>
+                </nav>
+            </div>
 
             <div class="header-right">
                 <div class="header-search header-search-extended header-search-visible">
-                    <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
-                  
-                    
-                    
-                </div><!-- End .header-search -->
-             
-                <div class="">
-                    <a href="/cart" class="w-25" role="button" style="font-size: 30px;">
-                        <i class="icon-shopping-cart" style="font-size: 1.2em;"></i>
-                       
-                    </a>
-                    
-                    
+                    <form action="/shop" method="get">
+                        <div class="header-search-wrapper search-wrapper-wide">
+                            <label for="nav-search" class="sr-only">Search</label>
+                            <input type="search" class="form-control" name="q" id="nav-search" placeholder="Search products..." autocomplete="off">
+                            <button class="btn btn-primary" type="submit" aria-label="Search">
+                                <i class="icon-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
 
-                    <!-- End .dropdown-menu -->
-                </div><!-- End .cart-dropdown -->
-            </div><!-- End .header-right -->
-        </div><!-- End .container-fluid -->
-    </div><!-- End .header-middle -->
-</header><!-- End .header -->
+                <div class="cart-dropdown">
+                    <a href="/cart" role="button" class="d-flex align-items-center" style="text-decoration:none; gap:6px; padding: 8px 12px; border-radius: 50px; border: 1.5px solid rgba(255,255,255,0.12); transition: all 0.25s ease;">
+                        <i class="icon-shopping-cart" style="font-size:1.25rem;"></i>
+                        <span style="color:#d0d0e8; font-size:12px; font-weight:600; letter-spacing:0.3px;">Cart</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
 
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.7/dist/sweetalert2.all.min.js"></script>
 <script>
-  // Add event listener to the logout button
-  document.getElementById('logout-button').addEventListener('click', function(event) {
-    // Prevent the default form submission
-    event.preventDefault();
-
-    // Show SweetAlert2 confirmation prompt
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'Do you really want to logout?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, logout!',
-      cancelButtonText: 'Cancel'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // If confirmed, submit the logout form
-        document.getElementById('logout-form').submit();
-      }
+  const logoutBtn = document.getElementById('logout-button');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', function(event) {
+      event.preventDefault();
+      Swal.fire({
+        title: 'Leaving so soon?',
+        text: 'Are you sure you want to log out?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#c9a96e',
+        cancelButtonColor: '#1a1a2e',
+        confirmButtonText: 'Yes, logout',
+        cancelButtonText: 'Stay',
+        background: '#fff',
+        customClass: {
+          popup: 'rounded-fz',
+          confirmButton: 'btn-fz-primary',
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          document.getElementById('logout-form').submit();
+        }
+      });
     });
-  });
+  }
 </script>

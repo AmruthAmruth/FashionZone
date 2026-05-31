@@ -4,19 +4,23 @@ import Category from "../../models/categoryModel.js";
 
 
 
+
+const firstFlash = (req, key) => {
+    const value = req.flash(key);
+    return value && value.length ? value[0] : null;
+};
+
 export const getAddProductPage = (req, res) => {
-    console.log(req.categoryname); 
-    
     res.render('admin/addproduct', {
-        messages: {
-            message: req.flash('message'),
-            price: req.flash('price'),
-            disPrice: req.flash('disPrice'),
-            tags: req.flash('tags'),
-            image: req.flash('image'),
-            success: req.flash('success')
+        flash: {
+            message: firstFlash(req, 'message'),
+            price: firstFlash(req, 'price'),
+            disPrice: firstFlash(req, 'disPrice'),
+            tags: firstFlash(req, 'tags'),
+            image: firstFlash(req, 'image'),
+            success: firstFlash(req, 'success'),
         },
-        categories: req.categoryname 
+        categories: req.categoryname || [],
     });
 };
 
@@ -52,50 +56,67 @@ export const getAllProductPage = async (req, res) => {
 
 export const addProduct = async (req, res) => {
     try {
-        const { brand, title, price, disPrice, color, size, category, stock, isActive, description, gender, tags } = req.body;
-   console.log(color);
-   
+        const { brand, title, price, disPrice, color, size, category, stock, status, description, gender, tags } = req.body;
+
         if (!brand || !title || !price || !color || !size || !category || !stock || !description || !gender) {
-            req.flash('message', 'All fields are required');
+            req.flash('message', 'All required fields must be filled.');
             return res.redirect('/admin/addproduct');
         }
 
-        if (price <= 0) {
+        if (Number(price) <= 0) {
             req.flash('price', 'Price must be a positive number.');
             return res.redirect('/admin/addproduct');
         }
 
-        if (disPrice && disPrice <= 0) {
+        if (disPrice && Number(disPrice) <= 0) {
             req.flash('disPrice', 'Discount price must be a positive number.');
             return res.redirect('/admin/addproduct');
         }
 
-       
-
-        if (!req.files || req.files.length < 4) {
-            req.flash('image', 'Upload 4 images');
-            console.log("This will work");
+        if (disPrice && Number(disPrice) >= Number(price)) {
+            req.flash('disPrice', 'Discount price must be less than the regular price.');
             return res.redirect('/admin/addproduct');
         }
 
-        if (!tags) {
-            req.flash('tags', 'Add tags in this field');
+        if (!req.files || req.files.length < 4) {
+            req.flash('image', 'Please upload all four product images.');
+            return res.redirect('/admin/addproduct');
         }
 
-        const imagePaths = req.files.map(file => file.path);
+        if (!tags || !String(tags).trim()) {
+            req.flash('tags', 'Add at least one tag.');
+            return res.redirect('/admin/addproduct');
+        }
 
-        const newProduct = new Product({
-            brand, title, price, disPrice, color, size, category, stock, isActive, description, gender, tags, images: imagePaths
+        const isActive = status !== 'Inactive';
+        const imagePaths = req.files.map((file) => file.path);
+        const tagList = String(tags)
+            .split(',')
+            .map((t) => t.trim())
+            .filter(Boolean);
+
+        await Product.create({
+            brand,
+            title,
+            price: Number(price),
+            disPrice: disPrice ? Number(disPrice) : undefined,
+            color,
+            size,
+            category,
+            stock: Number(stock),
+            isActive,
+            description,
+            gender,
+            tags: tagList.length ? tagList : [String(tags).trim()],
+            images: imagePaths,
         });
 
-        await newProduct.save();
-        console.log("Product added successfully");
-        req.flash('success', "Product Added Successfully");
-        return res.redirect('/admin/addproduct');
+        req.flash('success', 'Product added successfully.');
+        return res.redirect('/admin/products');
 
     } catch (err) {
-        console.log("Error while trying to add product", err);
-        req.flash('message', 'An error occurred while adding the product');
+        console.error('Error adding product:', err);
+        req.flash('message', 'An error occurred while adding the product.');
         return res.redirect('/admin/addproduct');
     }
 };
@@ -103,16 +124,13 @@ export const addProduct = async (req, res) => {
 
 export const getCategory = async (req, res, next) => {
     try {
-        const categories = await Category.find({isListed:true});  
-        console.log(categories);
-
-       
-        req.categoryname = categories.map(cat => cat.category);
-
-        next();
+        const categories = await Category.find({ isListed: true });
+        req.categoryname = categories.map((cat) => cat.category);
+        return next();
     } catch (err) {
-        console.log("Error while getting the Category name", err);
-        res.redirect('/admin/addproduct');
+        console.error('Error loading categories:', err);
+        req.categoryname = [];
+        return next();
     }
 };
 

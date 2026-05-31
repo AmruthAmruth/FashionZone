@@ -1,315 +1,695 @@
-
 <%- include('../layout/header.ejs') -%>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-    </head>
+<style>
+    :root {
+        --primary: #c9a96e;
+        --primary-dark: #a8813d;
+        --dark: #111827;
+        --navy: #1a1a2e;
+        --text: #6b7280;
+        --light: #f8f7f4;
+        --border: rgba(17, 24, 39, 0.1);
+        --shadow: 0 18px 45px rgba(17, 24, 39, 0.08);
+        --shadow-hover: 0 25px 65px rgba(17, 24, 39, 0.14);
+    }
 
-    <
-        <div class="page-wrapper">
+    body {
+        background: #fafafa;
+        color: var(--dark);
+    }
+
+    .main {
+        background:
+            radial-gradient(circle at top left, rgba(201, 169, 110, 0.08), transparent 30%),
+            linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+    }
+
+    .page-header {
+        min-height: 260px;
+        display: flex;
+        align-items: center;
+        position: relative;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .page-header::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, rgba(17, 24, 39, 0.82), rgba(17, 24, 39, 0.45));
+    }
+
+    .page-header .container {
+        position: relative;
+        z-index: 2;
+    }
+
+    .page-title {
+        color: #fff;
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2.5rem, 5vw, 4.4rem);
+        font-weight: 800;
+        letter-spacing: -1px;
+    }
+
+    .page-title span {
+        display: block;
+        color: rgba(255, 255, 255, 0.8);
+        font-family: inherit;
+        font-size: 15px;
+        font-weight: 400;
+        margin-top: 12px;
+        letter-spacing: 0;
+    }
+
+    .breadcrumb-nav {
+        background: #fff;
+        border-bottom: 1px solid var(--border);
+        padding: 14px 0;
+    }
+
+    .breadcrumb {
+        margin-bottom: 0;
+    }
+
+    .toolbox {
+        background: #fff;
+        border-radius: 24px !important;
+        border: 1px solid var(--border) !important;
+        padding: 22px !important;
+        margin-bottom: 32px;
+        box-shadow: var(--shadow);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 18px;
+    }
+
+    .toolbox-info {
+        font-size: 14px !important;
+        color: var(--text) !important;
+        font-weight: 600;
+    }
+
+    /* Search Bar Visible Fix */
+    .shop-search {
+        max-width: 460px;
+        width: 100%;
+        flex: 1;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    .shop-search form {
+        width: 100%;
+    }
+
+    .shop-search-wrapper {
+        width: 100%;
+        display: flex !important;
+        align-items: center;
+        background: #fff;
+        border: 2px solid var(--primary);
+        border-radius: 999px;
+        overflow: hidden;
+        box-shadow: 0 12px 30px rgba(201, 169, 110, 0.18);
+        transition: all 0.3s ease;
+    }
+
+    .shop-search-wrapper:focus-within {
+        border-color: var(--primary-dark);
+        box-shadow: 0 16px 38px rgba(201, 169, 110, 0.3);
+    }
+
+    .shop-search-input-box {
+        position: relative;
+        flex: 1;
+    }
+
+    .shop-search-input {
+        width: 100% !important;
+        height: 52px !important;
+        border: none !important;
+        background: #fff !important;
+        color: var(--navy) !important;
+        font-size: 14px !important;
+        font-weight: 500;
+        padding: 0 44px 0 22px !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+
+    .shop-search-input::placeholder {
+        color: #9ca3af;
+    }
+
+    #clear-icon {
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 14px;
+        color: #9ca3af;
+        display: none;
+        z-index: 5;
+    }
+
+    #clear-icon:hover {
+        color: var(--dark);
+    }
+
+    .shop-search-btn {
+        width: 58px;
+        height: 52px;
+        border: none !important;
+        background: var(--navy) !important;
+        color: #fff !important;
+        border-radius: 0 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .shop-search-btn:hover {
+        background: var(--primary) !important;
+        color: var(--navy) !important;
+    }
+
+    .sidebar-shop {
+        background: #fff !important;
+        border: 1px solid var(--border) !important;
+        padding: 30px 24px !important;
+        border-radius: 24px !important;
+        position: sticky;
+        top: 110px;
+        box-shadow: var(--shadow);
+    }
+
+    .widget-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem !important;
+        font-weight: 800 !important;
+        color: var(--navy) !important;
+        border-bottom: 2px solid var(--primary);
+        padding-bottom: 12px;
+        margin-bottom: 26px !important;
+    }
+
+    .filter-label {
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--navy);
+        margin-bottom: 9px;
+        display: block;
+    }
+
+    .filter-select {
+        background: #fff !important;
+        border: 1.5px solid #e5e7eb !important;
+        border-radius: 14px !important;
+        font-size: 14px !important;
+        height: 48px !important;
+        padding: 10px 14px !important;
+        color: #374151 !important;
+        box-shadow: none !important;
+    }
+
+    .filter-select:focus {
+        border-color: var(--primary) !important;
+    }
+
+    .btn-fz-primary {
+        display: block;
+        width: 100%;
+        padding: 14px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: var(--navy) !important;
+        border: none;
+        font-size: 13px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-fz-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 14px 32px rgba(201, 169, 110, 0.35);
+    }
+
+    .clear-link {
+        display: block;
+        margin-top: 12px;
+        padding: 12px;
+        border-radius: 999px;
+        border: 1.5px solid #e5e7eb;
+        background: #fff;
+        color: #555 !important;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+    }
+
+    .clear-link:hover {
+        border-color: var(--navy);
+        color: var(--navy) !important;
+        transform: translateY(-2px);
+    }
+
+    .product.product-7 {
+        background: #fff;
+        border-radius: 24px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        box-shadow: 0 12px 32px rgba(17, 24, 39, 0.05);
+        transition: all 0.35s ease;
+    }
+
+    .product.product-7:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .product-media {
+        border-radius: 24px 24px 0 0;
+        overflow: hidden;
+        background: #f4f4f4;
+    }
+
+    .product-image {
+        transition: transform 0.75s ease;
+    }
+
+    .product.product-7:hover .product-image {
+        transform: scale(1.08);
+    }
+
+    .product-body {
+        padding: 20px 18px 24px !important;
+    }
+
+    .product-cat a {
+        color: #9ca3af;
+        font-size: 12px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-weight: 800;
+    }
+
+    .product-title {
+        font-size: 15px !important;
+        font-weight: 800 !important;
+        line-height: 1.45 !important;
+        min-height: 42px;
+    }
+
+    .product-title a {
+        color: var(--dark);
+        transition: color 0.3s ease;
+    }
+
+    .product-title a:hover {
+        color: var(--primary-dark);
+    }
+
+    .product-price {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        font-size: 17px;
+        font-weight: 800;
+        color: var(--navy);
+    }
+
+    .new-price {
+        color: var(--navy);
+        font-weight: 800;
+    }
+
+    .old-price {
+        color: #9ca3af;
+        text-decoration: line-through;
+        font-size: 14px;
+    }
+
+    .product-label {
+        border-radius: 999px;
+        padding: 7px 12px;
+        font-weight: 800;
+        font-size: 11px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    .btn-product-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 50% !important;
+        background: #fff !important;
+        box-shadow: 0 10px 25px rgba(17, 24, 39, 0.12);
+        transition: all 0.3s ease;
+    }
+
+    .btn-product-icon:hover {
+        background: var(--primary) !important;
+        color: var(--navy) !important;
+        transform: scale(1.08);
+    }
+
+    .product-action {
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(10px);
+    }
+
+    .btn-product.btn-cart span {
+        font-weight: 800;
+        letter-spacing: 0.8px;
+    }
+
+    .ratings-container {
+        margin-top: 10px;
+    }
+
+    .pagination {
+        gap: 8px;
+        align-items: center;
+        margin-top: 28px;
+    }
+
+    .page-link {
+        border-radius: 999px !important;
+        border: 1px solid #e5e7eb !important;
+        color: var(--navy) !important;
+        font-weight: 700;
+        min-width: 38px;
+        text-align: center;
+    }
+
+    .page-item.active .page-link {
+        background: var(--navy) !important;
+        color: #fff !important;
+        border-color: var(--navy) !important;
+    }
+
+    .page-item-total {
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .empty-shop {
+        background: #fff;
+        border-radius: 24px;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+    }
+
+    @media (max-width: 991px) {
+        .sidebar-shop {
+            position: relative;
+            top: 0;
+            margin-bottom: 28px;
+        }
+
+        .toolbox {
+            align-items: stretch;
+        }
+
+        .shop-search {
+            max-width: 100%;
+            flex: 0 0 100%;
+        }
+    }
+
+    @media (max-width: 575px) {
+        .page-header {
+            min-height: 220px;
+        }
+
+        .toolbox {
+            padding: 18px !important;
+            border-radius: 20px !important;
+        }
+
+        .shop-search-input {
+            height: 48px !important;
+            font-size: 13px !important;
+        }
+
+        .shop-search-btn {
+            width: 52px;
+            height: 48px;
+        }
+
+        .sidebar-shop {
+            border-radius: 20px !important;
+            padding: 24px 18px !important;
+        }
+    }
+</style>
+</head>
+
+<div class="page-wrapper">
     <%- include('../partials/navbar.ejs') -%>
 
+    <main class="main">
+        <div class="page-header text-center" style="background-image: url('/static/images/page-header-bg.jpg')">
+            <div class="container">
+                <h1 class="page-title">Curated Catalog<span>Explore the finest collection curated precisely for you.</span></h1>
+            </div>
+        </div>
 
+        <nav aria-label="breadcrumb" class="breadcrumb-nav mb-4">
+            <div class="container">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Shop</li>
+                </ol>
+            </div>
+        </nav>
 
-
-<main class="main">
-    <div class="page-header text-center" style="background-image: url('/static/images/page-header-bg.jpg')">
-        <div class="container">
-            <h1 class="page-title">FashionZone<span>The ultimate fashion destination for men and women.</span></h1>
-        </div><!-- End .container -->
-    </div><!-- End .page-header -->
-    <nav aria-label="breadcrumb" class="breadcrumb-nav mb-2">
-        <div class="container">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Shop</li>
-                
-            </ol>
-        </div><!-- End .container -->
-    </nav><!-- End .breadcrumb-nav -->
-
-    <div class="page-content">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-9">
-                    <div class="toolbox">
-                        <div class="toolbox-left">
-                            <div class="toolbox-info">
-                               
-                            </div><!-- End .toolbox-info -->
-                        </div><!-- End .toolbox-left -->
-
-                        <div class="header-search header-search-extended header-search-visible">
-                            <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
-                        
-                            <form action="/shop" method="get">
-                                <div class="header-search-wrapper search-wrapper-wide">
-                                    <label for="q" class="sr-only">Search</label>
-                                    
-                                    <!-- Input Wrapper for Search and Clear Icon -->
-                                    <div class="position-relative" style="width: 100%;">
-                                        <!-- Search Input -->
-                                        <input 
-                                            type="text" 
-                                            value="<%= searchQuery ? searchQuery : '' %>"  
-                                            class="form-control p-5" 
-                                            name="q" 
-                                            id="q" 
-                                            placeholder="Search product ..." 
-                                            >
-                                        
-                                        <!-- Clear Icon -->
-                                        <i 
-                                            class="icon-close" 
-                                            id="clear-icon" 
-                                            style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px; color: #aaa; display: none;">
-                                        </i>
-                                    </div>
-                                    
-                                    <!-- Submit Button -->
-                                    <button class="btn btn-primary p-5" type="submit">
-                                        <i class="icon-search"></i>
-                                    </button>
+        <div class="page-content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-9">
+                        <div class="toolbox">
+                            <div class="toolbox-left">
+                                <div class="toolbox-info">
+                                    Showing premium fashion selections
                                 </div>
-                            </form>
+                            </div>
+
+                            <div class="shop-search">
+                                <form action="/shop" method="get" class="m-0">
+                                    <div class="shop-search-wrapper">
+                                        <label for="q" class="sr-only">Search</label>
+
+                                        <div class="shop-search-input-box">
+                                            <input 
+                                                type="text" 
+                                                value="<%= searchQuery ? searchQuery : '' %>"  
+                                                class="form-control shop-search-input" 
+                                                name="q" 
+                                                id="q" 
+                                                placeholder="Search products..."
+                                            >
+                                            <i class="icon-close" id="clear-icon"></i>
+                                        </div>
+
+                                        <button class="shop-search-btn" type="submit">
+                                            <i class="icon-search"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
-                        
 
-
-
-
-                       
-                    </div><!-- End .toolbox -->
-
-                    <div class="products mb-3">
-                       
-                       
-                       
-                       
-                       
-                       
-                        <div class="row justify-content-center">
-                            <% if (products && products.length > 0) { %>
-                                <% products.forEach((product, index) => { %>
-                                    <div class="col-6 col-md-4 col-lg-4">
-                                        <div class="product product-7 text-center <% if (index % 2 === 0) { %> product-style-even <% } else { %> product-style-odd <% } %>">
-                                            <figure class="product-media">
-                                                <% if (product.stock===0) { %>
-                                                    <span class="product-label label-new bg-danger">Out Of Stock</span>
-                                                <% } %>
-                                                <a href="/product/<%= product._id %>?category=<%= product.category %>">
-                                                    <img src="/<%= product.images[0] %>" alt="<%= product.title %>" class="product-image">
-                                                </a>
-                                                <div class="product-action-vertical">
-                                                    
-                                                    <form id="wishlist-form" method="POST" action="/wishlist">
-                                                        <input type="hidden" name="productId" value="<%= product._id %>">
-                                                        <button type="submit" class="btn-product-icon btn-wishlist btn-expandable" style="border: none; margin-bottom: 10px;">
-                                                          <span>Add to Wishlist</span>
-                                                        </button>
-                                                      </form>
-
-                                                    <a href="/product/<%= product._id %>?category=<%= product.category %>" class="btn-product-icon btn-quickview btn-expandable" title="Quick view">
-                                                        <span>Quick view</span>
-                                                    </a>
-                                                </div>
-
-                                                <% if (product.stock !==0) { %>
-
-                                                <div class="product-action d-flex justify-content-center">
-                                                    <form action="/cart/add/<%= product._id %>" method="POST">
-                                                        <button type="submit" class="btn-product btn-cart" style="border: none;">
-                                                            <span>Add to cart</span>
-                                                        </button>
-                                                    </form>
-                                                </div>
-
-                                                <% } %>
-                                            </figure>
-                                            <div class="product-body">
-                                                <div class="product-cat">
-                                                    <a href="/category/<%= product.category %>"><%= product.category %></a>
-                                                </div>
-                                                <h3 class="product-title">
-                                                    <a href="/product/<%= product._id %>"><%= product.title %></a>
-                                                </h3>
-                                                <div class="product-price">
-                                                    <% if (product.disPrice && product.disPrice < product.price) { %>
-                                                        <span class="new-price">$<%= product.disPrice %></span>
-                                                        <span class="old-price">$<%= product.price %></span>
-                                                    <% } else { %>
-                                                        $<%= product.price %>
+                        <div class="products mb-4">
+                            <div class="row justify-content-center">
+                                <% if (products && products.length > 0) { %>
+                                    <% products.forEach((product, index) => { %>
+                                        <div class="col-6 col-md-4 col-lg-4 mb-4">
+                                            <div class="product product-7 text-center h-100 d-flex flex-column justify-content-between">
+                                                <figure class="product-media">
+                                                    <% if (product.stock === 0) { %>
+                                                        <span class="product-label bg-danger text-white">Out Of Stock</span>
                                                     <% } %>
-                                                </div>
-                                                <div class="ratings-container">
-                                                    <div class="ratings">
-                                                        <div class="ratings-val" style="width: 80%;"></div>
+
+                                                    <a href="/product/<%= product._id %>?category=<%= product.category %>">
+                                                        <img src="/<%= product.images[0] %>" alt="<%= product.title %>" class="product-image">
+                                                    </a>
+
+                                                    <div class="product-action-vertical">
+                                                        <form id="wishlist-form-<%= product._id %>" method="POST" action="/wishlist" style="margin:0;">
+                                                            <input type="hidden" name="productId" value="<%= product._id %>">
+                                                            <button type="submit" class="btn-product-icon btn-wishlist" style="border: none; cursor:pointer;" title="Add to Wishlist">
+                                                                <i class="icon-heart-o"></i>
+                                                            </button>
+                                                        </form>
+
+                                                        <a href="/product/<%= product._id %>?category=<%= product.category %>" class="btn-product-icon btn-quickview" title="Quick view">
+                                                            <i class="icon-eye"></i>
+                                                        </a>
                                                     </div>
-                                                    <span class="ratings-text">(5 Reviews)</span>
+
+                                                    <% if (product.stock !== 0) { %>
+                                                        <div class="product-action d-flex justify-content-center">
+                                                            <form action="/cart/add/<%= product._id %>" method="POST" style="width:100%; margin:0;">
+                                                                <button type="submit" class="btn-product btn-cart" style="width:100%; border: none; background:none; cursor:pointer;">
+                                                                    <span>Add to cart</span>
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    <% } %>
+                                                </figure>
+
+                                                <div class="product-body">
+                                                    <div class="product-cat">
+                                                        <a href="/category/<%= product.category %>"><%= product.category %></a>
+                                                    </div>
+
+                                                    <h3 class="product-title">
+                                                        <a href="/product/<%= product._id %>"><%= product.title %></a>
+                                                    </h3>
+
+                                                    <div class="product-price">
+                                                        <% if (product.disPrice && product.disPrice < product.price) { %>
+                                                            <span class="new-price">₹<%= product.disPrice %></span>
+                                                            <span class="old-price">₹<%= product.price %></span>
+                                                        <% } else { %>
+                                                            ₹<%= product.price %>
+                                                        <% } %>
+                                                    </div>
+
+                                                    <div class="ratings-container">
+                                                        <div class="ratings">
+                                                            <div class="ratings-val" style="width: 80%;"></div>
+                                                        </div>
+                                                        <span class="ratings-text">(5 Reviews)</span>
+                                                    </div>
                                                 </div>
-                                              
                                             </div>
                                         </div>
+                                    <% }); %>
+                                <% } else { %>
+                                    <div class="col-12 text-center py-5">
+                                        <div class="empty-shop py-5 px-4">
+                                            <i class="icon-search mb-3" style="font-size:3rem; color:#c9a96e; display:block;"></i>
+                                            <h3 style="font-family:'Playfair Display', serif; font-weight:700; color:#1a1a2e;">No Products Found</h3>
+                                            <p style="color:#777; font-size:14px;">We couldn't find any products matching your current criteria.</p>
+                                            <a href="/shop" class="btn btn-outline-dark-2 mt-2">Reset All Filters</a>
+                                        </div>
                                     </div>
-                                <% }); %>
-                            <% } else { %>
-                                <div class="col-12">
-                                    <p>No products available.</p>
-                                </div>
-                            <% } %>
+                                <% } %>
+                            </div>
                         </div>
-                        <!-- End .row -->
-                   
-                   
-                   
-                   
-                   
-                   
-                   
-                    </div><!-- End .products -->
 
-                   
+                        <% if (products && products.length > 0) { %>
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center">
+                                    <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                                        <a class="page-link page-link-prev" href="/shop?page=<%= currentPage - 1 %>&q=<%= searchQuery %>&category=<%= category %>&sort=<%= sortOption %>" aria-label="Previous">
+                                            <span aria-hidden="true"><i class="icon-long-arrow-left"></i></span> Prev
+                                        </a>
+                                    </li>
 
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination justify-content-center">
-                            <!-- Previous Page Link -->
-                            <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
-                                <a class="page-link page-link-prev" href="/shop?page=<%= currentPage - 1 %>&q=<%= searchQuery %>" aria-label="Previous">
-                                    <span aria-hidden="true"><i class="icon-long-arrow-left"></i></span>Prev
+                                    <% for (let i = 1; i <= totalPages; i++) { %>
+                                        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                            <a class="page-link" href="/shop?page=<%= i %>&q=<%= searchQuery %>&category=<%= category %>&sort=<%= sortOption %>"><%= i %></a>
+                                        </li>
+                                    <% } %>
+
+                                    <li class="page-item-total">of <%= totalPages %></li>
+
+                                    <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                                        <a class="page-link page-link-next" href="/shop?page=<%= currentPage + 1 %>&q=<%= searchQuery %>&category=<%= category %>&sort=<%= sortOption %>" aria-label="Next">
+                                            Next <span aria-hidden="true"><i class="icon-long-arrow-right"></i></span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        <% } %>
+                    </div>
+
+                    <aside class="col-lg-3 order-lg-first">
+                        <div class="sidebar sidebar-shop">
+                            <h3 class="widget-title">Filters & Sorting</h3>
+
+                            <form method="GET" action="/shop" class="m-0">
+                                <div class="form-group mb-4">
+                                    <label class="filter-label">Select Category</label>
+                                    <select name="category" class="form-control filter-select">
+                                        <option value="">All Categories</option>
+                                        <option value="Classic" <%= category === 'Classic' ? 'selected' : '' %>>Classic Collection</option>
+                                        <option value="Modern" <%= category === 'Modern' ? 'selected' : '' %>>Modern Trends</option>
+                                        <option value="Streetware" <%= category === 'Streetware' ? 'selected' : '' %>>Streetwear Edit</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-4">
+                                    <label class="filter-label">Sort Options</label>
+                                    <select name="sort" class="form-control filter-select">
+                                        <option value="">Default Order</option>
+                                        <option value="titleAsc" <%= sortOption === 'titleAsc' ? 'selected' : '' %>>Alphabetical: A to Z</option>
+                                        <option value="titleDesc" <%= sortOption === 'titleDesc' ? 'selected' : '' %>>Alphabetical: Z to A</option>
+                                        <option value="priceLowToHigh" <%= sortOption === 'priceLowToHigh' ? 'selected' : '' %>>Price: Low to High</option>
+                                        <option value="priceHighToLow" <%= sortOption === 'priceHighToLow' ? 'selected' : '' %>>Price: High to Low</option>
+                                        <option value="newArrivals" <%= sortOption === 'newArrivals' ? 'selected' : '' %>>Newest Additions</option>
+                                    </select>
+                                </div>
+
+                                <button type="submit" class="btn-fz-primary">
+                                    Apply Filters
+                                </button>
+
+                                <a href="/shop" class="clear-link text-center">
+                                    Clear All
                                 </a>
-                            </li>
-                    
-                            <!-- Page Numbers -->
-                            <% for (let i = 1; i <= totalPages; i++) { %>
-                                <li class="page-item <%= currentPage === i ? 'active' : '' %>">
-                                    <a class="page-link" href="/shop?page=<%= i %>&q=<%= searchQuery %>"><%= i %></a>
-                                </li>
-                            <% } %>
-                    
-                            <!-- Total Pages -->
-                            <li class="page-item-total">of <%= totalPages %></li>
-                    
-                            <!-- Next Page Link -->
-                            <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
-                                <a class="page-link page-link-next" href="/shop?page=<%= currentPage + 1 %>&q=<%= searchQuery %>" aria-label="Next">
-                                    Next <span aria-hidden="true"><i class="icon-long-arrow-right"></i></span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                    
+                            </form>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </div>
+    </main>
 
+    <%- include('../partials/footer.ejs') -%>
+</div>
 
-
-
-
-                </div><!-- End .col-lg-9 -->
-                <aside class="col-lg-3 order-lg-first">
-                    <div class="sidebar sidebar-shop">
-                       
-                       
-
-                      
-
-                        <form method="GET" action="/shop" style="margin-top: 100px;">
-                            <select name="category"
-                             style="width: 250px; padding: 10px; border: none;background-color: #e9e9e9; border-radius: 20px; color: black;">
-                                <option value="">All Categories</option>
-                                <option value="Classic" <%= category === 'Classic' ? 'selected' : '' %>>Classic</option>
-                                <option value="Modern" <%= category === 'Modern' ? 'selected' : '' %>>Modern</option>
-                                <option value="Streetware" <%= category === 'Streetware' ? 'selected' : '' %>>Streetware</option>
-                            </select>  <br>
-                            <select name="sort"
-                             style="width: 250px; margin-top: 30px; margin-bottom: 30px; padding: 10px; border: none;background-color: #e9e9e9;
-; border-radius: 20px; color: black;">
-                                <option value="">Default</option>
-                                <option value="titleAsc" <%= sortOption === 'titleAsc' ? 'selected' : '' %>>Title: A to Z</option>
-                                <option value="titleDesc" <%= sortOption === 'titleDesc' ? 'selected' : '' %>>Title: Z to A</option>
-                                <option value="priceLowToHigh" <%= sortOption === 'priceLowToHigh' ? 'selected' : '' %>>Price: Low to High</option>
-                                <option value="priceHighToLow" <%= sortOption === 'priceHighToLow' ? 'selected' : '' %>>Price: High to Low</option>
-                                <option value="newArrivals" <%= sortOption === 'newArrivals' ? 'selected' : '' %>>New Arrivals</option>
-                            </select> <br>
-                            <button type="submit"  style="width: 150px; height: 40px; background-color: #e9e9e9; margin-left: 50px; color: black; border: none; border-radius: 15px;">Apply Filters</button>
-                            <a href="/shop" 
-                            class="clear-link text-center px-5 d-flex mt-3" 
-                            style="width: 150px; height: 40px; background-color: #f2f2f2; margin-left: 50px; color: #333; border: none; border-radius: 15px; text-align: center; display: inline-flex; justify-content: center; align-items: center; text-decoration: none; font-weight: 500; transition: background-color 0.3s ease;">
-                             Clear
-                         </a>                        </form>
-                        
-
-
-
-
-
-                        
-                        <!-- <div class="widget widget-collapsible">
-                            <h3 class="widget-title">
-                                <a data-toggle="collapse" href="#widget-1" role="button" aria-expanded="true" aria-controls="widget-1">
-                                    Sorted On
-                                </a>
-                            </h3>
-                            <a href="/shop/sort/newarrivals" class="mt-5" id="newArrivals">New Arrivals</a> <br>
-                            <a href="/shop/sort/featured" class="mt-5" id="featured">Featured Products</a> <br>
-                            <a href="/shop/sort/low-to-high" class="mt-5" id="lowToHigh">Price: Low to High</a> <br>
-                            <a href="/shop/sort/high-to-low" class="mt-5" id="highToLow">Price: High to Low</a> <br>
-                            <a href="/shop/sort/a-to-z" class="mt-5" id="sortAZ">Sort A to Z</a> <br>
-                            <a href="/shop/sort/z-to-a" class="mt-5" id="sortZA">Sort Z to A</a> <br>
-                            <a href="/shop/sort/men" class="mt-5" id="men">Men's</a> <br>
-                            <a href="/shop/sort/women" class="mt-5" id="women">Women’s</a> <br>
-                            
-                        </div> -->
-                        
-
-                    </div><!-- End .sidebar sidebar-shop -->
-                </aside><!-- End .col-lg-3 -->
-            </div><!-- End .row -->
-        </div><!-- End .container -->
-    </div><!-- End .page-content -->
-</main><!-- End .main -->
-
-
-
-
-<!-- Cear button for the search bar -->
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-const searchInput = document.getElementById('q');
-const clearIcon = document.getElementById('clear-icon');
+        const searchInput = document.getElementById('q');
+        const clearIcon = document.getElementById('clear-icon');
 
-// Show or hide the clear icon based on the input value
-searchInput.addEventListener('input', () => {
-if (searchInput.value.trim() !== '') {
-clearIcon.style.display = 'block'; // Show the clear icon
-} else {
-clearIcon.style.display = 'none'; // Hide the clear icon
-}
-});
+        if (!searchInput || !clearIcon) return;
 
-// Clear the input field when the clear icon is clicked
-clearIcon.addEventListener('click', () => {
-searchInput.value = ''; // Clear the input
-clearIcon.style.display = 'none'; // Hide the clear icon
-searchInput.focus(); // Focus back on the input field
-});
+        const toggleClearIcon = () => {
+            clearIcon.style.display = searchInput.value.trim() !== '' ? 'block' : 'none';
+        };
 
-// Initialize the clear icon state based on the input's initial value
-if (searchInput.value.trim() !== '') {
-clearIcon.style.display = 'block';
-}
-});
+        searchInput.addEventListener('input', toggleClearIcon);
 
+        clearIcon.addEventListener('click', () => {
+            searchInput.value = '';
+            clearIcon.style.display = 'none';
+            searchInput.focus();
+        });
+
+        toggleClearIcon();
+    });
 </script>
-
-
-
-
-
-
-
-
-
-<%- include('../partials/footer.ejs')-%>
-
-
-
 </body>
-</div>
+</html>

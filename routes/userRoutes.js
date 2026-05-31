@@ -99,6 +99,7 @@ userRouter.post('/checkoutfromcart',proceedToChekout,cartPriceList,checkoutPage)
 userRouter.post('/checkoutaddaddress',checkoutAddAddress)
 userRouter.post('/checkouteditaddress',checkoutEditAddress)
 userRouter.post('/walletcontroller',createWalletcheckout)
+userRouter.get('/codcontroller', (req, res) => res.redirect('/checkout'))
 
 // ---------------------------Order Section----------------------------------------------------------------
  
@@ -124,7 +125,7 @@ userRouter.post('/removewishlist',removeProductFromWishlist)
 
 
 // -----------------------Coupon management--------------------------------------
-userRouter.post('/applycouoponcode',applyCoupon)
+userRouter.post('/applycouponcode',applyCoupon)
 userRouter.post('/removecoupon',removeCoupon)
 
 

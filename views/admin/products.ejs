@@ -58,12 +58,18 @@
     <div class="card-header">
       <h5 class="mb-0">Product Details</h5>
       
-      <% if (messages.success) { %>
-        <div class="alert alert-success"><%= messages.success %></div>
-    <% } %>
-    <% if (messages.error) { %>
-        <div class="alert alert-danger"><%= messages.error %></div>
-    <% } %>
+      <% if (message && message.success && message.success.length) { %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <%= message.success[0] %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
+      <% if (message && message.error && message.error.length) { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <%= message.error[0] %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
 
       <a href="/admin/addproduct"><button type="button" class="btn btn-success mt-5 ">Add New Product</button></a>
       <div class="d-flex justify-content-between align-items-center row pt-4 gap-4 gap-md-0">

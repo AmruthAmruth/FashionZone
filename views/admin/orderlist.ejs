@@ -55,19 +55,26 @@
           </tr>
         </thead>
         <tbody>
+          <% if (orders && orders.length > 0) { %>
           <% orders.forEach(order => { %>
             <tr>
               <td style="max-width: 200px;"><%= order.orderId %></td>
               <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
               <td><%= order.user ? order.user.name : 'Unknown' %></td>
-              <td>$<%= order.totalAmount %></td>
+              <td>₹<%= order.totalAmount %></td>
               <td>
                 <% if (order.status === 'Pending') { %>
-                  <span class="badge bg-warning">Pending</span>
+                  <span class="status-badge status-pending">Pending</span>
                 <% } else if (order.status === 'Cancelled') { %>
-                  <span class="badge bg-danger">Cancelled</span>
+                  <span class="status-badge status-inactive">Cancelled</span>
+                <% } else if (order.status === 'Delivered') { %>
+                  <span class="status-badge status-active">Delivered</span>
+                <% } else if (order.status === 'Shipped') { %>
+                  <span class="status-badge status-pending">Shipped</span>
+                <% } else if (order.status === 'Returned') { %>
+                  <span class="status-badge status-inactive">Returned</span>
                 <% } else { %>
-                  <span class="badge bg-success">Completed</span>
+                  <span class="status-badge"><%= order.status %></span>
                 <% } %>
               </td>
               <td><%= order.paymentMethod %></td>
@@ -78,6 +85,11 @@
               
             </tr>
           <% }); %>
+          <% } else { %>
+            <tr>
+              <td colspan="7" class="text-center py-5 admin-empty-state">No orders found yet.</td>
+            </tr>
+          <% } %>
         </tbody>
       </table>
       
@@ -102,7 +114,9 @@
 
 </div>
 </div>
-<body>
-    
+<script src="/assets/vendor/libs/jquery/jquery.js"></script>
+<script src="/assets/vendor/js/bootstrap.js"></script>
+<script src="/assets/vendor/js/menu.js"></script>
+<script src="/assets/js/main.js"></script>
 </body>
 </html>
