@@ -125,53 +125,84 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const updateButtons = document.querySelectorAll('.update-cart-btn');
-        
+
         updateButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const action = this.getAttribute('data-action');
                 const form = this.closest('form');
                 const productId = form.getAttribute('data-product-id');
-                updateCartQuantity(productId, action);
+                const qtyInput = form.querySelector('.quantity-input');
+                const oldQty = parseInt(qtyInput ? qtyInput.value : 0) || 0;
+                updateCartQuantity(productId, action, qtyInput, oldQty, this);
             });
         });
 
-        function updateCartQuantity(productId, action) {
-            fetch(`/cart/update/${productId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ action: action }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Cart Updated',
-                        text: `Quantity has been successfully updated.`,
-                        confirmButtonText: 'Ok'
-                    }).then(() => {
-                        window.location.reload(); 
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Limit Exceeded',
-                        text: data.message || 'Error occurred while updating the cart.',
-                        confirmButtonText: 'Ok'
-                    });
-                }
-            })
-            .catch(err => {
-                console.error("Error updating cart:", err);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'An error occurred while updating the cart.',
-                    confirmButtonText: 'Ok'
+        async function updateCartQuantity(productId, action, qtyInput, oldQty, button) {
+            try {
+                if (!productId) return;
+                button.disabled = true;
+
+                const response = await fetch(`/cart/update/${productId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ action: action }),
                 });
-            });
+
+                if (response.redirected) {
+                    window.location.href = response.url;
+                    return;
+                }
+
+                let data = null;
+                try { data = await response.json(); } catch (e) { /* ignore parse errors */ }
+
+                if (!response.ok) {
+                    const message = data && data.message ? data.message : 'Unable to update cart.';
+                    Swal.fire({ icon: 'error', title: 'Error', text: message });
+                    return;
+                }
+
+                if (data && data.success) {
+                    if (qtyInput) qtyInput.value = data.newQuantity;
+
+                    const row = qtyInput ? qtyInput.closest('tr') : null;
+                    if (row) {
+                        const priceCell = row.querySelectorAll('td')[2];
+                        const subtotalCell = row.querySelectorAll('td')[3];
+                        if (priceCell && subtotalCell) {
+                            const priceText = priceCell.textContent.replace(/[^0-9.]/g, '') || '0';
+                            const price = parseFloat(priceText);
+                            subtotalCell.textContent = '₹' + (price * data.newQuantity);
+                        }
+                    }
+
+                    const totalElem = document.getElementById('total-price');
+                    if (totalElem) {
+                        // Recalculate total by summing subtotals in the table
+                        const subtotalCells = document.querySelectorAll('.table-cart tbody tr td:nth-child(4)');
+                        let newTotal = 0;
+                        subtotalCells.forEach(cell => {
+                            const txt = cell.textContent.replace(/[^0-9.]/g, '') || '0';
+                            newTotal += parseFloat(txt);
+                        });
+                        totalElem.textContent = Math.round(newTotal * 100) / 100;
+                    }
+
+                    // brief success toast (no blocking reload)
+                    Swal.fire({ icon: 'success', title: 'Cart Updated', text: 'Quantity updated.' });
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Error', text: (data && data.message) || 'Error updating cart.' });
+                }
+            } catch (err) {
+                console.error('Error updating cart:', err);
+                Swal.fire({ icon: 'error', title: 'Oops...', text: 'An error occurred while updating the cart.' });
+            } finally {
+                if (button) button.disabled = false;
+            }
         }
 
         const checkoutBtn = document.querySelector('.btn-fz-primary');

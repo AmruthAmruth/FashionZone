@@ -410,7 +410,11 @@ export const updateCart = async (req, res) => {
         
         const MAX_QUANTITY = 5;
 
+        // Log request details for debugging quantity update issues
+        console.log('updateCart called:', { method: req.method, productId, action, sessionUser: !!req.session.user, sessionUserId: req.session.userId });
+
         if (!req.session.user) {
+            console.warn('updateCart: no session user present');
             return res.status(403).json({ success: false, message: "User not logged in" });
         }
 
@@ -441,7 +445,8 @@ export const updateCart = async (req, res) => {
             }
 
             await cart.save();
-            
+            console.log(`updateCart: updated product ${productId} quantity -> ${item.quantity}`);
+
             return res.json({
                 success: true,
                 newQuantity: item.quantity,
