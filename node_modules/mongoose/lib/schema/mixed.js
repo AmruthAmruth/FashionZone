@@ -12,19 +12,21 @@ const utils = require('../utils');
 /**
  * Mixed SchemaType constructor.
  *
- * @param {String} path
- * @param {Object} options
+ * @param {string} path
+ * @param {object} options
+ * @param {object} _schemaOptions
+ * @param {Schema} parentSchema
  * @inherits SchemaType
  * @api public
  */
 
-function SchemaMixed(path, options) {
-  if (options && options.default) {
+function SchemaMixed(path, options, _schemaOptions, parentSchema) {
+  if (options?.default) {
     const def = options.default;
     if (Array.isArray(def) && def.length === 0) {
       // make sure empty array defaults are handled
       options.default = Array;
-    } else if (!options.shared && isObject(def) && Object.keys(def).length === 0) {
+    } else if (!options.shared && isObject(def) && utils.hasOwnKeys(def) === false) {
       // prevent odd "shared" objects between documents
       options.default = function() {
         return {};
@@ -32,7 +34,7 @@ function SchemaMixed(path, options) {
     }
   }
 
-  SchemaType.call(this, path, options, 'Mixed');
+  SchemaType.call(this, path, options, 'Mixed', parentSchema);
 
   this[symbols.schemaMixedSymbol] = true;
 }
@@ -59,7 +61,7 @@ SchemaMixed.prototype.constructor = SchemaMixed;
  * #### Example:
  *
  *     // Hide the 'hidden' path
- *     mongoose.Schema.Mixed.get(v => Object.assign({}, v, { hidden: null }));
+ *     mongoose.Schema.Types.Mixed.get(v => Object.assign({}, v, { hidden: null }));
  *
  *     const Model = mongoose.model('Test', new Schema({ test: {} }));
  *     new Model({ test: { hidden: 'Secret!' } }).test.hidden; // null
@@ -79,13 +81,13 @@ SchemaMixed.get = SchemaType.get;
  * #### Example:
  *
  *     // Make all mixed instances have `required` of true by default.
- *     mongoose.Schema.Mixed.set('required', true);
+ *     mongoose.Schema.Types.Mixed.set('required', true);
  *
  *     const User = mongoose.model('User', new Schema({ test: mongoose.Mixed }));
  *     new User({ }).validateSync().errors.test.message; // Path `test` is required.
  *
- * @param {String} option The option you'd like to set the value for
- * @param {Any} value value for option
+ * @param {string} option The option you'd like to set the value for
+ * @param {any} value value for option
  * @return {undefined}
  * @function set
  * @static
@@ -101,7 +103,7 @@ SchemaMixed.setters = [];
  *
  * _this is a no-op_
  *
- * @param {Object} value to cast
+ * @param {object} value to cast
  * @api private
  */
 
@@ -115,13 +117,26 @@ SchemaMixed.prototype.cast = function(val) {
 /**
  * Casts contents for queries.
  *
- * @param {String} $cond
+ * @param {string} $cond
  * @param {any} [val]
  * @api private
  */
 
 SchemaMixed.prototype.castForQuery = function($cond, val) {
   return val;
+};
+
+/**
+ * Returns this schema type's representation in a JSON schema.
+ *
+ * @param {object} [options]
+ * @param {boolean} [options.useBsonType=false] If true, return a representation with `bsonType` for use with MongoDB's `$jsonSchema`.
+ * @returns {object} JSON schema properties
+ */
+
+// eslint-disable-next-line no-unused-vars
+SchemaMixed.prototype.toJSONSchema = function toJSONSchema(_options) {
+  return {};
 };
 
 /*!

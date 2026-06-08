@@ -31,10 +31,10 @@ const noDottedPathGetOptions = Object.freeze({
 
 /**
  * Compiles schemas.
- * @param {Object} tree
- * @param {Any} proto
- * @param {String} prefix
- * @param {Object} options
+ * @param {object} tree
+ * @param {any} proto
+ * @param {string} prefix
+ * @param {object} options
  * @api private
  */
 
@@ -46,7 +46,7 @@ function compile(tree, proto, prefix, options) {
     const limb = tree[key];
 
     const hasSubprops = isPOJO(limb) &&
-      Object.keys(limb).length > 0 &&
+      utils.hasOwnKeys(limb) &&
       (!limb[typeKey] || (typeKey === 'type' && isPOJO(limb.type) && limb.type.type));
     const subprops = hasSubprops ? limb : null;
 
@@ -56,12 +56,12 @@ function compile(tree, proto, prefix, options) {
 
 /**
  * Defines the accessor named prop on the incoming prototype.
- * @param {Object} options
- * @param {String} options.prop
- * @param {Boolean} options.subprops
- * @param {Any} options.prototype
- * @param {String} [options.prefix]
- * @param {Object} options.options
+ * @param {object} options
+ * @param {string} options.prop
+ * @param {boolean} options.subprops
+ * @param {any} options.prototype
+ * @param {string} [options.prefix]
+ * @param {object} options.options
  * @api private
  */
 
@@ -76,6 +76,9 @@ function defineKey({ prop, subprops, prototype, prefix, options }) {
       enumerable: true,
       configurable: true,
       get: function() {
+        if (!this.$__) {
+          return undefined;
+        }
         const _this = this;
         if (!this.$__.getters) {
           this.$__.getters = {};
@@ -132,7 +135,7 @@ function defineKey({ prop, subprops, prototype, prefix, options }) {
             writable: false,
             value: function() {
               return _this.get(path, null, {
-                virtuals: this && this.schema && this.schema.options && this.schema.options.toObject && this.schema.options.toObject.virtuals || null
+                virtuals: this?.schema?.options?.toObject?.virtuals || null
               });
             }
           });
@@ -143,7 +146,7 @@ function defineKey({ prop, subprops, prototype, prefix, options }) {
             writable: false,
             value: function() {
               return _this.get(path, null, {
-                virtuals: this && this.schema && this.schema.options && this.schema.options.toJSON && this.schema.options.toJSON.virtuals || null
+                virtuals: this?.schema?.options?.toJSON?.virtuals || null
               });
             }
           });
@@ -178,7 +181,7 @@ function defineKey({ prop, subprops, prototype, prefix, options }) {
         return this.$__.getters[path];
       },
       set: function(v) {
-        if (v != null && v.$__isNested) {
+        if (v?.$__isNested) {
           // Convert top-level to POJO, but leave subdocs hydrated so `$set`
           // can handle them. See gh-9293.
           v = v.$__get();

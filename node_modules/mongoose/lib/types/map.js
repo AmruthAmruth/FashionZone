@@ -23,7 +23,7 @@ class MongooseMap extends Map {
       v = Object.keys(v).reduce((arr, key) => arr.concat([[key, v[key]]]), []);
     }
     super(v);
-    this.$__parent = doc != null && doc.$__ != null ? doc : null;
+    this.$__parent = doc?.$__ != null ? doc : null;
     this.$__path = path;
     this.$__schemaType = schemaType == null ? new Mixed(path) : schemaType;
 
@@ -35,7 +35,7 @@ class MongooseMap extends Map {
 
     super.set(key, value);
 
-    if (value != null && value.$isSingleNested) {
+    if (value?.$isSingleNested) {
       value.$basePath = this.$__path + '.' + key;
     }
   }
@@ -106,7 +106,7 @@ class MongooseMap extends Map {
 
     let _fullPath;
     const parent = this.$__parent;
-    const populated = parent != null && parent.$__ && parent.$__.populated ?
+    const populated = parent?.$__?.populated ?
       parent.$populated(fullPath.call(this), true) || parent.$populated(this.$__path, true) :
       null;
     const priorVal = this.get(key);
@@ -136,7 +136,7 @@ class MongooseMap extends Map {
       }
     } else {
       try {
-        const options = this.$__schemaType.$isMongooseDocumentArray || this.$__schemaType.$isSingleNested ?
+        const options = this.$__schemaType.$isMongooseDocumentArray || this.$__schemaType.$isSingleNested || this.$__schemaType.$isMongooseArray || this.$__schemaType.$isSchemaMap ?
           { path: fullPath.call(this) } :
           null;
         value = this.$__schemaType.applySetters(
@@ -147,7 +147,7 @@ class MongooseMap extends Map {
           options
         );
       } catch (error) {
-        if (this.$__parent != null && this.$__parent.$__ != null) {
+        if (this.$__parent?.$__ != null) {
           this.$__parent.invalidate(fullPath.call(this), error);
           return;
         }
@@ -157,7 +157,7 @@ class MongooseMap extends Map {
 
     super.set(key, value);
 
-    if (parent != null && parent.$__ != null && !deepEqual(value, priorVal)) {
+    if (parent?.$__ != null && !deepEqual(value, priorVal)) {
       const path = fullPath.call(this);
       parent.markModified(path);
       // If overwriting the full document array or subdoc, make sure to clean up any paths that were modified
@@ -224,7 +224,7 @@ class MongooseMap extends Map {
   }
 
   toObject(options) {
-    if (options && options.flattenMaps) {
+    if (options?.flattenMaps) {
       const ret = {};
       const keys = this.keys();
       for (const key of keys) {
@@ -251,13 +251,13 @@ class MongooseMap extends Map {
    *
    * @api public
    * @method toJSON
-   * @param {Object} [options]
-   * @param {Boolean} [options.flattenMaps=false] set to `true` to convert the map to a POJO rather than a native JavaScript map
+   * @param {object} [options]
+   * @param {boolean} [options.flattenMaps=false] set to `true` to convert the map to a POJO rather than a native JavaScript map
    * @memberOf Map
    */
 
   toJSON(options) {
-    if (typeof (options && options.flattenMaps) === 'boolean' ? options.flattenMaps : true) {
+    if (typeof options?.flattenMaps === 'boolean' ? options.flattenMaps : true) {
       const ret = {};
       const keys = this.keys();
       for (const key of keys) {
@@ -345,7 +345,7 @@ Object.defineProperty(MongooseMap.prototype, '$__deferredCalls', {
 /**
  * Since maps are stored as objects under the hood, keys must be strings
  * and can't contain any invalid characters
- * @param {String} key
+ * @param {string} key
  * @api private
  */
 

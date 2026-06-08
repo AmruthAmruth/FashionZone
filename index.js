@@ -13,7 +13,8 @@ import adminRouter from './routes/adminRoutes.js';
 import userRouter from './routes/userRoutes.js'; 
 import bodyParser from 'body-parser';
 import { seedAdmin } from './config/adminSeeder.js';
-
+import dns from 'dns';
+dns.setDefaultResultOrder("ipv4first");
 dotenv.config();
 const app = express(); 
 
@@ -62,6 +63,10 @@ app.use('*', (req, res) => {
 const PORT = process.env.PORT || 7000;
 console.log("Starting application...");
 console.log("MONGO_URI exists:", !!process.env.MONGO_URI);
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
+dns.setDefaultResultOrder("ipv4first");
+
+
 
 
 mongoose.connect(process.env.MONGO_URI)

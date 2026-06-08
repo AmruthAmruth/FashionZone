@@ -26,8 +26,8 @@ const kHasArray = Symbol('mongoose#assignRawDocsToIdStructure#hasArray');
  * @param {Array} rawIds
  * @param {Array} resultDocs
  * @param {Array} resultOrder
- * @param {Object} options
- * @param {Boolean} recursed
+ * @param {object} options
+ * @param {boolean} recursed
  * @api private
  */
 
@@ -104,7 +104,7 @@ function assignRawDocsToIdStructure(rawIds, resultDocs, resultOrder, options, re
         } else {
           newOrder.push(doc);
         }
-      } else if (id != null && id[modelSymbol] != null) {
+      } else if (id?.[modelSymbol] != null) {
         newOrder.push(id);
       } else {
         newOrder.push(options.retainNullValues || nullIfNotFound ? null : id);

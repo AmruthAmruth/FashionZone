@@ -4,7 +4,6 @@ exports.AUTH_MECHS_AUTH_SRC_EXTERNAL = exports.AuthMechanism = void 0;
 /** @public */
 exports.AuthMechanism = Object.freeze({
     MONGODB_AWS: 'MONGODB-AWS',
-    MONGODB_CR: 'MONGODB-CR',
     MONGODB_DEFAULT: 'DEFAULT',
     MONGODB_GSSAPI: 'GSSAPI',
     MONGODB_PLAIN: 'PLAIN',

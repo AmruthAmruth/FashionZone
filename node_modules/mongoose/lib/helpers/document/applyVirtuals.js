@@ -1,6 +1,7 @@
 'use strict';
 
 const mpath = require('mpath');
+const utils = require('../../utils');
 
 module.exports = applyVirtuals;
 
@@ -8,8 +9,8 @@ module.exports = applyVirtuals;
  * Apply a given schema's virtuals to a given POJO
  *
  * @param {Schema} schema
- * @param {Object} obj
- * @param {Array<string>} [virtuals] optional whitelist of virtuals to apply
+ * @param {object} obj
+ * @param {string[]} [virtuals] optional whitelist of virtuals to apply
  * @returns
  */
 
@@ -41,8 +42,8 @@ function applyVirtuals(schema, obj, virtuals) {
  * Apply virtuals to any subdocuments
  *
  * @param {Schema} schema subdocument schema
- * @param {Object} res subdocument
- * @param {Array<String>} [virtuals] optional whitelist of virtuals to apply
+ * @param {object} res subdocument
+ * @param {string[]} [virtuals] optional whitelist of virtuals to apply
  */
 
 function applyVirtualsToChildren(schema, res, virtuals) {
@@ -76,7 +77,7 @@ function applyVirtualsToChildren(schema, res, virtuals) {
     attachedVirtuals = true;
   }
 
-  if (virtuals && virtuals.length && !attachedVirtuals) {
+  if (virtuals?.length && !attachedVirtuals) {
     applyVirtualsToDoc(schema, res, virtuals);
   }
 }
@@ -85,8 +86,8 @@ function applyVirtualsToChildren(schema, res, virtuals) {
  * Apply virtuals to a given document. Does not apply virtuals to subdocuments: use `applyVirtualsToChildren` instead
  *
  * @param {Schema} schema
- * @param {Object} doc
- * @param {Array<String>} [virtuals] optional whitelist of virtuals to apply
+ * @param {object} doc
+ * @param {string[]} [virtuals] optional whitelist of virtuals to apply
  * @returns
  */
 
@@ -101,7 +102,7 @@ function applyVirtualsToDoc(schema, obj, virtuals) {
     return;
   }
 
-  if (schema.discriminators && Object.keys(schema.discriminators).length > 0) {
+  if (schema.discriminators && utils.hasOwnKeys(schema.discriminators)) {
     for (const discriminatorKey of Object.keys(schema.discriminators)) {
       const discriminator = schema.discriminators[discriminatorKey];
       const key = discriminator.discriminatorMapping.key;
@@ -133,7 +134,7 @@ function applyVirtualsToDoc(schema, obj, virtuals) {
     }
     let val = virtualType.applyGetters(cur[sp[sp.length - 1]], obj);
     const isPopulateVirtual =
-      virtualType.options && (virtualType.options.ref || virtualType.options.refPath);
+      virtualType.options?.ref || virtualType.options?.refPath;
     if (isPopulateVirtual && val === undefined) {
       if (virtualType.options.justOne) {
         val = null;

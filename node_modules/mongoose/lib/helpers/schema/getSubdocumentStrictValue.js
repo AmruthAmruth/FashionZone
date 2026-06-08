@@ -7,7 +7,7 @@
  * default, not the top-level document's.
  *
  * @param {Schema} schema
- * @param {String[]} parts
+ * @param {string[]} parts
  * @returns {boolean | 'throw' | undefined}
  */
 
@@ -19,7 +19,7 @@ module.exports = function getSubdocumentStrictValue(schema, parts) {
   let strict = undefined;
   for (let i = 0; i < parts.length - 1; ++i) {
     const curSchemaType = schema.path(cur);
-    if (curSchemaType && curSchemaType.schema) {
+    if (curSchemaType?.schema) {
       strict = curSchemaType.schema.options.strict;
       schema = curSchemaType.schema;
       cur = curSchemaType.$isMongooseDocumentArray && !isNaN(parts[i + 1]) ? '' : parts[i + 1];

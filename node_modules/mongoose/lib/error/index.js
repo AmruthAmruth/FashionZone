@@ -13,7 +13,7 @@
  *     err instanceof mongoose.Error.ValidationError; // true
  *
  * @constructor Error
- * @param {String} msg Error message
+ * @param {string} msg Error message
  * @inherits Error https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Error
  */
 
@@ -32,14 +32,14 @@ const MongooseError = require('./mongooseError');
  * - `ValidationError`: error returned from [`validate()`](https://mongoosejs.com/docs/api/document.html#Document.prototype.validate()) or [`validateSync()`](https://mongoosejs.com/docs/api/document.html#Document.prototype.validateSync()). Contains zero or more `ValidatorError` instances in `.errors` property.
  * - `MissingSchemaError`: You called `mongoose.Document()` without a schema
  * - `ObjectExpectedError`: Thrown when you set a nested path to a non-object value with [strict mode set](https://mongoosejs.com/docs/guide.html#strict).
- * - `ObjectParameterError`: Thrown when you pass a non-object value to a function which expects an object as a paramter
+ * - `ObjectParameterError`: Thrown when you pass a non-object value to a function which expects an object as a parameter
  * - `OverwriteModelError`: Thrown when you call [`mongoose.model()`](https://mongoosejs.com/docs/api/mongoose.html#Mongoose.model()) to re-define a model that was already defined.
  * - `ParallelSaveError`: Thrown when you call [`save()`](https://mongoosejs.com/docs/api/model.html#Model.prototype.save()) on a document when the same document instance is already saving.
  * - `StrictModeError`: Thrown when you set a path that isn't the schema and [strict mode](https://mongoosejs.com/docs/guide.html#strict) is set to `throw`.
  * - `VersionError`: Thrown when the [document is out of sync](https://mongoosejs.com/docs/guide.html#versionKey)
  *
  * @api public
- * @property {String} name
+ * @property {string} name
  * @memberOf Error
  * @instance
  */
@@ -65,7 +65,18 @@ MongooseError.messages = require('./messages');
 MongooseError.Messages = MongooseError.messages;
 
 /**
- * An instance of this error class will be returned when `save()` fails
+ * An instance of this error class will be thrown when mongoose failed to
+ * cast a value.
+ *
+ * @api public
+ * @memberOf Error
+ * @static
+ */
+
+MongooseError.CastError = require('./cast');
+
+/**
+ * An instance of this error class will be thrown when `save()` fails
  * because the underlying
  * document was not found. The constructor takes one parameter, the
  * conditions that mongoose passed to `updateOne()` when trying to update
@@ -79,18 +90,7 @@ MongooseError.Messages = MongooseError.messages;
 MongooseError.DocumentNotFoundError = require('./notFound');
 
 /**
- * An instance of this error class will be returned when mongoose failed to
- * cast a value.
- *
- * @api public
- * @memberOf Error
- * @static
- */
-
-MongooseError.CastError = require('./cast');
-
-/**
- * An instance of this error class will be returned when [validation](https://mongoosejs.com/docs/validation.html) failed.
+ * An instance of this error class will be thrown when [validation](https://mongoosejs.com/docs/validation.html) failed.
  * The `errors` property contains an object whose keys are the paths that failed and whose values are
  * instances of CastError or ValidationError.
  *
@@ -137,7 +137,7 @@ MongooseError.ValidationError = require('./validation');
 MongooseError.ValidatorError = require('./validator');
 
 /**
- * An instance of this error class will be returned when you call `save()` after
+ * An instance of this error class will be thrown when you call `save()` after
  * the document in the database was changed in a potentially unsafe way. See
  * the [`versionKey` option](https://mongoosejs.com/docs/guide.html#versionKey) for more information.
  *
@@ -149,7 +149,7 @@ MongooseError.ValidatorError = require('./validator');
 MongooseError.VersionError = require('./version');
 
 /**
- * An instance of this error class will be returned when you call `save()` multiple
+ * An instance of this error class will be thrown when you call `save()` multiple
  * times on the same document in parallel. See the [FAQ](https://mongoosejs.com/docs/faq.html) for more
  * information.
  *
@@ -182,6 +182,16 @@ MongooseError.OverwriteModelError = require('./overwriteModel');
 MongooseError.MissingSchemaError = require('./missingSchema');
 
 /**
+ * Thrown when some documents failed to save when calling `bulkSave()`
+ *
+ * @api public
+ * @memberOf Error
+ * @static
+ */
+
+MongooseError.MongooseBulkSaveIncompleteError = require('./bulkSaveIncompleteError');
+
+/**
  * Thrown when the MongoDB Node driver can't connect to a valid server
  * to send an operation to.
  *
@@ -193,7 +203,7 @@ MongooseError.MissingSchemaError = require('./missingSchema');
 MongooseError.MongooseServerSelectionError = require('./serverSelection');
 
 /**
- * An instance of this error will be returned if you used an array projection
+ * An instance of this error will be thrown if you used an array projection
  * and then modified the array in an unsafe way.
  *
  * @api public

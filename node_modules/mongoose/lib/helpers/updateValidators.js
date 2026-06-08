@@ -7,7 +7,6 @@
 const ValidationError = require('../error/validation');
 const cleanPositionalOperators = require('./schema/cleanPositionalOperators');
 const flatten = require('./common').flatten;
-const modifiedPaths = require('./common').modifiedPaths;
 
 /**
  * Applies validators and defaults to update and findOneAndUpdate operations,
@@ -15,13 +14,13 @@ const modifiedPaths = require('./common').modifiedPaths;
  *
  * @param {Query} query
  * @param {Schema} schema
- * @param {Object} castedDoc
- * @param {Object} options
+ * @param {object} castedDoc
+ * @param {object} options
  * @method runValidatorsOnUpdate
  * @api private
  */
 
-module.exports = function(query, schema, castedDoc, options, callback) {
+module.exports = async function updateValidators(query, schema, castedDoc, options) {
   const keys = Object.keys(castedDoc || {});
   let updatedKeys = {};
   let updatedValues = {};
@@ -29,19 +28,17 @@ module.exports = function(query, schema, castedDoc, options, callback) {
   const arrayAtomicUpdates = {};
   const numKeys = keys.length;
   let hasDollarUpdate = false;
-  const modified = {};
   let currentUpdate;
   let key;
-  let i;
 
-  for (i = 0; i < numKeys; ++i) {
+  for (let i = 0; i < numKeys; ++i) {
     if (keys[i].startsWith('$')) {
       hasDollarUpdate = true;
       if (keys[i] === '$push' || keys[i] === '$addToSet') {
         const _keys = Object.keys(castedDoc[keys[i]]);
         for (let ii = 0; ii < _keys.length; ++ii) {
           currentUpdate = castedDoc[keys[i]][_keys[ii]];
-          if (currentUpdate && currentUpdate.$each) {
+          if (currentUpdate?.$each) {
             arrayAtomicUpdates[_keys[ii]] = (arrayAtomicUpdates[_keys[ii]] || []).
               concat(currentUpdate.$each);
           } else {
@@ -51,7 +48,6 @@ module.exports = function(query, schema, castedDoc, options, callback) {
         }
         continue;
       }
-      modifiedPaths(castedDoc[keys[i]], '', modified);
       const flat = flatten(castedDoc[keys[i]], null, null, schema);
       const paths = Object.keys(flat);
       const numPaths = paths.length;
@@ -76,7 +72,6 @@ module.exports = function(query, schema, castedDoc, options, callback) {
   }
 
   if (!hasDollarUpdate) {
-    modifiedPaths(castedDoc, '', modified);
     updatedValues = flatten(castedDoc, null, null, schema);
     updatedKeys = Object.keys(updatedValues);
   }
@@ -89,161 +84,103 @@ module.exports = function(query, schema, castedDoc, options, callback) {
   const alreadyValidated = [];
 
   const context = query;
-  function iter(i, v) {
+  for (let i = 0; i < numUpdates; ++i) {
+    const v = updatedValues[updates[i]];
     const schemaPath = schema._getSchema(updates[i]);
     if (schemaPath == null) {
-      return;
+      continue;
     }
     if (schemaPath.instance === 'Mixed' && schemaPath.path !== updates[i]) {
-      return;
+      continue;
     }
 
     if (v && Array.isArray(v.$in)) {
       v.$in.forEach((v, i) => {
-        validatorsToExecute.push(function(callback) {
-          schemaPath.doValidate(
-            v,
-            function(err) {
-              if (err) {
-                err.path = updates[i] + '.$in.' + i;
-                validationErrors.push(err);
-              }
-              callback(null);
-            },
-            context,
-            { updateValidator: true });
-        });
+        validatorsToExecute.push(
+          schemaPath.doValidate(v, context, { updateValidator: true }).catch(err => {
+            err.path = updates[i] + '.$in.' + i;
+            validationErrors.push(err);
+          })
+        );
       });
     } else {
       if (isPull[updates[i]] &&
           schemaPath.$isMongooseArray) {
-        return;
+        continue;
       }
 
-      if (schemaPath.$isMongooseDocumentArrayElement && v != null && v.$__ != null) {
+      if (schemaPath.$isMongooseDocumentArrayElement && v?.$__ != null) {
         alreadyValidated.push(updates[i]);
-        validatorsToExecute.push(function(callback) {
-          schemaPath.doValidate(v, function(err) {
-            if (err) {
-              if (err.errors) {
-                for (const key of Object.keys(err.errors)) {
-                  const _err = err.errors[key];
-                  _err.path = updates[i] + '.' + key;
-                  validationErrors.push(_err);
-                }
-              } else {
-                err.path = updates[i];
-                validationErrors.push(err);
+        validatorsToExecute.push(
+          schemaPath.doValidate(v, context, { updateValidator: true }).catch(err => {
+            if (err.errors) {
+              for (const key of Object.keys(err.errors)) {
+                const _err = err.errors[key];
+                _err.path = updates[i] + '.' + key;
+                validationErrors.push(_err);
               }
+            } else {
+              err.path = updates[i];
+              validationErrors.push(err);
             }
-
-            return callback(null);
-          }, context, { updateValidator: true });
-        });
+          })
+        );
       } else {
-        validatorsToExecute.push(function(callback) {
-          for (const path of alreadyValidated) {
-            if (updates[i].startsWith(path + '.')) {
-              return callback(null);
-            }
-          }
-
-          schemaPath.doValidate(v, function(err) {
+        const isAlreadyValidated = alreadyValidated.find(path => updates[i].startsWith(path + '.'));
+        if (isAlreadyValidated) {
+          continue;
+        }
+        if (schemaPath.$isSingleNested) {
+          alreadyValidated.push(updates[i]);
+        }
+        validatorsToExecute.push(
+          schemaPath.doValidate(v, context, { updateValidator: true }).catch(err => {
             if (schemaPath.schema != null &&
                 schemaPath.schema.options.storeSubdocValidationError === false &&
                 err instanceof ValidationError) {
-              return callback(null);
+              return;
             }
 
             if (err) {
               err.path = updates[i];
               validationErrors.push(err);
             }
-            callback(null);
-          }, context, { updateValidator: true });
-        });
+          })
+        );
       }
     }
-  }
-  for (i = 0; i < numUpdates; ++i) {
-    iter(i, updatedValues[updates[i]]);
   }
 
   const arrayUpdates = Object.keys(arrayAtomicUpdates);
   for (const arrayUpdate of arrayUpdates) {
     let schemaPath = schema._getSchema(arrayUpdate);
     if (schemaPath && schemaPath.$isMongooseDocumentArray) {
-      validatorsToExecute.push(function(callback) {
+      validatorsToExecute.push(
         schemaPath.doValidate(
           arrayAtomicUpdates[arrayUpdate],
-          getValidationCallback(arrayUpdate, validationErrors, callback),
-          options && options.context === 'query' ? query : null);
-      });
+          options?.context === 'query' ? query : null
+        ).catch(err => {
+          err.path = arrayUpdate;
+          validationErrors.push(err);
+        })
+      );
     } else {
       schemaPath = schema._getSchema(arrayUpdate + '.0');
       for (const atomicUpdate of arrayAtomicUpdates[arrayUpdate]) {
-        validatorsToExecute.push(function(callback) {
+        validatorsToExecute.push(
           schemaPath.doValidate(
             atomicUpdate,
-            getValidationCallback(arrayUpdate, validationErrors, callback),
-            options && options.context === 'query' ? query : null,
-            { updateValidator: true });
-        });
+            options?.context === 'query' ? query : null,
+            { updateValidator: true }
+          ).catch(err => {
+            err.path = arrayUpdate;
+            validationErrors.push(err);
+          })
+        );
       }
     }
   }
 
-  if (callback != null) {
-    let numValidators = validatorsToExecute.length;
-    if (numValidators === 0) {
-      return _done(callback);
-    }
-    for (const validator of validatorsToExecute) {
-      validator(function() {
-        if (--numValidators <= 0) {
-          _done(callback);
-        }
-      });
-    }
-
-    return;
-  }
-
-  return function(callback) {
-    let numValidators = validatorsToExecute.length;
-    if (numValidators === 0) {
-      return _done(callback);
-    }
-    for (const validator of validatorsToExecute) {
-      validator(function() {
-        if (--numValidators <= 0) {
-          _done(callback);
-        }
-      });
-    }
-  };
-
-  function _done(callback) {
-    if (validationErrors.length) {
-      const err = new ValidationError(null);
-
-      for (const validationError of validationErrors) {
-        err.addError(validationError.path, validationError);
-      }
-
-      return callback(err);
-    }
-    callback(null);
-  }
-
-  function getValidationCallback(arrayUpdate, validationErrors, callback) {
-    return function(err) {
-      if (err) {
-        err.path = arrayUpdate;
-        validationErrors.push(err);
-      }
-      callback(null);
-    };
-  }
+  await Promise.all(validatorsToExecute);
+  return validationErrors;
 };
-

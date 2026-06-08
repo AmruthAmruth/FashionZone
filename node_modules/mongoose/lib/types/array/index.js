@@ -4,7 +4,6 @@
 
 'use strict';
 
-const Document = require('../../document');
 const mongooseArrayMethods = require('./methods');
 
 const arrayAtomicsSymbol = require('../../helpers/symbols').arrayAtomicsSymbol;
@@ -21,7 +20,7 @@ const arraySchemaSymbol = require('../../helpers/symbols').arraySchemaSymbol;
  * _Values always have to be passed to the constructor to initialize, otherwise `MongooseArray#push` will mark the array as modified._
  *
  * @param {Array} values
- * @param {String} path
+ * @param {string} path
  * @param {Document} doc parent document
  * @api private
  * @inherits Array https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
@@ -73,28 +72,24 @@ function MongooseArray(values, path, doc, schematype) {
     internals[arrayAtomicsSymbol] = values[arrayAtomicsSymbol];
   }
 
-  // Because doc comes from the context of another function, doc === global
-  // can happen if there was a null somewhere up the chain (see #3020)
-  // RB Jun 17, 2015 updated to check for presence of expected paths instead
-  // to make more proof against unusual node environments
-  if (doc != null && doc instanceof Document) {
+  if (doc?.$__) {
     internals[arrayParentSymbol] = doc;
     internals[arraySchemaSymbol] = schematype || doc.schema.path(path);
   }
 
   const proxy = new Proxy(__array, {
     get: function(target, prop) {
-      if (internals.hasOwnProperty(prop)) {
+      if (Object.hasOwn(internals, prop)) {
         return internals[prop];
       }
-      if (mongooseArrayMethods.hasOwnProperty(prop)) {
+      if (Object.hasOwn(mongooseArrayMethods, prop)) {
         return mongooseArrayMethods[prop];
       }
-      if (schematype && schematype.virtuals && schematype.virtuals.hasOwnProperty(prop)) {
+      if (schematype?.virtuals && Object.hasOwn(schematype.virtuals, prop)) {
         return schematype.virtuals[prop].applyGetters(undefined, target);
       }
-      if (typeof prop === 'string' && numberRE.test(prop) && schematype?.$embeddedSchemaType != null) {
-        return schematype.$embeddedSchemaType.applyGetters(__array[prop], doc);
+      if (typeof prop === 'string' && numberRE.test(prop) && schematype?.embeddedSchemaType != null) {
+        return schematype.embeddedSchemaType.applyGetters(__array[prop], doc);
       }
 
       return __array[prop];
@@ -102,9 +97,9 @@ function MongooseArray(values, path, doc, schematype) {
     set: function(target, prop, value) {
       if (typeof prop === 'string' && numberRE.test(prop)) {
         mongooseArrayMethods.set.call(proxy, prop, value, false);
-      } else if (internals.hasOwnProperty(prop)) {
+      } else if (Object.hasOwn(internals, prop)) {
         internals[prop] = value;
-      } else if (schematype && schematype.virtuals && schematype.virtuals.hasOwnProperty(prop)) {
+      } else if (schematype?.virtuals && Object.hasOwn(schematype.virtuals, prop)) {
         schematype.virtuals[prop].applySetters(value, target);
       } else {
         __array[prop] = value;

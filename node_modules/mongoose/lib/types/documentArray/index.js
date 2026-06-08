@@ -6,7 +6,6 @@
 
 const ArrayMethods = require('../array/methods');
 const DocumentArrayMethods = require('./methods');
-const Document = require('../../document');
 
 const arrayAtomicsSymbol = require('../../helpers/symbols').arrayAtomicsSymbol;
 const arrayAtomicsBackupSymbol = require('../../helpers/symbols').arrayAtomicsBackupSymbol;
@@ -20,7 +19,7 @@ const numberRE = /^\d+$/;
  * DocumentArray constructor
  *
  * @param {Array} values
- * @param {String} path the path to this array
+ * @param {string} path the path to this array
  * @param {Document} doc parent document
  * @api private
  * @return {MongooseDocumentArray}
@@ -51,11 +50,7 @@ function MongooseDocumentArray(values, path, doc, schematype) {
   internals[arrayPathSymbol] = path;
   internals.__array = __array;
 
-  // Because doc comes from the context of another function, doc === global
-  // can happen if there was a null somewhere up the chain (see #3020 && #3034)
-  // RB Jun 17, 2015 updated to check for presence of expected paths instead
-  // to make more proof against unusual node environments
-  if (doc && doc instanceof Document) {
+  if (doc?.$__) {
     internals[arrayParentSymbol] = doc;
     internals[arraySchemaSymbol] = doc.$__schema.path(path);
 
@@ -66,7 +61,7 @@ function MongooseDocumentArray(values, path, doc, schematype) {
     while (internals[arraySchemaSymbol] != null &&
         internals[arraySchemaSymbol].$isMongooseArray &&
         !internals[arraySchemaSymbol].$isMongooseDocumentArray) {
-      internals[arraySchemaSymbol] = internals[arraySchemaSymbol].casterConstructor;
+      internals[arraySchemaSymbol] = internals[arraySchemaSymbol].embeddedSchemaType;
     }
   }
 
@@ -78,16 +73,16 @@ function MongooseDocumentArray(values, path, doc, schematype) {
           prop === 'isMongooseDocumentArrayProxy') {
         return true;
       }
-      if (internals.hasOwnProperty(prop)) {
+      if (Object.hasOwn(internals, prop)) {
         return internals[prop];
       }
-      if (DocumentArrayMethods.hasOwnProperty(prop)) {
+      if (Object.hasOwn(DocumentArrayMethods, prop)) {
         return DocumentArrayMethods[prop];
       }
-      if (schematype && schematype.virtuals && schematype.virtuals.hasOwnProperty(prop)) {
+      if (schematype?.virtuals && Object.hasOwn(schematype.virtuals, prop)) {
         return schematype.virtuals[prop].applyGetters(undefined, target);
       }
-      if (ArrayMethods.hasOwnProperty(prop)) {
+      if (Object.hasOwn(ArrayMethods, prop)) {
         return ArrayMethods[prop];
       }
 
@@ -96,9 +91,9 @@ function MongooseDocumentArray(values, path, doc, schematype) {
     set: function(target, prop, value) {
       if (typeof prop === 'string' && numberRE.test(prop)) {
         DocumentArrayMethods.set.call(proxy, prop, value, false);
-      } else if (internals.hasOwnProperty(prop)) {
+      } else if (Object.hasOwn(internals, prop)) {
         internals[prop] = value;
-      } else if (schematype && schematype.virtuals && schematype.virtuals.hasOwnProperty(prop)) {
+      } else if (schematype?.virtuals && Object.hasOwn(schematype.virtuals, prop)) {
         schematype.virtuals[prop].applySetters(value, target);
       } else {
         __array[prop] = value;

@@ -1,6 +1,7 @@
 import { BSONError } from '../error';
 import { parseUtf8 } from '../parse_utf8';
 import { tryReadBasicLatin, tryWriteBasicLatin } from './latin';
+import { isUint8Array } from '../parser/utils';
 
 type NodeJsEncoding = 'base64' | 'hex' | 'utf8' | 'binary';
 type NodeJsBuffer = ArrayBufferView &
@@ -10,6 +11,7 @@ type NodeJsBuffer = ArrayBufferView &
     toString: (this: Uint8Array, encoding: NodeJsEncoding, start?: number, end?: number) => string;
     equals: (this: Uint8Array, other: Uint8Array) => boolean;
     swap32: (this: NodeJsBuffer) => NodeJsBuffer;
+    compare: (this: Uint8Array, other: Uint8Array) => -1 | 0 | 1;
   };
 type NodeJsBufferConstructor = Omit<Uint8ArrayConstructor, 'from'> & {
   alloc: (size: number) => NodeJsBuffer;
@@ -17,49 +19,48 @@ type NodeJsBufferConstructor = Omit<Uint8ArrayConstructor, 'from'> & {
   from(array: number[]): NodeJsBuffer;
   from(array: Uint8Array): NodeJsBuffer;
   from(array: ArrayBuffer): NodeJsBuffer;
-  from(array: ArrayBuffer, byteOffset: number, byteLength: number): NodeJsBuffer;
+  from(array: ArrayBufferLike, byteOffset: number, byteLength: number): NodeJsBuffer;
   from(base64: string, encoding: NodeJsEncoding): NodeJsBuffer;
   byteLength(input: string, encoding: 'utf8'): number;
   isBuffer(value: unknown): value is NodeJsBuffer;
+  concat(list: Uint8Array[]): NodeJsBuffer;
 };
 
 // This can be nullish, but we gate the nodejs functions on being exported whether or not this exists
 // Node.js global
 declare const Buffer: NodeJsBufferConstructor;
-declare const require: (mod: 'crypto') => { randomBytes: (byteLength: number) => Uint8Array };
 
 /** @internal */
-export function nodejsMathRandomBytes(byteLength: number) {
+function nodejsMathRandomBytes(byteLength: number): NodeJsBuffer {
   return nodeJsByteUtils.fromNumberArray(
     Array.from({ length: byteLength }, () => Math.floor(Math.random() * 256))
   );
 }
 
-/**
- * @internal
- * WARNING: REQUIRE WILL BE REWRITTEN
- *
- * This code is carefully used by require_rewriter.mjs any modifications must be reflected in the plugin.
- *
- * @remarks
- * "crypto" is the only dependency BSON needs. This presents a problem for creating a bundle of the BSON library
- * in an es module format that can be used both on the browser and in Node.js. In Node.js when BSON is imported as
- * an es module, there will be no global require function defined, making the code below fallback to the much less desireable math.random bytes.
- * In order to make our es module bundle work as expected on Node.js we need to change this `require()` to a dynamic import, and the dynamic
- * import must be top-level awaited since es modules are async. So we rely on a custom rollup plugin to seek out the following lines of code
- * and replace `require` with `await import` and the IIFE line (`nodejsRandomBytes = (() => { ... })()`) with `nodejsRandomBytes = await (async () => { ... })()`
- * when generating an es module bundle.
- */
-const nodejsRandomBytes: (byteLength: number) => Uint8Array = (() => {
-  try {
-    return require('crypto').randomBytes;
-  } catch {
+/** @internal */
+function nodejsSecureRandomBytes(byteLength: number): NodeJsBuffer {
+  // @ts-expect-error: crypto.getRandomValues cannot actually be null here
+  return crypto.getRandomValues(nodeJsByteUtils.allocate(byteLength));
+}
+
+const nodejsRandomBytes = (() => {
+  const { crypto } = globalThis as {
+    crypto?: { getRandomValues?: (space: Uint8Array) => Uint8Array };
+  };
+  if (crypto != null && typeof crypto.getRandomValues === 'function') {
+    return nodejsSecureRandomBytes;
+  } else {
     return nodejsMathRandomBytes;
   }
 })();
 
-/** @internal */
+/**
+ * @public
+ * @experimental
+ */
 export const nodeJsByteUtils = {
+  isUint8Array: isUint8Array,
+
   toLocalBufferType(potentialBuffer: Uint8Array | NodeJsBuffer | ArrayBuffer): NodeJsBuffer {
     if (Buffer.isBuffer(potentialBuffer)) {
       return potentialBuffer;
@@ -95,6 +96,26 @@ export const nodeJsByteUtils = {
     return Buffer.allocUnsafe(size);
   },
 
+  compare(a: Uint8Array, b: Uint8Array) {
+    return nodeJsByteUtils.toLocalBufferType(a).compare(b);
+  },
+
+  concat(list: Uint8Array[]): NodeJsBuffer {
+    return Buffer.concat(list);
+  },
+
+  copy(
+    source: Uint8Array,
+    target: Uint8Array,
+    targetStart?: number,
+    sourceStart?: number,
+    sourceEnd?: number
+  ): number {
+    return nodeJsByteUtils
+      .toLocalBufferType(source)
+      .copy(target, targetStart ?? 0, sourceStart ?? 0, sourceEnd ?? source.length);
+  },
+
   equals(a: Uint8Array, b: Uint8Array): boolean {
     return nodeJsByteUtils.toLocalBufferType(a).equals(b);
   },
@@ -105,6 +126,10 @@ export const nodeJsByteUtils = {
 
   fromBase64(base64: string): NodeJsBuffer {
     return Buffer.from(base64, 'base64');
+  },
+
+  fromUTF8(utf8: string): NodeJsBuffer {
+    return Buffer.from(utf8, 'utf8');
   },
 
   toBase64(buffer: Uint8Array): string {

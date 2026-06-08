@@ -8,7 +8,7 @@ This package contains type definitions for whatwg-url (https://github.com/jsdom/
 Files were exported from https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/whatwg-url.
 
 ### Additional Details
- * Last updated: Sat, 18 May 2024 21:06:54 GMT
+ * Last updated: Tue, 12 Nov 2024 00:46:36 GMT
  * Dependencies: [@types/webidl-conversions](https://npmjs.com/package/@types/webidl-conversions)
 
 # Credits

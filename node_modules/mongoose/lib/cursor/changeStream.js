@@ -18,7 +18,7 @@ const driverChangeStreamEvents = ['close', 'change', 'end', 'error', 'resumeToke
  */
 
 class ChangeStream extends EventEmitter {
-  constructor(changeStreamThunk, pipeline, options) {
+  constructor(changeStreamPromise, pipeline, options) {
     super();
 
     this.driverChangeStream = null;
@@ -28,43 +28,29 @@ class ChangeStream extends EventEmitter {
     this.options = options;
     this.errored = false;
 
-    if (options && options.hydrate && !options.model) {
+    if (options?.hydrate && !options.model) {
       throw new Error(
         'Cannot create change stream with `hydrate: true` ' +
         'unless calling `Model.watch()`'
       );
     }
 
-    let syncError = null;
-    this.$driverChangeStreamPromise = new Promise((resolve, reject) => {
-      // This wrapper is necessary because of buffering.
-      try {
-        changeStreamThunk((err, driverChangeStream) => {
-          if (err != null) {
-            this.errored = true;
-            this.emit('error', err);
-            return reject(err);
-          }
-
-          this.driverChangeStream = driverChangeStream;
-          this.emit('ready');
-          resolve();
-        });
-      } catch (err) {
-        syncError = err;
+    this.$driverChangeStreamPromise = changeStreamPromise.then(
+      driverChangeStream => {
+        this.driverChangeStream = driverChangeStream;
+        // Use setImmediate so the stream pump (_read) has a chance to run and
+        // the driver cursor initializes before 'ready' resolves. Without this,
+        // changes emitted immediately after 'ready' can be missed because the
+        // underlying cursor hasn't sent its initial aggregate to MongoDB yet.
+        setImmediate(() => this.emit('ready'));
+        return this;
+      },
+      err => {
         this.errored = true;
         this.emit('error', err);
-        reject(err);
+        throw err;
       }
-    });
-
-    // Because a ChangeStream is an event emitter, there's no way to register an 'error' handler
-    // that catches errors which occur in the constructor, unless we force sync errors into async
-    // errors with setImmediate(). For cleaner stack trace, we just immediately throw any synchronous
-    // errors that occurred with changeStreamThunk().
-    if (syncError != null) {
-      throw syncError;
-    }
+    );
   }
 
   _bindEvents() {
@@ -83,7 +69,7 @@ class ChangeStream extends EventEmitter {
 
           driverChangeStreamEvents.forEach(ev => {
             this.driverChangeStream.on(ev, data => {
-              if (data != null && data.fullDocument != null && this.options && this.options.hydrate) {
+              if (data?.fullDocument != null && this.options?.hydrate) {
                 data.fullDocument = this.options.model.hydrate(data.fullDocument);
               }
               this.emit(ev, data);
@@ -102,7 +88,7 @@ class ChangeStream extends EventEmitter {
 
     driverChangeStreamEvents.forEach(ev => {
       this.driverChangeStream.on(ev, data => {
-        if (data != null && data.fullDocument != null && this.options && this.options.hydrate) {
+        if (data?.fullDocument != null && this.options?.hydrate) {
           data.fullDocument = this.options.model.hydrate(data.fullDocument);
         }
         this.emit(ev, data);
@@ -114,14 +100,27 @@ class ChangeStream extends EventEmitter {
     if (this.errored) {
       throw new MongooseError('Cannot call hasNext() on errored ChangeStream');
     }
-    return this.driverChangeStream.hasNext(cb);
+
+    if (this.driverChangeStream != null) {
+      return this.driverChangeStream.hasNext(cb);
+    }
+
+    return this.$driverChangeStreamPromise.then(
+      () => this.driverChangeStream.hasNext(cb),
+      err => {
+        if (cb != null) {
+          return cb(err);
+        }
+        throw err;
+      }
+    );
   }
 
   next(cb) {
     if (this.errored) {
       throw new MongooseError('Cannot call next() on errored ChangeStream');
     }
-    if (this.options && this.options.hydrate) {
+    if (this.options?.hydrate) {
       if (cb != null) {
         const originalCb = cb;
         cb = (err, data) => {
@@ -135,8 +134,21 @@ class ChangeStream extends EventEmitter {
         };
       }
 
-      let maybePromise = this.driverChangeStream.next(cb);
-      if (maybePromise && typeof maybePromise.then === 'function') {
+      let maybePromise;
+      if (this.driverChangeStream != null) {
+        maybePromise = this.driverChangeStream.next(cb);
+      } else {
+        maybePromise = this.$driverChangeStreamPromise.then(
+          () => this.driverChangeStream.next(cb),
+          err => {
+            if (cb != null) {
+              return cb(err);
+            }
+            throw err;
+          }
+        );
+      }
+      if (typeof maybePromise?.then === 'function') {
         maybePromise = maybePromise.then(data => {
           if (data.fullDocument != null) {
             data.fullDocument = this.options.model.hydrate(data.fullDocument);
@@ -147,7 +159,19 @@ class ChangeStream extends EventEmitter {
       return maybePromise;
     }
 
-    return this.driverChangeStream.next(cb);
+    if (this.driverChangeStream != null) {
+      return this.driverChangeStream.next(cb);
+    }
+
+    return this.$driverChangeStreamPromise.then(
+      () => this.driverChangeStream.next(cb),
+      err => {
+        if (cb != null) {
+          return cb(err);
+        }
+        throw err;
+      }
+    );
   }
 
   addListener(event, handler) {
@@ -172,10 +196,6 @@ class ChangeStream extends EventEmitter {
     }
     this._bindEvents();
     return super.once(event, handler);
-  }
-
-  _queue(cb) {
-    this.once('ready', () => cb());
   }
 
   close() {

@@ -6,8 +6,8 @@ const CastError = require('../error/cast');
  * Given a value, cast it to a string, or throw a `CastError` if the value
  * cannot be casted. `null` and `undefined` are considered valid.
  *
- * @param {Any} value
- * @param {String} [path] optional the path to set on the CastError
+ * @param {any} value
+ * @param {string} [path] optional the path to set on the CastError
  * @return {string|null|undefined}
  * @throws {CastError}
  * @api private
@@ -20,7 +20,7 @@ module.exports = function castString(value, path) {
   }
 
   // handle documents being passed
-  if (value._id && typeof value._id === 'string') {
+  if (typeof value?._id === 'string') {
     return value._id;
   }
 

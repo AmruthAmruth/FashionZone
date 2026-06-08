@@ -10,17 +10,16 @@ const MongooseError = require('./mongooseError');
  * Constructor for errors that happen when a parameter that's expected to be
  * an object isn't an object
  *
- * @param {Any} value
- * @param {String} paramName
- * @param {String} fnName
+ * @param {any} value
+ * @param {string} paramName
+ * @param {string} fnName
  * @api private
  */
 
 class ObjectParameterError extends MongooseError {
-
   constructor(value, paramName, fnName) {
     super('Parameter "' + paramName + '" to ' + fnName +
-      '() must be an object, got "' + value.toString() + '" (type ' + typeof value + ')');
+      '() must be an object, got "' + (value == null ? value : value.toString()) + '" (type ' + typeof value + ')');
   }
 }
 

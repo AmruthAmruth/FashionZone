@@ -20,24 +20,24 @@ const populateModelSymbol = require('../symbols').populateModelSymbol;
  *
  * @param {Model} model
  * @param {Schema} schema
- * @param {Object} doc POJO
+ * @param {object} doc POJO
  * @param {string} path
+ * @param {string[]} [parts] pass in pre-split `path` to avoid extra splitting
  * @api private
  */
 
-module.exports = function getSchemaTypes(model, schema, doc, path) {
+module.exports = function getSchemaTypes(model, schema, doc, path, parts) {
   const pathschema = schema.path(path);
   const topLevelDoc = doc;
   if (pathschema) {
     return pathschema;
   }
 
-  const discriminatorKey = schema.discriminatorMapping &&
-    schema.discriminatorMapping.key;
+  const discriminatorKey = schema.discriminatorMapping?.key;
   if (discriminatorKey && model != null) {
-    if (doc != null && doc[discriminatorKey] != null) {
+    if (doc?.[discriminatorKey] != null) {
       const discriminator = getDiscriminatorByValue(model.discriminators, doc[discriminatorKey]);
-      schema = discriminator ? discriminator.schema : schema;
+      schema = discriminator?.schema || schema;
     } else if (model.discriminators != null) {
       return Object.keys(model.discriminators).reduce((arr, name) => {
         const disc = model.discriminators[name];
@@ -58,14 +58,14 @@ module.exports = function getSchemaTypes(model, schema, doc, path) {
         continue;
       }
 
-      if (foundschema.caster) {
+      if (foundschema.embeddedSchemaType || foundschema.schema) {
         // array of Mixed?
-        if (foundschema.caster instanceof Mixed) {
-          return foundschema.caster;
+        if (foundschema.embeddedSchemaType instanceof Mixed) {
+          return foundschema.embeddedSchemaType;
         }
 
         let schemas = null;
-        if (foundschema.schema != null && foundschema.schema.discriminators != null) {
+        if (foundschema.schema?.discriminators != null) {
           const discriminators = foundschema.schema.discriminators;
           const discriminatorKeyPath = trypath + '.' +
             foundschema.schema.options.discriminatorKey;
@@ -142,11 +142,11 @@ module.exports = function getSchemaTypes(model, schema, doc, path) {
           }
         } else if (p !== parts.length &&
             foundschema.$isMongooseArray &&
-            foundschema.casterConstructor.$isMongooseArray) {
+            foundschema.embeddedSchemaType.$isMongooseArray) {
           // Nested arrays. Drill down to the bottom of the nested array.
           let type = foundschema;
           while (type.$isMongooseArray && !type.$isMongooseDocumentArray) {
-            type = type.casterConstructor;
+            type = type.embeddedSchemaType;
           }
 
           const ret = search(
@@ -178,8 +178,8 @@ module.exports = function getSchemaTypes(model, schema, doc, path) {
       }
 
       const fullPath = nestedPath.concat([trypath]).join('.');
-      if (topLevelDoc != null && topLevelDoc.$__ && topLevelDoc.$populated(fullPath) && p < parts.length) {
-        const model = doc.$__.populated[fullPath].options[populateModelSymbol];
+      if (topLevelDoc?.$__ && topLevelDoc.$populated(fullPath, true) && p < parts.length) {
+        const model = topLevelDoc.$populated(fullPath, true).options[populateModelSymbol];
         if (model != null) {
           const ret = search(
             parts.slice(p),
@@ -198,7 +198,7 @@ module.exports = function getSchemaTypes(model, schema, doc, path) {
           leanPopulateMap.get(_val[0]) :
           leanPopulateMap.get(_val);
         // Populated using lean, `leanPopulateMap` value is the foreign model
-        const schema = model != null ? model.schema : null;
+        const schema = model?.schema ?? null;
         if (schema != null) {
           const ret = search(
             parts.slice(p),
@@ -218,7 +218,7 @@ module.exports = function getSchemaTypes(model, schema, doc, path) {
     }
   }
   // look for arrays
-  const parts = path.split('.');
+  parts = parts || path.split('.');
   for (let i = 0; i < parts.length; ++i) {
     if (parts[i] === '$') {
       // Re: gh-5628, because `schema.path()` doesn't take $ into account.

@@ -6,8 +6,7 @@ const redact_1 = require("./redact");
 Object.defineProperty(exports, "redactConnectionString", { enumerable: true, get: function () { return redact_1.redactConnectionString; } });
 const DUMMY_HOSTNAME = '__this_is_a_placeholder__';
 function connectionStringHasValidScheme(connectionString) {
-    return (connectionString.startsWith('mongodb://') ||
-        connectionString.startsWith('mongodb+srv://'));
+    return connectionString.startsWith('mongodb://') || connectionString.startsWith('mongodb+srv://');
 }
 const HOSTS_REGEX = /^(?<protocol>[^/]+):\/\/(?:(?<username>[^:@]*)(?::(?<password>[^@]*))?@)?(?<hosts>(?!:)[^/?@]*)(?<rest>.*)/;
 class CaseInsensitiveMap extends Map {
@@ -79,8 +78,8 @@ class MongoParseError extends Error {
     }
 }
 class ConnectionString extends URLWithoutHost {
+    _hosts;
     constructor(uri, options = {}) {
-        var _a;
         const { looseValidation } = options;
         if (!looseValidation && !connectionStringHasValidScheme(uri)) {
             throw new MongoParseError('Invalid scheme, expected connection string to start with "mongodb://" or "mongodb+srv://"');
@@ -89,20 +88,20 @@ class ConnectionString extends URLWithoutHost {
         if (!match) {
             throw new MongoParseError(`Invalid connection string "${uri}"`);
         }
-        const { protocol, username, password, hosts, rest } = (_a = match.groups) !== null && _a !== void 0 ? _a : {};
+        const { protocol, username, password, hosts, rest } = match.groups ?? {};
         if (!looseValidation) {
             if (!protocol || !hosts) {
                 throw new MongoParseError(`Protocol and host list are required in "${uri}"`);
             }
             try {
-                decodeURIComponent(username !== null && username !== void 0 ? username : '');
-                decodeURIComponent(password !== null && password !== void 0 ? password : '');
+                decodeURIComponent(username ?? '');
+                decodeURIComponent(password ?? '');
             }
             catch (err) {
                 throw new MongoParseError(err.message);
             }
             const illegalCharacters = /[:/?#[\]@]/gi;
-            if (username === null || username === void 0 ? void 0 : username.match(illegalCharacters)) {
+            if (username?.match(illegalCharacters)) {
                 throw new MongoParseError(`Username contains unescaped characters ${username}`);
             }
             if (!username || !password) {
@@ -111,7 +110,7 @@ class ConnectionString extends URLWithoutHost {
                     throw new MongoParseError('URI contained empty userinfo section');
                 }
             }
-            if (password === null || password === void 0 ? void 0 : password.match(illegalCharacters)) {
+            if (password?.match(illegalCharacters)) {
                 throw new MongoParseError('Password contains unescaped characters');
             }
         }
@@ -151,14 +150,30 @@ class ConnectionString extends URLWithoutHost {
         }
         Object.setPrototypeOf(this.searchParams, caseInsenstiveURLSearchParams(this.searchParams.constructor).prototype);
     }
-    get host() { return DUMMY_HOSTNAME; }
-    set host(_ignored) { throw new Error('No single host for connection string'); }
-    get hostname() { return DUMMY_HOSTNAME; }
-    set hostname(_ignored) { throw new Error('No single host for connection string'); }
-    get port() { return ''; }
-    set port(_ignored) { throw new Error('No single host for connection string'); }
-    get href() { return this.toString(); }
-    set href(_ignored) { throw new Error('Cannot set href for connection strings'); }
+    get host() {
+        return DUMMY_HOSTNAME;
+    }
+    set host(_ignored) {
+        throw new Error('No single host for connection string');
+    }
+    get hostname() {
+        return DUMMY_HOSTNAME;
+    }
+    set hostname(_ignored) {
+        throw new Error('No single host for connection string');
+    }
+    get port() {
+        return '';
+    }
+    set port(_ignored) {
+        throw new Error('No single host for connection string');
+    }
+    get href() {
+        return this.toString();
+    }
+    set href(_ignored) {
+        throw new Error('Cannot set href for connection strings');
+    }
     get isSRV() {
         return this.protocol.includes('srv');
     }
@@ -180,19 +195,30 @@ class ConnectionString extends URLWithoutHost {
         return (0, redact_1.redactValidConnectionString)(this, options);
     }
     typedSearchParams() {
-        const sametype = false && new (caseInsenstiveURLSearchParams(whatwg_url_1.URLSearchParams))();
+        const _sametype = false && new (caseInsenstiveURLSearchParams(whatwg_url_1.URLSearchParams))();
         return this.searchParams;
     }
     [Symbol.for('nodejs.util.inspect.custom')]() {
         const { href, origin, protocol, username, password, hosts, pathname, search, searchParams, hash } = this;
-        return { href, origin, protocol, username, password, hosts, pathname, search, searchParams, hash };
+        return {
+            href,
+            origin,
+            protocol,
+            username,
+            password,
+            hosts,
+            pathname,
+            search,
+            searchParams,
+            hash
+        };
     }
 }
 exports.ConnectionString = ConnectionString;
 class CommaAndColonSeparatedRecord extends CaseInsensitiveMap {
     constructor(from) {
         super();
-        for (const entry of (from !== null && from !== void 0 ? from : '').split(',')) {
+        for (const entry of (from ?? '').split(',')) {
             if (!entry)
                 continue;
             const colonIndex = entry.indexOf(':');

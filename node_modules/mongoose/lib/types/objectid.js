@@ -10,7 +10,7 @@
 
 'use strict';
 
-const ObjectId = require('bson').ObjectId;
+const ObjectId = require('mongodb/lib/bson').ObjectId;
 const objectIdSymbol = require('../helpers/symbols').objectIdSymbol;
 
 /**
@@ -30,7 +30,7 @@ Object.defineProperty(ObjectId.prototype, '_id', {
  * Convenience `valueOf()` to allow comparing ObjectIds using double equals re: gh-7299
  */
 
-if (!ObjectId.prototype.hasOwnProperty('valueOf')) {
+if (!Object.hasOwn(ObjectId.prototype, 'valueOf')) {
   ObjectId.prototype.valueOf = function objectIdValueOf() {
     return this.toString();
   };

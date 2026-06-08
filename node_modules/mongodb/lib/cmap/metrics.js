@@ -8,6 +8,9 @@ class ConnectionPoolMetrics {
         this.cursorConnections = 0;
         this.otherConnections = 0;
     }
+    static { this.TXN = 'txn'; }
+    static { this.CURSOR = 'cursor'; }
+    static { this.OTHER = 'other'; }
     /**
      * Mark a connection as pinned for a specific operation.
      */
@@ -56,7 +59,4 @@ class ConnectionPoolMetrics {
     }
 }
 exports.ConnectionPoolMetrics = ConnectionPoolMetrics;
-ConnectionPoolMetrics.TXN = 'txn';
-ConnectionPoolMetrics.CURSOR = 'cursor';
-ConnectionPoolMetrics.OTHER = 'other';
 //# sourceMappingURL=metrics.js.map

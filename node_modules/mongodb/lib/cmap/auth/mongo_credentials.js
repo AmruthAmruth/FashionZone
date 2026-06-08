@@ -35,7 +35,8 @@ exports.DEFAULT_ALLOWED_HOSTS = [
     '*.mongodbgov.net',
     'localhost',
     '127.0.0.1',
-    '::1'
+    '::1',
+    '*.mongo.com'
 ];
 /** Error for when the token audience is missing in the environment. */
 const TOKEN_RESOURCE_MISSING_ERROR = 'TOKEN_RESOURCE must be set in the auth mechanism properties when ENVIRONMENT is azure or gcp.';
@@ -53,21 +54,6 @@ class MongoCredentials {
         }
         this.mechanism = options.mechanism || providers_1.AuthMechanism.MONGODB_DEFAULT;
         this.mechanismProperties = options.mechanismProperties || {};
-        if (this.mechanism.match(/MONGODB-AWS/i)) {
-            if (!this.username && process.env.AWS_ACCESS_KEY_ID) {
-                this.username = process.env.AWS_ACCESS_KEY_ID;
-            }
-            if (!this.password && process.env.AWS_SECRET_ACCESS_KEY) {
-                this.password = process.env.AWS_SECRET_ACCESS_KEY;
-            }
-            if (this.mechanismProperties.AWS_SESSION_TOKEN == null &&
-                process.env.AWS_SESSION_TOKEN != null) {
-                this.mechanismProperties = {
-                    ...this.mechanismProperties,
-                    AWS_SESSION_TOKEN: process.env.AWS_SESSION_TOKEN
-                };
-            }
-        }
         if (this.mechanism === providers_1.AuthMechanism.MONGODB_OIDC && !this.mechanismProperties.ALLOWED_HOSTS) {
             this.mechanismProperties = {
                 ...this.mechanismProperties,

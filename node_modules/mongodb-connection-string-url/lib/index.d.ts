@@ -38,7 +38,7 @@ export declare class ConnectionString extends URLWithoutHost {
     toString(): string;
     clone(): ConnectionString;
     redact(options?: ConnectionStringRedactionOptions): ConnectionString;
-    typedSearchParams<T extends {}>(): {
+    typedSearchParams<T extends Record<string, any>>(): {
         append(name: keyof T & string, value: any): void;
         delete(name: keyof T & string): void;
         get(name: keyof T & string): string | null;
@@ -50,12 +50,13 @@ export declare class ConnectionString extends URLWithoutHost {
         entries(): IterableIterator<[keyof T & string, string]>;
         _normalizeKey(name: keyof T & string): string;
         [Symbol.iterator](): IterableIterator<[keyof T & string, string]>;
+        get size(): number;
         sort(): void;
         forEach<THIS_ARG = void>(callback: (this: THIS_ARG, value: string, name: string, searchParams: any) => void, thisArg?: THIS_ARG | undefined): void;
         readonly [Symbol.toStringTag]: "URLSearchParams";
     };
 }
-export declare class CommaAndColonSeparatedRecord<K extends {} = Record<string, unknown>> extends CaseInsensitiveMap<keyof K & string> {
+export declare class CommaAndColonSeparatedRecord<K extends Record<string, unknown> = Record<string, unknown>> extends CaseInsensitiveMap<keyof K & string> {
     constructor(from?: string | null);
     toString(): string;
 }

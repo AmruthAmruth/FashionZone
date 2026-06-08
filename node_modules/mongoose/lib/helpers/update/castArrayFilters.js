@@ -4,9 +4,13 @@ const castFilterPath = require('../query/castFilterPath');
 const cleanPositionalOperators = require('../schema/cleanPositionalOperators');
 const getPath = require('../schema/getPath');
 const updatedPathsByArrayFilter = require('./updatedPathsByArrayFilter');
+const utils = require('../../utils');
 
 module.exports = function castArrayFilters(query) {
   const arrayFilters = query.options.arrayFilters;
+  if (!Array.isArray(arrayFilters)) {
+    return;
+  }
   const update = query.getUpdate();
   const schema = query.schema;
   const updatedPathsByFilter = updatedPathsByArrayFilter(update);
@@ -15,7 +19,7 @@ module.exports = function castArrayFilters(query) {
   if (query._mongooseOptions.strict != null) {
     strictQuery = query._mongooseOptions.strict;
   }
-  if (query.model && query.model.base.options.strictQuery != null) {
+  if (query.model?.base.options.strictQuery != null) {
     strictQuery = query.model.base.options.strictQuery;
   }
   if (schema._userProvidedOptions.strictQuery != null) {
@@ -29,9 +33,9 @@ module.exports = function castArrayFilters(query) {
 };
 
 function _castArrayFilters(arrayFilters, schema, strictQuery, updatedPathsByFilter, query) {
-  if (!Array.isArray(arrayFilters)) {
-    return;
-  }
+  // Map to store discriminator values for embedded documents in the array filters.
+  // This is used to handle cases where array filters target specific embedded document types.
+  const discriminatorValueMap = {};
 
   for (const filter of arrayFilters) {
     if (filter == null) {
@@ -58,19 +62,19 @@ function _castArrayFilters(arrayFilters, schema, strictQuery, updatedPathsByFilt
       updatedPathsByFilter[filterWildcardPath]
     );
 
-    const baseSchematype = getPath(schema, baseFilterPath);
+    const baseSchematype = getPath(schema, baseFilterPath, discriminatorValueMap);
     let filterBaseSchema = baseSchematype != null ? baseSchematype.schema : null;
-    if (filterBaseSchema != null &&
-        filterBaseSchema.discriminators != null &&
+    if (filterBaseSchema?.discriminators != null &&
         filter[filterWildcardPath + '.' + filterBaseSchema.options.discriminatorKey]) {
       filterBaseSchema = filterBaseSchema.discriminators[filter[filterWildcardPath + '.' + filterBaseSchema.options.discriminatorKey]] || filterBaseSchema;
+      discriminatorValueMap[baseFilterPath] = filter[filterWildcardPath + '.' + filterBaseSchema.options.discriminatorKey];
     }
 
     for (const key of keys) {
       if (updatedPathsByFilter[key] === null) {
         continue;
       }
-      if (Object.keys(updatedPathsByFilter).length === 0) {
+      if (utils.hasOwnKeys(updatedPathsByFilter) === false) {
         continue;
       }
       const dot = key.indexOf('.');
@@ -83,7 +87,7 @@ function _castArrayFilters(arrayFilters, schema, strictQuery, updatedPathsByFilt
         // If there are multiple array filters in the path being updated, make sure
         // to replace them so we can get the schema path.
         filterPathRelativeToBase = cleanPositionalOperators(filterPathRelativeToBase);
-        schematype = getPath(filterBaseSchema, filterPathRelativeToBase);
+        schematype = getPath(filterBaseSchema, filterPathRelativeToBase, discriminatorValueMap);
       }
 
       if (schematype == null) {

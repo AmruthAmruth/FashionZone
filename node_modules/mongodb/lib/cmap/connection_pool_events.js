@@ -86,7 +86,7 @@ class ConnectionReadyEvent extends ConnectionPoolMonitoringEvent {
         super(pool);
         /** @internal */
         this.name = constants_1.CONNECTION_READY;
-        this.durationMS = (0, utils_1.now)() - connectionCreatedEventTime;
+        this.durationMS = (0, utils_1.processTimeMS)() - connectionCreatedEventTime;
         this.connectionId = connection.id;
     }
 }
@@ -134,7 +134,7 @@ class ConnectionCheckOutFailedEvent extends ConnectionPoolMonitoringEvent {
         super(pool);
         /** @internal */
         this.name = constants_1.CONNECTION_CHECK_OUT_FAILED;
-        this.durationMS = (0, utils_1.now)() - checkoutTime;
+        this.durationMS = (0, utils_1.processTimeMS)() - checkoutTime;
         this.reason = reason;
         this.error = error;
     }
@@ -151,7 +151,7 @@ class ConnectionCheckedOutEvent extends ConnectionPoolMonitoringEvent {
         super(pool);
         /** @internal */
         this.name = constants_1.CONNECTION_CHECKED_OUT;
-        this.durationMS = (0, utils_1.now)() - checkoutTime;
+        this.durationMS = (0, utils_1.processTimeMS)() - checkoutTime;
         this.connectionId = connection.id;
     }
 }

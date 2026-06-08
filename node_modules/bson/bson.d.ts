@@ -12,7 +12,10 @@ export declare class Binary extends BSONValue {
     static readonly SUBTYPE_DEFAULT = 0;
     /** Function BSON type */
     static readonly SUBTYPE_FUNCTION = 1;
-    /** Byte Array BSON type */
+    /**
+     * Legacy default BSON Binary type
+     * @deprecated BSON Binary subtype 2 is deprecated in the BSON specification
+     */
     static readonly SUBTYPE_BYTE_ARRAY = 2;
     /** Deprecated UUID BSON type @deprecated Please use SUBTYPE_UUID */
     static readonly SUBTYPE_UUID_OLD = 3;
@@ -204,6 +207,9 @@ declare namespace BSON {
         Decimal128Extended,
         DoubleExtended,
         EJSONOptions,
+        EJSONOptionsBase,
+        EJSONSerializeOptions,
+        EJSONParseOptions,
         Int32Extended,
         LongExtended,
         MaxKeyExtended,
@@ -233,7 +239,11 @@ declare namespace BSON {
         MaxKey,
         BSONRegExp,
         Decimal128,
+        NumberUtils,
+        ByteUtils,
         BSONValue,
+        bsonType,
+        BSONTypeTag,
         BSONError,
         BSONVersionError,
         BSONRuntimeError,
@@ -409,9 +419,16 @@ export declare const BSONType: Readonly<{
 export declare type BSONType = (typeof BSONType)[keyof typeof BSONType];
 
 /** @public */
+export declare const bsonType: unique symbol;
+
+/** @public */
+export declare type BSONTypeTag = 'BSONRegExp' | 'BSONSymbol' | 'ObjectId' | 'Binary' | 'Decimal128' | 'Double' | 'Int32' | 'Long' | 'MaxKey' | 'MinKey' | 'Timestamp' | 'Code' | 'DBRef';
+
+/** @public */
 export declare abstract class BSONValue {
     /** @public */
-    abstract get _bsontype(): string;
+    abstract get _bsontype(): BSONTypeTag;
+    get [bsonType](): this['_bsontype'];
     /* Excluded from this release type: [BSON_VERSION_SYMBOL] */
     /**
      * @public
@@ -438,19 +455,29 @@ export declare class BSONVersionError extends BSONError {
  * A collection of functions that help work with data in a Uint8Array.
  * ByteUtils is configured at load time to use Node.js or Web based APIs for the internal implementations.
  */
-declare type ByteUtils = {
+export declare type ByteUtils = {
+    /** Checks if the given value is a Uint8Array. */
+    isUint8Array: (value: unknown) => value is Uint8Array;
     /** Transforms the input to an instance of Buffer if running on node, otherwise Uint8Array */
     toLocalBufferType: (buffer: Uint8Array | ArrayBufferView | ArrayBuffer) => Uint8Array;
     /** Create empty space of size */
     allocate: (size: number) => Uint8Array;
     /** Create empty space of size, use pooled memory when available */
     allocateUnsafe: (size: number) => Uint8Array;
+    /** Compare 2 Uint8Arrays lexicographically */
+    compare: (buffer1: Uint8Array, buffer2: Uint8Array) => -1 | 0 | 1;
+    /** Concatenating all the Uint8Arrays in new Uint8Array. */
+    concat: (list: Uint8Array[]) => Uint8Array;
+    /** Copy bytes from source Uint8Array to target Uint8Array */
+    copy: (source: Uint8Array, target: Uint8Array, targetStart?: number, sourceStart?: number, sourceEnd?: number) => number;
     /** Check if two Uint8Arrays are deep equal */
     equals: (a: Uint8Array, b: Uint8Array) => boolean;
-    /** Check if two Uint8Arrays are deep equal */
+    /** Create a Uint8Array from an array of numbers */
     fromNumberArray: (array: number[]) => Uint8Array;
     /** Create a Uint8Array from a base64 string */
     fromBase64: (base64: string) => Uint8Array;
+    /** Create a Uint8Array from a UTF8 string */
+    fromUTF8: (utf8: string) => Uint8Array;
     /** Create a base64 string from bytes */
     toBase64: (buffer: Uint8Array) => string;
     /** **Legacy** binary strings are an outdated method of data transfer. Do not add public API support for interpreting this format */
@@ -473,7 +500,16 @@ declare type ByteUtils = {
     swap32: (buffer: Uint8Array) => Uint8Array;
 };
 
-/* Excluded declaration from this release type: ByteUtils */
+/**
+ * This is the only ByteUtils that should be used across the rest of the BSON library.
+ *
+ * The type annotation is important here, it asserts that each of the platform specific
+ * utils implementations are compatible with the common one.
+ *
+ * @public
+ * @experimental
+ */
+export declare const ByteUtils: ByteUtils;
 
 /**
  * Calculate the bson size for a passed in Javascript object.
@@ -751,10 +787,13 @@ export declare const EJSON: {
  * @param ejson - The Extended JSON object to deserialize
  * @param options - Optional settings passed to the parse method
  */
-declare function EJSONdeserialize(ejson: Document, options?: EJSONOptions): any;
+declare function EJSONdeserialize(ejson: Document, options?: EJSONParseOptions): any;
 
 /** @public */
-export declare type EJSONOptions = {
+export declare type EJSONOptions = EJSONSerializeOptions & EJSONParseOptions;
+
+/** @public */
+export declare type EJSONOptionsBase = {
     /**
      * Output using the Extended JSON v1 spec
      * @defaultValue `false`
@@ -762,8 +801,13 @@ export declare type EJSONOptions = {
     legacy?: boolean;
     /**
      * Enable Extended JSON's `relaxed` mode, which attempts to return native JS types where possible, rather than BSON types
-     * @defaultValue `false` */
+     * @defaultValue `false`
+     */
     relaxed?: boolean;
+};
+
+/** @public */
+export declare type EJSONParseOptions = EJSONOptionsBase & {
     /**
      * Enable native bigint support
      * @defaultValue `false`
@@ -777,7 +821,16 @@ export declare type EJSONOptions = {
  * @param value - The object to serialize
  * @param options - Optional settings passed to the `stringify` function
  */
-declare function EJSONserialize(value: any, options?: EJSONOptions): Document;
+declare function EJSONserialize(value: any, options?: EJSONSerializeOptions): Document;
+
+/** @public */
+export declare type EJSONSerializeOptions = EJSONOptionsBase & {
+    /**
+     * Omits undefined values from the output instead of converting them to null
+     * @defaultValue `false`
+     */
+    ignoreUndefined?: boolean;
+};
 
 declare type InspectFn = (x: unknown, options?: unknown) => string;
 
@@ -1309,7 +1362,7 @@ export declare interface MinKeyExtended {
  *
  * A collection of functions that get or set various numeric types and bit widths from a Uint8Array.
  */
-declare type NumberUtils = {
+export declare type NumberUtils = {
     /** Is true if the current system is big endian. */
     isBigEndian: boolean;
     /**
@@ -1333,7 +1386,7 @@ declare type NumberUtils = {
  * @experimental
  * @public
  */
-declare const NumberUtils: NumberUtils;
+export declare const NumberUtils: NumberUtils;
 
 /**
  * A class representation of the BSON ObjectId type.
@@ -1345,13 +1398,8 @@ export declare class ObjectId extends BSONValue {
     /* Excluded from this release type: index */
     static cacheHexString: boolean;
     /* Excluded from this release type: buffer */
-    /**
-     * Create ObjectId from a number.
-     *
-     * @param inputId - A number.
-     * @deprecated Instead, use `static createFromTime()` to set a numeric value for the new ObjectId.
-     */
-    constructor(inputId: number);
+    /** To generate a new ObjectId, use ObjectId() with no argument. */
+    constructor();
     /**
      * Create ObjectId from a 24 character hex string.
      *
@@ -1376,14 +1424,12 @@ export declare class ObjectId extends BSONValue {
      * @param inputId - A 12 byte binary Buffer.
      */
     constructor(inputId: Uint8Array);
-    /** To generate a new ObjectId, use ObjectId() with no argument. */
-    constructor();
     /**
      * Implementation overload.
      *
      * @param inputId - All input types that are used in the constructor implementation.
      */
-    constructor(inputId?: string | number | ObjectId | ObjectIdLike | Uint8Array);
+    constructor(inputId?: string | ObjectId | ObjectIdLike | Uint8Array);
     /**
      * The ObjectId bytes
      * @readonly
@@ -1436,7 +1482,7 @@ export declare class ObjectId extends BSONValue {
      * Checks if a value can be used to create a valid bson ObjectId
      * @param id - any JS value
      */
-    static isValid(id: string | number | ObjectId | ObjectIdLike | Uint8Array): boolean;
+    static isValid(id: string | ObjectId | ObjectIdLike | Uint8Array): boolean;
     /* Excluded from this release type: toExtendedJSON */
     /* Excluded from this release type: fromExtendedJSON */
     /* Excluded from this release type: isCached */
@@ -1495,7 +1541,7 @@ export declare const onDemand: OnDemand;
  * console.log(EJSON.parse(text));
  * ```
  */
-declare function parse(text: string, options?: EJSONOptions): any;
+declare function parse(text: string, options?: EJSONParseOptions): any;
 
 /**
  * Serialize a Javascript object.
@@ -1574,7 +1620,7 @@ export declare function setInternalBufferSize(size: number): void;
  * console.log(EJSON.stringify(doc));
  * ```
  */
-declare function stringify(value: any, replacer?: (number | string)[] | ((this: any, key: string, value: any) => any) | EJSONOptions, space?: string | number, options?: EJSONOptions): string;
+declare function stringify(value: any, replacer?: (number | string)[] | ((this: any, key: string, value: any) => any) | EJSONSerializeOptions, space?: string | number, options?: EJSONSerializeOptions): string;
 
 /**
  * @public
@@ -1584,6 +1630,7 @@ declare function stringify(value: any, replacer?: (number | string)[] | ((this: 
  */
 export declare class Timestamp extends LongWithoutOverridesClass {
     get _bsontype(): 'Timestamp';
+    get [bsonType](): 'Timestamp';
     static readonly MAX_VALUE: Long;
     /**
      * An incrementing ordinal for operations within a given second.
@@ -1643,7 +1690,7 @@ export declare interface TimestampExtended {
 }
 
 /** @public */
-export declare type TimestampOverrides = '_bsontype' | 'toExtendedJSON' | 'fromExtendedJSON' | 'inspect';
+export declare type TimestampOverrides = '_bsontype' | 'toExtendedJSON' | 'fromExtendedJSON' | 'inspect' | typeof bsonType;
 
 /**
  * A class representation of the BSON UUID type.

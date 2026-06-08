@@ -6,9 +6,9 @@
  * document.
  *
  * @param {Document} doc
- * @param {String[]} parts
+ * @param {string[]} parts
  * @param {Schema} schema
- * @returns Document
+ * @returns {Document}
  */
 
 module.exports = function getDeepestSubdocumentForPath(doc, parts, schema) {
@@ -17,7 +17,7 @@ module.exports = function getDeepestSubdocumentForPath(doc, parts, schema) {
   let subdoc = doc;
   for (let i = 0; i < parts.length - 1; ++i) {
     const curSchemaType = curSchema.path(curPath);
-    if (curSchemaType && curSchemaType.schema) {
+    if (curSchemaType?.schema) {
       let newSubdoc = subdoc.get(curPath);
       curSchema = curSchemaType.schema;
       curPath = parts[i + 1];

@@ -45,26 +45,26 @@ Object.defineProperty(SchemaStringOptions.prototype, 'enum', opts);
 Object.defineProperty(SchemaStringOptions.prototype, 'match', opts);
 
 /**
- * If truthy, Mongoose will add a custom setter that lowercases this string
+ * If truthy, Mongoose will add a [custom setter](https://mongoosejs.com/docs/api/schematype.html#SchemaType.prototype.set()) that lowercases this string
  * using JavaScript's built-in `String#toLowerCase()`.
  *
  * @api public
  * @property lowercase
  * @memberOf SchemaStringOptions
- * @type {Boolean}
+ * @type {boolean}
  * @instance
  */
 
 Object.defineProperty(SchemaStringOptions.prototype, 'lowercase', opts);
 
 /**
- * If truthy, Mongoose will add a custom setter that removes leading and trailing
+ * If truthy, Mongoose will add a [custom setter](https://mongoosejs.com/docs/api/schematype.html#SchemaType.prototype.set()) that removes leading and trailing
  * whitespace using [JavaScript's built-in `String#trim()`](https://masteringjs.io/tutorials/fundamentals/trim-string).
  *
  * @api public
  * @property trim
  * @memberOf SchemaStringOptions
- * @type {Boolean}
+ * @type {boolean}
  * @instance
  */
 
@@ -77,7 +77,7 @@ Object.defineProperty(SchemaStringOptions.prototype, 'trim', opts);
  * @api public
  * @property uppercase
  * @memberOf SchemaStringOptions
- * @type {Boolean}
+ * @type {boolean}
  * @instance
  */
 
@@ -94,7 +94,7 @@ Object.defineProperty(SchemaStringOptions.prototype, 'uppercase', opts);
  * @api public
  * @property minLength
  * @memberOf SchemaStringOptions
- * @type {Number}
+ * @type {number}
  * @instance
  */
 
@@ -112,7 +112,7 @@ Object.defineProperty(SchemaStringOptions.prototype, 'minlength', opts);
  * @api public
  * @property maxLength
  * @memberOf SchemaStringOptions
- * @type {Number}
+ * @type {number}
  * @instance
  */
 
@@ -125,7 +125,7 @@ Object.defineProperty(SchemaStringOptions.prototype, 'maxlength', opts);
  * @api public
  * @property populate
  * @memberOf SchemaStringOptions
- * @type {Object}
+ * @type {object}
  * @instance
  */
 

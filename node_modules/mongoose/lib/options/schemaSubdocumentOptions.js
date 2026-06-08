@@ -31,12 +31,59 @@ const opts = require('./propertyOptions');
  *     parentSchema.path('child').schema.options._id; // false
  *
  * @api public
- * @property of
+ * @property _id
  * @memberOf SchemaSubdocumentOptions
  * @type {Function|string}
  * @instance
  */
 
 Object.defineProperty(SchemaSubdocumentOptions.prototype, '_id', opts);
+
+/**
+ * If set, overwrites the child schema's `minimize` option. In addition, configures whether the entire
+ * subdocument can be minimized out.
+ *
+ * #### Example:
+ *
+ *     const childSchema = Schema({ name: String });
+ *     const parentSchema = Schema({
+ *       child: { type: childSchema, minimize: false }
+ *     });
+ *     const ParentModel = mongoose.model('Parent', parentSchema);
+ *     // Saves `{ child: {} }` to the db. Without `minimize: false`, Mongoose would remove the empty
+ *     // object and save `{}` to the db.
+ *     await ParentModel.create({ child: {} });
+ *
+ * @api public
+ * @property minimize
+ * @memberOf SchemaSubdocumentOptions
+ * @type {Function|string}
+ * @instance
+ */
+
+Object.defineProperty(SchemaSubdocumentOptions.prototype, 'minimize', opts);
+
+/**
+ * Defines embedded discriminators for this single nested path.
+ *
+ * #### Example:
+ *
+ *     const eventSchema = Schema({ message: String }, { discriminatorKey: 'kind' });
+ *     const clickedSchema = Schema({ element: String });
+ *     const parentSchema = Schema({
+ *       event: {
+ *         type: eventSchema,
+ *         discriminators: { Clicked: clickedSchema }
+ *       }
+ *     });
+ *
+ * @api public
+ * @property discriminators
+ * @memberOf SchemaSubdocumentOptions
+ * @type {Object}
+ * @instance
+ */
+
+Object.defineProperty(SchemaSubdocumentOptions.prototype, 'discriminators', opts);
 
 module.exports = SchemaSubdocumentOptions;

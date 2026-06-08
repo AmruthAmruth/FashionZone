@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MongoCryptKMSRequestNetworkTimeoutError = exports.MongoCryptAzureKMSRequestError = exports.MongoCryptCreateEncryptedCollectionError = exports.MongoCryptCreateDataKeyError = exports.MongoCryptInvalidArgumentError = exports.MongoCryptError = void 0;
+exports.MongoCryptKMSRequestNetworkTimeoutError = exports.MongoCryptAzureKMSRequestError = exports.MongoCryptCreateEncryptedCollectionError = exports.MongoCryptCreateDataKeyError = exports.MongoCryptInvalidArgumentError = exports.defaultErrorWrapper = exports.MongoCryptError = void 0;
 const error_1 = require("../error");
 /**
  * @public
@@ -26,6 +26,8 @@ class MongoCryptError extends error_1.MongoError {
     }
 }
 exports.MongoCryptError = MongoCryptError;
+const defaultErrorWrapper = (error) => new MongoCryptError(error.message, { cause: error });
+exports.defaultErrorWrapper = defaultErrorWrapper;
 /**
  * @public
  *

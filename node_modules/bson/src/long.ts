@@ -258,10 +258,8 @@ export class Long extends BSONValue {
    * @returns The corresponding Long value
    */
   static fromBigInt(value: bigint, unsigned?: boolean): Long {
-    // eslint-disable-next-line no-restricted-globals
-    const FROM_BIGINT_BIT_MASK = BigInt(0xffffffff);
-    // eslint-disable-next-line no-restricted-globals
-    const FROM_BIGINT_BIT_SHIFT = BigInt(32);
+    const FROM_BIGINT_BIT_MASK = 0xffffffffn;
+    const FROM_BIGINT_BIT_SHIFT = 32n;
     return new Long(
       Number(value & FROM_BIGINT_BIT_MASK),
       Number((value >> FROM_BIGINT_BIT_SHIFT) & FROM_BIGINT_BIT_MASK),
@@ -366,7 +364,7 @@ export class Long extends BSONValue {
     let unsigned = false;
     if (typeof unsignedOrRadix === 'number') {
       // For goog.math.long compatibility
-      (radix = unsignedOrRadix), (unsignedOrRadix = false);
+      ((radix = unsignedOrRadix), (unsignedOrRadix = false));
     } else {
       unsigned = !!unsignedOrRadix;
     }
@@ -456,7 +454,7 @@ export class Long extends BSONValue {
     let unsigned = false;
     if (typeof unsignedOrRadix === 'number') {
       // For goog.math.long compatibility
-      (radix = unsignedOrRadix), (unsignedOrRadix = false);
+      ((radix = unsignedOrRadix), (unsignedOrRadix = false));
     } else {
       unsigned = !!unsignedOrRadix;
     }
@@ -1077,7 +1075,6 @@ export class Long extends BSONValue {
 
   /** Converts the Long to a BigInt (arbitrary precision). */
   toBigInt(): bigint {
-    // eslint-disable-next-line no-restricted-globals -- This is allowed here as it is explicitly requesting a bigint
     return BigInt(this.toString());
   }
 
@@ -1223,10 +1220,8 @@ export class Long extends BSONValue {
     }
 
     if (useBigInt64) {
-      /* eslint-disable no-restricted-globals -- Can use BigInt here as useBigInt64=true */
       const bigIntResult = BigInt(doc.$numberLong);
       return BigInt.asIntN(64, bigIntResult);
-      /* eslint-enable */
     }
 
     const longResult = Long.fromString(doc.$numberLong);

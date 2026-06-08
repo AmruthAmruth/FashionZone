@@ -31,7 +31,7 @@ const opts = require('./propertyOptions');
  * @api public
  * @property type
  * @memberOf SchemaTypeOptions
- * @type {Function|String|Object}
+ * @type {Function|string|object}
  * @instance
  */
 
@@ -43,7 +43,7 @@ Object.defineProperty(SchemaTypeOptions.prototype, 'type', opts);
  * @api public
  * @property validate
  * @memberOf SchemaTypeOptions
- * @type {Function|Object}
+ * @type {Function|object}
  * @instance
  */
 
@@ -74,7 +74,7 @@ Object.defineProperty(SchemaTypeOptions.prototype, 'validate', opts);
  * @api public
  * @property cast
  * @memberOf SchemaTypeOptions
- * @type {String}
+ * @type {string}
  * @instance
  */
 
@@ -88,11 +88,25 @@ Object.defineProperty(SchemaTypeOptions.prototype, 'cast', opts);
  * @api public
  * @property required
  * @memberOf SchemaTypeOptions
- * @type {Function|Boolean}
+ * @type {Function|boolean}
  * @instance
  */
 
 Object.defineProperty(SchemaTypeOptions.prototype, 'required', opts);
+
+/**
+ * Controls whether this path may be set to `null`. By default, Mongoose allows
+ * `null` for non-required paths. Set `allowNull: false` to allow `undefined`
+ * but disallow `null`.
+ *
+ * @api public
+ * @property allowNull
+ * @memberOf SchemaTypeOptions
+ * @type {boolean}
+ * @instance
+ */
+
+Object.defineProperty(SchemaTypeOptions.prototype, 'allowNull', opts);
 
 /**
  * The default value for this path. If a function, Mongoose executes the function
@@ -101,7 +115,7 @@ Object.defineProperty(SchemaTypeOptions.prototype, 'required', opts);
  * @api public
  * @property default
  * @memberOf SchemaTypeOptions
- * @type {Function|Any}
+ * @type {Function|any}
  * @instance
  */
 
@@ -113,7 +127,7 @@ Object.defineProperty(SchemaTypeOptions.prototype, 'default', opts);
  * @api public
  * @property ref
  * @memberOf SchemaTypeOptions
- * @type {Function|String}
+ * @type {Function|string}
  * @instance
  */
 
@@ -126,7 +140,7 @@ Object.defineProperty(SchemaTypeOptions.prototype, 'ref', opts);
  * @api public
  * @property ref
  * @memberOf SchemaTypeOptions
- * @type {Function|String}
+ * @type {Function|string}
  * @instance
  */
 
@@ -139,7 +153,7 @@ Object.defineProperty(SchemaTypeOptions.prototype, 'refPath', opts);
  * @api public
  * @property select
  * @memberOf SchemaTypeOptions
- * @type {Boolean|Number}
+ * @type {boolean|number}
  * @instance
  */
 
@@ -152,7 +166,7 @@ Object.defineProperty(SchemaTypeOptions.prototype, 'select', opts);
  * @api public
  * @property index
  * @memberOf SchemaTypeOptions
- * @type {Boolean|Number|Object}
+ * @type {boolean|number|object}
  * @instance
  */
 
@@ -166,7 +180,7 @@ Object.defineProperty(SchemaTypeOptions.prototype, 'index', opts);
  * @api public
  * @property unique
  * @memberOf SchemaTypeOptions
- * @type {Boolean|Number}
+ * @type {boolean|number}
  * @instance
  */
 
@@ -180,7 +194,7 @@ Object.defineProperty(SchemaTypeOptions.prototype, 'unique', opts);
  * @api public
  * @property immutable
  * @memberOf SchemaTypeOptions
- * @type {Function|Boolean}
+ * @type {Function|boolean}
  * @instance
  */
 
@@ -193,7 +207,7 @@ Object.defineProperty(SchemaTypeOptions.prototype, 'immutable', opts);
  * @api public
  * @property sparse
  * @memberOf SchemaTypeOptions
- * @type {Boolean|Number}
+ * @type {boolean|number}
  * @instance
  */
 
@@ -206,7 +220,7 @@ Object.defineProperty(SchemaTypeOptions.prototype, 'sparse', opts);
  * @api public
  * @property text
  * @memberOf SchemaTypeOptions
- * @type {Boolean|Number|Object}
+ * @type {boolean|number|object}
  * @instance
  */
 

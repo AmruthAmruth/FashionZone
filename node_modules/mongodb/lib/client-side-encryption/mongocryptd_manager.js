@@ -7,6 +7,7 @@ const error_1 = require("../error");
  * An internal class that handles spawning a mongocryptd.
  */
 class MongocryptdManager {
+    static { this.DEFAULT_MONGOCRYPTD_URI = 'mongodb://localhost:27020'; }
     constructor(extraOptions = {}) {
         this.spawnPath = '';
         this.spawnArgs = [];
@@ -81,5 +82,4 @@ class MongocryptdManager {
     }
 }
 exports.MongocryptdManager = MongocryptdManager;
-MongocryptdManager.DEFAULT_MONGOCRYPTD_URI = 'mongodb://localhost:27020';
 //# sourceMappingURL=mongocryptd_manager.js.map

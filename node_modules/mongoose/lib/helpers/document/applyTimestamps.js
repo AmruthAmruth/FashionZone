@@ -2,6 +2,7 @@
 
 const handleTimestampOption = require('../schema/handleTimestampOption');
 const mpath = require('mpath');
+const utils = require('../../utils');
 
 module.exports = applyTimestamps;
 
@@ -9,9 +10,9 @@ module.exports = applyTimestamps;
  * Apply a given schema's timestamps to the given POJO
  *
  * @param {Schema} schema
- * @param {Object} obj
- * @param {Object} [options]
- * @param {Boolean} [options.isUpdate=false] if true, treat this as an update: just set updatedAt, skip setting createdAt. If false, set both createdAt and updatedAt
+ * @param {object} obj
+ * @param {object} [options]
+ * @param {boolean} [options.isUpdate=false] if true, treat this as an update: just set updatedAt, skip setting createdAt. If false, set both createdAt and updatedAt
  * @param {Function} [options.currentTime] if set, Mongoose will call this function to get the current time.
  */
 
@@ -28,9 +29,9 @@ function applyTimestamps(schema, obj, options) {
  * Apply timestamps to any subdocuments
  *
  * @param {Schema} schema subdocument schema
- * @param {Object} res subdocument
- * @param {Object} [options]
- * @param {Boolean} [options.isUpdate=false] if true, treat this as an update: just set updatedAt, skip setting createdAt. If false, set both createdAt and updatedAt
+ * @param {object} res subdocument
+ * @param {object} [options]
+ * @param {boolean} [options.isUpdate=false] if true, treat this as an update: just set updatedAt, skip setting createdAt. If false, set both createdAt and updatedAt
  * @param {Function} [options.currentTime] if set, Mongoose will call this function to get the current time.
  */
 
@@ -54,9 +55,9 @@ function applyTimestampsToChildren(schema, res, options) {
  * Apply timestamps to a given document. Does not apply timestamps to subdocuments: use `applyTimestampsToChildren` instead
  *
  * @param {Schema} schema
- * @param {Object} obj
- * @param {Object} [options]
- * @param {Boolean} [options.isUpdate=false] if true, treat this as an update: just set updatedAt, skip setting createdAt. If false, set both createdAt and updatedAt
+ * @param {object} obj
+ * @param {object} [options]
+ * @param {boolean} [options.isUpdate=false] if true, treat this as an update: just set updatedAt, skip setting createdAt. If false, set both createdAt and updatedAt
  * @param {Function} [options.currentTime] if set, Mongoose will call this function to get the current time.
  */
 
@@ -71,7 +72,7 @@ function applyTimestampsToDoc(schema, obj, options) {
     return;
   }
 
-  if (schema.discriminators && Object.keys(schema.discriminators).length > 0) {
+  if (schema.discriminators && utils.hasOwnKeys(schema.discriminators)) {
     for (const discriminatorKey of Object.keys(schema.discriminators)) {
       const discriminator = schema.discriminators[discriminatorKey];
       const key = discriminator.discriminatorMapping.key;

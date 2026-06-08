@@ -45,17 +45,9 @@ class ValidationError extends MongooseError {
   }
 
   /**
-   * inspect helper
-   * @api private
-   */
-  inspect() {
-    return Object.assign(new Error(this.message), this);
-  }
-
-  /**
   * add message
-  * @param {String} path
-  * @param {String|Error} error
+  * @param {string} path
+  * @param {string|Error} error
   * @api private
   */
   addError(path, error) {

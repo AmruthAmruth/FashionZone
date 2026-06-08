@@ -1,47 +1,40 @@
 'use strict';
-const modifiedPaths = require('./common').modifiedPaths;
 const get = require('./get');
 
 /**
  * Applies defaults to update and findOneAndUpdate operations.
  *
- * @param {Object} filter
+ * @param {object} filter
  * @param {Schema} schema
- * @param {Object} castedDoc
- * @param {Object} options
+ * @param {object} castedDoc
+ * @param {object} options
+ * @param {object} queryMongooseOptions
+ * @param {object | null} [context] the context to pass to default functions as `this`
  * @method setDefaultsOnInsert
  * @api private
  */
 
-module.exports = function(filter, schema, castedDoc, options) {
-  options = options || {};
-
-  const shouldSetDefaultsOnInsert =
-    options.setDefaultsOnInsert != null ?
-      options.setDefaultsOnInsert :
-      schema.base.options.setDefaultsOnInsert;
+module.exports = function(filter, schema, castedDoc, options, queryMongooseOptions, context) {
+  const shouldSetDefaultsOnInsert = options?.setDefaultsOnInsert ??
+    queryMongooseOptions?.setDefaultsOnInsert ??
+    schema.base.options.setDefaultsOnInsert;
 
   if (!options.upsert || shouldSetDefaultsOnInsert === false) {
     return castedDoc;
   }
 
   const keys = Object.keys(castedDoc || {});
-  const updatedKeys = {};
+  const updatedKeys = Object.create(null);
   const updatedValues = {};
   const numKeys = keys.length;
-  const modified = {};
 
   let hasDollarUpdate = false;
 
   for (let i = 0; i < numKeys; ++i) {
-    if (keys[i].startsWith('$')) {
-      modifiedPaths(castedDoc[keys[i]], '', modified);
+    if (keys[i].charAt(0) === '$') {
       hasDollarUpdate = true;
+      break;
     }
-  }
-
-  if (!hasDollarUpdate) {
-    modifiedPaths(castedDoc, '', modified);
   }
 
   const paths = Object.keys(filter);
@@ -54,7 +47,7 @@ module.exports = function(filter, schema, castedDoc, options) {
       const numConditionKeys = conditionKeys.length;
       let hasDollarKey = false;
       for (let j = 0; j < numConditionKeys; ++j) {
-        if (conditionKeys[j].startsWith('$')) {
+        if (conditionKeys[j].charAt(0) === '$') {
           hasDollarKey = true;
           break;
         }
@@ -64,10 +57,23 @@ module.exports = function(filter, schema, castedDoc, options) {
       }
     }
     updatedKeys[path] = true;
-    modified[path] = true;
+    if (path.indexOf('.') === -1) {
+      continue;
+    }
+    // Also mark all parent prefixes so child-path lookups are O(1).
+    // e.g. 'extraProps.location' also marks 'extraProps'
+    const pieces = schema.paths[path] ?
+      // If the SchemaType already split for us, use that to avoid the extra overhead
+      schema.paths[path].splitPath() :
+      path.split('.');
+    let cur = pieces[0];
+    for (let j = 1; j < pieces.length; ++j) {
+      updatedKeys[cur] = true;
+      cur += '.' + pieces[j];
+    }
   }
 
-  if (options && options.overwrite && !hasDollarUpdate) {
+  if (options?.overwrite && !hasDollarUpdate) {
     // Defaults will be set later, since we're overwriting we'll cast
     // the whole update to a document
     return castedDoc;
@@ -78,15 +84,16 @@ module.exports = function(filter, schema, castedDoc, options) {
     if (schemaType.path === '_id' && schemaType.options.auto) {
       return;
     }
-    const def = schemaType.getDefault(null, true);
-    if (isModified(modified, path)) {
-      return;
-    }
+    const def = schemaType.getDefault(null, true, { context });
     if (typeof def === 'undefined') {
       return;
     }
-    if (schemaType.splitPath().includes('$*')) {
+    const pathPieces = schemaType.splitPath();
+    if (pathPieces.includes('$*')) {
       // Skip defaults underneath maps. We should never do `$setOnInsert` on a path with `$*`
+      return;
+    }
+    if (isModified(castedDoc, updatedKeys, path, pathPieces, hasDollarUpdate)) {
       return;
     }
 
@@ -101,30 +108,65 @@ module.exports = function(filter, schema, castedDoc, options) {
   return castedDoc;
 };
 
-function isModified(modified, path) {
-  if (modified[path]) {
+function isModified(castedDoc, updatedKeys, path, pathPieces, hasDollarUpdate) {
+  // Check if path is in filter (updatedKeys)
+  if (updatedKeys[path]) {
     return true;
   }
 
-  // Is any parent path of `path` modified?
-  const sp = path.split('.');
-  let cur = sp[0];
-  for (let i = 1; i < sp.length; ++i) {
-    if (modified[cur]) {
+  // Check if any parent path is in filter
+  let cur = pathPieces[0];
+  for (let i = 1; i < pathPieces.length; ++i) {
+    if (updatedKeys[cur]) {
       return true;
     }
-    cur += '.' + sp[i];
+    cur += '.' + pathPieces[i];
   }
 
-  // Is any child of `path` modified?
-  const modifiedKeys = Object.keys(modified);
-  if (modifiedKeys.length) {
-    const parentPath = path + '.';
-
-    for (const modifiedPath of modifiedKeys) {
-      if (modifiedPath.slice(0, path.length + 1) === parentPath) {
-        return true;
+  // Check if path is modified in the update
+  if (hasDollarUpdate) {
+    // Check each update operator
+    for (const key in castedDoc) {
+      if (key.charAt(0) === '$') {
+        if (pathExistsInUpdate(castedDoc[key], path, pathPieces)) {
+          return true;
+        }
       }
+    }
+  } else {
+    // No dollar operators, check the castedDoc directly
+    if (pathExistsInUpdate(castedDoc, path, pathPieces)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function pathExistsInUpdate(update, targetPath, pathPieces) {
+  if (update == null || typeof update !== 'object') {
+    return false;
+  }
+
+  // Check exact match
+  if (Object.hasOwn(update, targetPath)) {
+    return true;
+  }
+
+  // Check if any parent path exists
+  let cur = pathPieces[0];
+  for (let i = 1; i < pathPieces.length; ++i) {
+    if (Object.hasOwn(update, cur)) {
+      return true;
+    }
+    cur += '.' + pathPieces[i];
+  }
+
+  // Check if any child path exists (e.g., path is "a" and update has "a.b")
+  const prefix = targetPath + '.';
+  for (const key in update) {
+    if (key.startsWith(prefix)) {
+      return true;
     }
   }
 

@@ -30,6 +30,7 @@ msg.DocumentNotFoundError = null;
 msg.general = {};
 msg.general.default = 'Validator failed for path `{PATH}` with value `{VALUE}`';
 msg.general.required = 'Path `{PATH}` is required.';
+msg.general.allowNull = 'Path `{PATH}` does not allow null values.';
 
 msg.Number = {};
 msg.Number.min = 'Path `{PATH}` ({VALUE}) is less than minimum allowed value ({MIN}).';
@@ -43,5 +44,5 @@ msg.Date.max = 'Path `{PATH}` ({VALUE}) is after maximum allowed value ({MAX}).'
 msg.String = {};
 msg.String.enum = '`{VALUE}` is not a valid enum value for path `{PATH}`.';
 msg.String.match = 'Path `{PATH}` is invalid ({VALUE}).';
-msg.String.minlength = 'Path `{PATH}` (`{VALUE}`) is shorter than the minimum allowed length ({MINLENGTH}).';
-msg.String.maxlength = 'Path `{PATH}` (`{VALUE}`) is longer than the maximum allowed length ({MAXLENGTH}).';
+msg.String.minlength = 'Path `{PATH}` (`{VALUE}`, length {LENGTH}) is shorter than the minimum allowed length ({MINLENGTH}).';
+msg.String.maxlength = 'Path `{PATH}` (`{VALUE}`, length {LENGTH}) is longer than the maximum allowed length ({MAXLENGTH}).';

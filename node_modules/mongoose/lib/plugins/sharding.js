@@ -1,6 +1,7 @@
 'use strict';
 
 const objectIdSymbol = require('../helpers/symbols').objectIdSymbol;
+const symbols = require('../schema/symbols');
 const utils = require('../utils');
 
 /*!
@@ -8,22 +9,33 @@ const utils = require('../utils');
  */
 
 module.exports = function shardingPlugin(schema) {
-  schema.post('init', function shardingPluginPostInit() {
-    storeShard.call(this);
-    return this;
-  });
-  schema.pre('save', function shardingPluginPreSave(next) {
-    applyWhere.call(this);
-    next();
-  });
-  schema.pre('remove', function shardingPluginPreRemove(next) {
-    applyWhere.call(this);
-    next();
-  });
-  schema.post('save', function shardingPluginPostSave() {
-    storeShard.call(this);
-  });
+  schema.post('init', shardingPluginPostInit);
+  schema.pre('save', shardingPluginPreSave);
+  schema.post('save', shardingPluginPostSave);
+  schema.pre('deleteOne', { document: true, query: false }, shardingPluginPreDeleteOne);
+  schema.pre('updateOne', { document: true, query: false }, shardingPluginPreUpdateOne);
 };
+
+function shardingPluginPostInit() {
+  storeShard.call(this);
+  return this;
+}
+
+function shardingPluginPreSave() {
+  applyWhere.call(this);
+}
+
+function shardingPluginPostSave() {
+  storeShard.call(this);
+}
+
+function shardingPluginPreDeleteOne() {
+  applyWhere.call(this);
+}
+
+function shardingPluginPreUpdateOne() {
+  applyWhere.call(this);
+}
 
 /*!
  * ignore
@@ -81,3 +93,9 @@ function storeShard() {
     }
   }
 }
+
+shardingPluginPostInit[symbols.builtInMiddleware] = true;
+shardingPluginPreSave[symbols.builtInMiddleware] = true;
+shardingPluginPostSave[symbols.builtInMiddleware] = true;
+shardingPluginPreDeleteOne[symbols.builtInMiddleware] = true;
+shardingPluginPreUpdateOne[symbols.builtInMiddleware] = true;

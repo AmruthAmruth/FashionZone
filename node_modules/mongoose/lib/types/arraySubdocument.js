@@ -13,11 +13,11 @@ const documentArrayParent = require('../helpers/symbols').documentArrayParent;
 /**
  * A constructor.
  *
- * @param {Object} obj js object returned from the db
+ * @param {object} obj js object returned from the db
  * @param {MongooseDocumentArray} parentArr the parent array of this document
- * @param {Boolean} skipId
- * @param {Object} fields
- * @param {Number} index
+ * @param {boolean} skipId
+ * @param {object} fields
+ * @param {number} index
  * @inherits Document
  * @api private
  */
@@ -41,7 +41,7 @@ function ArraySubdocument(obj, parentArr, skipId, fields, index) {
     options = { isNew: true };
   }
 
-  Subdocument.call(this, obj, fields, this[documentArrayParent], skipId, options);
+  Subdocument.call(this, obj, fields, this[documentArrayParent], options);
 }
 
 /*!
@@ -73,7 +73,7 @@ for (const i in EventEmitter.prototype) {
 ArraySubdocument.prototype.$setIndex = function(index) {
   this.__index = index;
 
-  if (this.$__ != null && this.$__.validationError != null) {
+  if (this.$__?.validationError != null) {
     const keys = Object.keys(this.$__.validationError.errors);
     for (const key of keys) {
       this.invalidate(key, this.$__.validationError.errors[key]);
@@ -107,9 +107,9 @@ ArraySubdocument.prototype.$__removeFromParent = function() {
 /**
  * Returns the full path to this document. If optional `path` is passed, it is appended to the full path.
  *
- * @param {String} [path]
- * @param {Boolean} [skipIndex] Skip adding the array index. For example `arr.foo` instead of `arr.0.foo`.
- * @return {String}
+ * @param {string} [path]
+ * @param {boolean} [skipIndex] Skip adding the array index. For example `arr.foo` instead of `arr.0.foo`.
+ * @return {string}
  * @api private
  * @method $__fullPath
  * @memberOf ArraySubdocument
@@ -145,7 +145,7 @@ ArraySubdocument.prototype.$__fullPath = function(path, skipIndex) {
  */
 
 ArraySubdocument.prototype.$__pathRelativeToParent = function(path, skipIndex) {
-  if (this.__index == null || (!this.__parentArray || !this.__parentArray.$path)) {
+  if (this.__index == null || !this.__parentArray?.$path) {
     return null;
   }
   if (skipIndex) {
@@ -169,6 +169,17 @@ ArraySubdocument.prototype.$parent = function() {
   return this[documentArrayParent];
 };
 
+/*!
+ * Sets this sub-documents parent document.
+ *
+ * @api private
+ */
+
+ArraySubdocument.prototype.$__setParent = function $__setParent(parent) {
+  this[documentArrayParent] = parent;
+  this.$__parent = parent;
+};
+
 /**
  * Returns this subdocument's parent array.
  *
@@ -183,7 +194,7 @@ ArraySubdocument.prototype.$parent = function() {
  *
  * @api public
  * @method parentArray
- * @returns DocumentArray
+ * @returns {DocumentArray}
  */
 
 ArraySubdocument.prototype.parentArray = function() {

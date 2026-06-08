@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.aws4 = void 0;
 exports.getKerberos = getKerberos;
 exports.getZstdLibrary = getZstdLibrary;
 exports.getAwsCredentialProvider = getAwsCredentialProvider;
@@ -93,18 +92,6 @@ function getSocks() {
         const kModuleError = new error_1.MongoMissingDependencyError('Optional module `socks` not found. Please install it to connections over a SOCKS5 proxy', { cause: error, dependencyName: 'socks' });
         return { kModuleError };
     }
-}
-exports.aws4 = loadAws4();
-function loadAws4() {
-    let aws4;
-    try {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        aws4 = require('aws4');
-    }
-    catch (error) {
-        aws4 = makeErrorModule(new error_1.MongoMissingDependencyError('Optional module `aws4` not found. Please install it to enable AWS authentication', { cause: error, dependencyName: 'aws4' }));
-    }
-    return aws4;
 }
 /** A utility function to get the instance of mongodb-client-encryption, if it exists. */
 function getMongoDBClientEncryption() {

@@ -4,7 +4,8 @@
 
 'use strict';
 
-const Binary = require('bson').Binary;
+const Binary = require('mongodb/lib/bson').Binary;
+const UUID = require('mongodb/lib/bson').UUID;
 const utils = require('../utils');
 
 /**
@@ -13,8 +14,8 @@ const utils = require('../utils');
  * Values always have to be passed to the constructor to initialize.
  *
  * @param {Buffer} value
- * @param {String} encode
- * @param {Number} offset
+ * @param {string} encode
+ * @param {number} offset
  * @api private
  * @inherits Buffer https://nodejs.org/api/buffer.html
  * @see https://bit.ly/f6CnZU
@@ -120,7 +121,7 @@ MongooseBuffer.mixin = {
    *
    * `Buffer#copy` does not mark `target` as modified so you must copy from a `MongooseBuffer` for it to work as expected. This is a work around since `copy` modifies the target, not this.
    *
-   * @return {Number} The number of bytes copied.
+   * @return {number} The number of bytes copied.
    * @param {Buffer} target
    * @method copy
    * @memberOf MongooseBuffer.mixin
@@ -130,7 +131,7 @@ MongooseBuffer.mixin = {
   copy: function(target) {
     const ret = Buffer.prototype.copy.apply(this, arguments);
 
-    if (target && target.isMongooseBuffer) {
+    if (target?.isMongooseBuffer) {
       target._markModified();
     }
 
@@ -168,14 +169,14 @@ utils.each(
  *
  * #### SubTypes:
  *
- *     const bson = require('bson')
- *     bson.BSON_BINARY_SUBTYPE_DEFAULT
- *     bson.BSON_BINARY_SUBTYPE_FUNCTION
- *     bson.BSON_BINARY_SUBTYPE_BYTE_ARRAY
- *     bson.BSON_BINARY_SUBTYPE_UUID
- *     bson.BSON_BINARY_SUBTYPE_MD5
- *     bson.BSON_BINARY_SUBTYPE_USER_DEFINED
- *     doc.buffer.toObject(bson.BSON_BINARY_SUBTYPE_USER_DEFINED);
+ *     const mongodb = require('mongodb')
+ *     mongodb.BSON.BSON_BINARY_SUBTYPE_DEFAULT
+ *     mongodb.BSON.BSON_BINARY_SUBTYPE_FUNCTION
+ *     mongodb.BSON.BSON_BINARY_SUBTYPE_BYTE_ARRAY
+ *     mongodb.BSON.BSON_BINARY_SUBTYPE_UUID
+ *     mongodb.BSON.BSON_BINARY_SUBTYPE_MD5
+ *     mongodb.BSON.BSON_BINARY_SUBTYPE_USER_DEFINED
+ *     doc.buffer.toObject(mongodb.BSON.BSON_BINARY_SUBTYPE_USER_DEFINED);
  *
  * @see bsonspec https://bsonspec.org/#/specification
  * @param {Hex} [subtype]
@@ -208,10 +209,26 @@ MongooseBuffer.mixin.toBSON = function() {
 };
 
 /**
+ * Converts this buffer to a UUID. Throws an error if subtype is not 4.
+ *
+ * @return {UUID}
+ * @api public
+ * @method toUUID
+ * @memberOf MongooseBuffer
+ */
+
+MongooseBuffer.mixin.toUUID = function() {
+  if (this._subtype !== 4) {
+    throw new Error('Cannot convert a Buffer with subtype ' + this._subtype + ' to a UUID');
+  }
+  return new UUID(this);
+};
+
+/**
  * Determines if this buffer is equals to `other` buffer
  *
  * @param {Buffer} other
- * @return {Boolean}
+ * @return {boolean}
  * @method equals
  * @memberOf MongooseBuffer
  */

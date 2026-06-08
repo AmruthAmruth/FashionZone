@@ -10,6 +10,7 @@ const mpath = require('mpath');
 const utils = require('../../../utils');
 const isBsonType = require('../../../helpers/isBsonType');
 
+const arrayAtomicsBackupSymbol = require('../../../helpers/symbols').arrayAtomicsBackupSymbol;
 const arrayAtomicsSymbol = require('../../../helpers/symbols').arrayAtomicsSymbol;
 const arrayParentSymbol = require('../../../helpers/symbols').arrayParentSymbol;
 const arrayPathSymbol = require('../../../helpers/symbols').arrayPathSymbol;
@@ -59,9 +60,9 @@ const methods = {
         val = val.toObject(opts);
       } else if (Array.isArray(val)) {
         val = this.toObject.call(val, opts);
-      } else if (val != null && Array.isArray(val.$each)) {
+      } else if (Array.isArray(val?.$each)) {
         val.$each = this.toObject.call(val.$each, opts);
-      } else if (val != null && typeof val.valueOf === 'function') {
+      } else if (typeof val?.valueOf === 'function') {
         val = val.valueOf();
       }
 
@@ -73,6 +74,36 @@ const methods = {
     }
 
     return ret;
+  },
+
+  /**
+   * Public API for getting atomics. Alias for $__getAtomics() that can be
+   * implemented by custom container types.
+   *
+   * @return {Array}
+   * @method getAtomics
+   * @memberOf MongooseArray
+   * @instance
+   * @api public
+   */
+
+  getAtomics() {
+    return this.$__getAtomics();
+  },
+
+  /**
+   * Clears all pending atomic operations. Called by Mongoose after save().
+   *
+   * @return {void}
+   * @method clearAtomics
+   * @memberOf MongooseArray
+   * @instance
+   * @api public
+   */
+
+  clearAtomics() {
+    this[arrayAtomicsBackupSymbol] = this[arrayAtomicsSymbol];
+    this[arrayAtomicsSymbol] = {};
   },
 
   /*!
@@ -97,6 +128,13 @@ const methods = {
 
   $path() {
     return this[arrayPathSymbol];
+  },
+
+  /*!
+   * ignore
+   */
+  $schemaType() {
+    return this[arraySchemaSymbol];
   },
 
   /**
@@ -208,7 +246,7 @@ const methods = {
    * Casts a member based on this arrays schema.
    *
    * @param {any} value
-   * @return value the casted value
+   * @return {any} the casted value
    * @method _cast
    * @api private
    * @memberOf MongooseArray
@@ -223,7 +261,7 @@ const methods = {
       populated = parent.$populated(this[arrayPathSymbol], true);
     }
 
-    if (populated && value !== null && value !== undefined) {
+    if (populated && value != null) {
       // cast to the populated Models schema
       Model = populated.options[populateModelSymbol];
       if (Model == null) {
@@ -239,22 +277,21 @@ const methods = {
 
       // gh-2399
       // we should cast model only when it's not a discriminator
-      const isDisc = value.schema && value.schema.discriminatorMapping &&
-          value.schema.discriminatorMapping.key !== undefined;
+      const isDisc = value.schema?.discriminatorMapping?.key !== undefined;
       if (!isDisc) {
         value = new Model(value);
       }
-      return this[arraySchemaSymbol].caster.applySetters(value, parent, true);
+      return this[arraySchemaSymbol].embeddedSchemaType.applySetters(value, parent, true);
     }
 
-    return this[arraySchemaSymbol].caster.applySetters(value, parent, false);
+    return this[arraySchemaSymbol].embeddedSchemaType.applySetters(value, parent, false);
   },
 
   /**
    * Internal helper for .map()
    *
    * @api private
-   * @return {Number}
+   * @return {number}
    * @method _mapCast
    * @memberOf MongooseArray
    */
@@ -269,7 +306,7 @@ const methods = {
    * If it bubbles up from an embedded document change, then it takes the following arguments (otherwise, takes 0 arguments)
    *
    * @param {ArraySubdocument} subdoc the embedded doc that invoked this method on the Array
-   * @param {String} embeddedPath the path which changed in the subdoc
+   * @param {string} embeddedPath the path which changed in the subdoc
    * @method _markModified
    * @api private
    * @memberOf MongooseArray
@@ -331,7 +368,7 @@ const methods = {
 
     // check for impossible $atomic combos (Mongo denies more than one
     // $atomic op on a single path
-    if (atomics.$set || Object.keys(atomics).length && !(op in atomics)) {
+    if (atomics.$set || utils.hasOwnKeys(atomics) && !(op in atomics)) {
       // a different op was previously registered.
       // save the entire thing.
       this[arrayAtomicsSymbol] = { $set: this };
@@ -463,7 +500,7 @@ const methods = {
    * Returns the number of pending atomic operations to send to the db for this array.
    *
    * @api private
-   * @return {Number}
+   * @return {number}
    * @method hasAtomics
    * @memberOf MongooseArray
    */
@@ -479,9 +516,9 @@ const methods = {
   /**
    * Return whether or not the `obj` is included in the array.
    *
-   * @param {Object} obj the item to check
-   * @param {Number} fromIndex
-   * @return {Boolean}
+   * @param {object} obj the item to check
+   * @param {number} fromIndex
+   * @return {boolean}
    * @api public
    * @method includes
    * @memberOf MongooseArray
@@ -495,9 +532,9 @@ const methods = {
   /**
    * Return the index of `obj` or `-1` if not found.
    *
-   * @param {Object} obj the item to look for
-   * @param {Number} fromIndex
-   * @return {Number}
+   * @param {object} obj the item to look for
+   * @param {number} fromIndex
+   * @return {number}
    * @api public
    * @method indexOf
    * @memberOf MongooseArray
@@ -535,7 +572,7 @@ const methods = {
    *
    * #### Note:
    *
-   * _marks the entire array as modified, which if saved, will store it as a `$set` operation, potentially overwritting any changes that happen between when you retrieved the object and when you save it._
+   * _marks the entire array as modified, which if saved, will store it as a `$set` operation, potentially overwriting any changes that happen between when you retrieved the object and when you save it._
    *
    * @param {...any} [args]
    * @api public
@@ -604,7 +641,7 @@ const methods = {
 
   pull() {
     const values = [].map.call(arguments, (v, i) => this._cast(v, i, { defaults: false }), this);
-    let cur = this[arrayParentSymbol].get(this[arrayPathSymbol]);
+    let cur = this;
     if (utils.isMongooseArray(cur)) {
       cur = cur.__array;
     }
@@ -670,7 +707,7 @@ const methods = {
    *     });
    *     doc.nums; // [1, 2, 3, 4, 5]
    *
-   * @param {...Object} [args]
+   * @param {...object} [args]
    * @api public
    * @method push
    * @memberOf MongooseArray
@@ -793,7 +830,7 @@ const methods = {
    *
    * #### Note:
    *
-   * _marks the entire array as modified, which if saved, will store it as a `$set` operation, potentially overwritting any changes that happen between when you retrieved the object and when you save it._
+   * _marks the entire array as modified, which if saved, will store it as a `$set` operation, potentially overwriting any changes that happen between when you retrieved the object and when you save it._
    *
    * @api public
    * @method shift
@@ -813,7 +850,7 @@ const methods = {
    *
    * #### Note:
    *
-   * _marks the entire array as modified, which if saved, will store it as a `$set` operation, potentially overwritting any changes that happen between when you retrieved the object and when you save it._
+   * _marks the entire array as modified, which if saved, will store it as a `$set` operation, potentially overwriting any changes that happen between when you retrieved the object and when you save it._
    *
    * @api public
    * @method sort
@@ -833,7 +870,7 @@ const methods = {
    *
    * #### Note:
    *
-   * _marks the entire array as modified, which if saved, will store it as a `$set` operation, potentially overwritting any changes that happen between when you retrieved the object and when you save it._
+   * _marks the entire array as modified, which if saved, will store it as a `$set` operation, potentially overwriting any changes that happen between when you retrieved the object and when you save it._
    *
    * @api public
    * @method splice
@@ -879,7 +916,7 @@ const methods = {
   /**
    * Returns a native js Array.
    *
-   * @param {Object} options
+   * @param {object} options
    * @return {Array}
    * @api public
    * @method toObject
@@ -888,7 +925,7 @@ const methods = {
 
   toObject(options) {
     const arr = utils.isMongooseArray(this) ? this.__array : this;
-    if (options && options.depopulate) {
+    if (options?.depopulate) {
       options = clone(options);
       options._isNested = true;
       // Ensure return value is a vanilla array, because in Node.js 6+ `map()`
@@ -988,7 +1025,7 @@ function _minimizePath(obj, parts, i) {
   }
 
   _minimizePath(obj[parts[0]], parts, i + 1);
-  if (obj[parts[0]] != null && typeof obj[parts[0]] === 'object' && Object.keys(obj[parts[0]]).length === 0) {
+  if (obj[parts[0]] != null && typeof obj[parts[0]] === 'object' && utils.hasOwnKeys(obj[parts[0]]) === false) {
     delete obj[parts[0]];
   }
 }
@@ -1000,7 +1037,7 @@ function _minimizePath(obj, parts, i) {
 function _checkManualPopulation(arr, docs) {
   const ref = arr == null ?
     null :
-    arr[arraySchemaSymbol] && arr[arraySchemaSymbol].caster && arr[arraySchemaSymbol].caster.options && arr[arraySchemaSymbol].caster.options.ref || null;
+    arr[arraySchemaSymbol]?.embeddedSchemaType?.options?.ref || null;
   if (arr.length === 0 &&
       docs.length !== 0) {
     if (_isAllSubdocs(docs, ref)) {
@@ -1018,7 +1055,7 @@ function _checkManualPopulation(arr, docs) {
 function _depopulateIfNecessary(arr, docs) {
   const ref = arr == null ?
     null :
-    arr[arraySchemaSymbol] && arr[arraySchemaSymbol].caster && arr[arraySchemaSymbol].caster.options && arr[arraySchemaSymbol].caster.options.ref || null;
+    arr[arraySchemaSymbol]?.embeddedSchemaType?.options?.ref || null;
   const parentDoc = arr[arrayParentSymbol];
   const path = arr[arrayPathSymbol];
   if (!ref || !parentDoc.populated(path)) {
