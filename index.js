@@ -60,15 +60,21 @@ app.use('*', (req, res) => {
 
 
 const PORT = process.env.PORT || 7000;
+console.log("Starting application...");
+console.log("MONGO_URI exists:", !!process.env.MONGO_URI);
+
 
 mongoose.connect(process.env.MONGO_URI)
   .then(async () => {
     console.log("MongoDB Database Connected Successfully");
-    await seedAdmin(); // Auto-create admin account from .env if not exists
+
+    await seedAdmin();
+    console.log("Admin seeding completed");
+
     app.listen(PORT, () => {
       console.log(`Server Running on Port ${PORT}`);
     });
   })
-  .catch((err) => { 
+  .catch((err) => {
     console.error("MongoDB Connection Error:", err);
   });
