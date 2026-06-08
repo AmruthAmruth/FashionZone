@@ -422,9 +422,6 @@ export const verifyPayment = async (req, res) => {
 
 
 
-
-
-
 export const orderSummery = async (req, res) => {
     try {
 
