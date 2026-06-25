@@ -5,56 +5,56 @@ import Cart from '../../models/cartModel.js'
 export const getShopPage = async (req, res) => {
     try {
         const searchQuery = req.query.q ? req.query.q.trim() : '';
-        const category = req.query.category || ''; 
+        const category = req.query.category || '';
         const sortOption = req.query.sort || '';
-        const page = parseInt(req.query.page) || 1; 
-        const productsPerPage = 6; 
+        const page = parseInt(req.query.page) || 1;
+        const productsPerPage = 6;
 
         let query = { isActive: true };
         if (searchQuery) {
-            query.title = { $regex: searchQuery, $options: 'i' }; 
+            query.title = { $regex: searchQuery, $options: 'i' };
         }
 
-       
+
         if (category) {
             query.category = category;
         }
 
-        
-        let sortQuery = {}; 
+
+        let sortQuery = {};
         if (sortOption === 'titleAsc') {
-            sortQuery.title = 1; 
+            sortQuery.title = 1;
         } else if (sortOption === 'titleDesc') {
-            sortQuery.title = -1; 
+            sortQuery.title = -1;
         } else if (sortOption === 'priceLowToHigh') {
-            sortQuery.disPrice = 1; 
+            sortQuery.disPrice = 1;
         } else if (sortOption === 'priceHighToLow') {
             sortQuery.disPrice = -1;
         } else if (sortOption === 'newArrivals') {
             sortQuery.createdAt = -1;
         }
 
-       
+
         const totalProducts = await Product.countDocuments(query);
         const totalPages = Math.ceil(totalProducts / productsPerPage);
 
-        
+
         const products = await Product.find(query)
-            .sort(sortQuery) 
-            .skip((page - 1) * productsPerPage) 
+            .sort(sortQuery)
+            .skip((page - 1) * productsPerPage)
             .limit(productsPerPage);
 
-       
+
         res.render('user/shop', {
-            user: req.session.user || null,  
+            user: req.session.user || null,
             products,
             searchQuery,
             category,
             sortOption,
             currentPage: page,
             totalPages,
-            totalProducts, 
-            
+            totalProducts,
+
         });
     } catch (error) {
         console.error('Error fetching products:', error);
@@ -65,7 +65,7 @@ export const getShopPage = async (req, res) => {
 
 
 
-export const getProduct=(req,res)=>{
+export const getProduct = (req, res) => {
     res.render('user/product')
 }
 
@@ -84,17 +84,17 @@ export const getProductbyId = async (req, res) => {
         }
 
         const relatedProducts = await Product.find({
-            category: category, 
-            isActive:true,
-            _id: { $ne: id } 
+            category: category,
+            isActive: true,
+            _id: { $ne: id }
         }).limit(5);
 
         console.log(relatedProducts);
 
-       
+
         res.render('user/product', {
             product: item,
-            relatedProducts, 
+            relatedProducts,
             user: req.session.user || null,
         });
 
@@ -112,9 +112,9 @@ export const getProductbyId = async (req, res) => {
 
 export const getWomenProducts = async (req, res) => {
     try {
-        const searchQuery = req.query.q ? req.query.q.trim() : ''; 
-        const page = parseInt(req.query.page) || 1; 
-        const productsPerPage = 6; 
+        const searchQuery = req.query.q ? req.query.q.trim() : '';
+        const page = parseInt(req.query.page) || 1;
+        const productsPerPage = 6;
 
         let query = {
             isActive: true,
@@ -126,19 +126,19 @@ export const getWomenProducts = async (req, res) => {
         }
 
         const totalProducts = await Product.countDocuments(query);
-        const totalPages = Math.ceil(totalProducts / productsPerPage); 
+        const totalPages = Math.ceil(totalProducts / productsPerPage);
 
         const womenProducts = await Product.find(query)
             .sort({ createdAt: -1 })
             .skip((page - 1) * productsPerPage)
-            .limit(productsPerPage); 
+            .limit(productsPerPage);
 
-        res.render('user/shop', { 
-            user: req.session.user || null, 
-            products: womenProducts, 
-            searchQuery, 
-            currentPage: page, 
-            totalPages 
+        res.render('user/shop', {
+            user: req.session.user || null,
+            products: womenProducts,
+            searchQuery,
+            currentPage: page,
+            totalPages
         });
     } catch (err) {
         console.log("Error while fetching women's products", err);
@@ -148,9 +148,9 @@ export const getWomenProducts = async (req, res) => {
 
 export const getMenProducts = async (req, res) => {
     try {
-        const searchQuery = req.query.q ? req.query.q.trim() : ''; 
-        const page = parseInt(req.query.page) || 1; 
-        const productsPerPage = 6; 
+        const searchQuery = req.query.q ? req.query.q.trim() : '';
+        const page = parseInt(req.query.page) || 1;
+        const productsPerPage = 6;
 
         let query = {
             isActive: true,
@@ -162,19 +162,19 @@ export const getMenProducts = async (req, res) => {
         }
 
         const totalProducts = await Product.countDocuments(query);
-        const totalPages = Math.ceil(totalProducts / productsPerPage); 
+        const totalPages = Math.ceil(totalProducts / productsPerPage);
 
         const menProducts = await Product.find(query)
             .sort({ createdAt: -1 })
             .skip((page - 1) * productsPerPage)
-            .limit(productsPerPage); 
+            .limit(productsPerPage);
 
-        res.render('user/shop', { 
-            user: req.session.user || null, 
-            products: menProducts, 
-            searchQuery, 
-            currentPage: page, 
-            totalPages 
+        res.render('user/shop', {
+            user: req.session.user || null,
+            products: menProducts,
+            searchQuery,
+            currentPage: page,
+            totalPages
         });
     } catch (err) {
         console.log("Error while fetching men's products", err);
@@ -184,9 +184,9 @@ export const getMenProducts = async (req, res) => {
 
 export const getFeaturedProducts = async (req, res) => {
     try {
-        const searchQuery = req.query.q ? req.query.q.trim() : ''; 
-        const page = parseInt(req.query.page) || 1; 
-        const productsPerPage = 6; 
+        const searchQuery = req.query.q ? req.query.q.trim() : '';
+        const page = parseInt(req.query.page) || 1;
+        const productsPerPage = 6;
 
         let query = {
             isActive: true,
@@ -197,19 +197,19 @@ export const getFeaturedProducts = async (req, res) => {
         }
 
         const totalProducts = await Product.countDocuments(query);
-        const totalPages = Math.ceil(totalProducts / productsPerPage); 
+        const totalPages = Math.ceil(totalProducts / productsPerPage);
 
         const featuredProducts = await Product.find(query)
             .sort({ createdAt: -1 })
             .skip((page - 1) * productsPerPage)
-            .limit(productsPerPage); 
+            .limit(productsPerPage);
 
-        res.render('user/shop', { 
-            user: req.session.user || null, 
+        res.render('user/shop', {
+            user: req.session.user || null,
             products: featuredProducts,
-            searchQuery, 
-            currentPage: page, 
-            totalPages 
+            searchQuery,
+            currentPage: page,
+            totalPages
         });
     } catch (err) {
         console.log("Error while getting featured products", err);
@@ -224,12 +224,12 @@ export const getFeaturedProducts = async (req, res) => {
 
 export const getCartPage = async (req, res) => {
     console.log(req.cartPrice);
-    
-    res.render('user/cart', { 
-        user: req.session.user || null, 
-        userCart: req.userCart ||  { items: []} ,
+
+    res.render('user/cart', {
+        user: req.session.user || null,
+        userCart: req.userCart || { items: [] },
         cartPrice: req.cartPrice || { subtotal: 0, shippingCost: 0, total: 0, selectedShipping: 'free' },
-        messages: req.flash() 
+        messages: req.flash()
     });
 };
 
@@ -238,23 +238,23 @@ export const getCartPage = async (req, res) => {
 export const getUserCart = async (req, res, next) => {
     try {
         if (!req.session.user) {
-            return res.redirect('/login');  
+            return res.redirect('/login');
         }
 
-        const userId = req.session.userId; 
-       
+        const userId = req.session.userId;
+
         const cart = await Cart.findOne({ userId: userId });
-         console.log("Cart",cart);
-         
+        console.log("Cart", cart);
+
         if (!cart) {
             console.log("Cart is empty");
-            req.userCart = null;  
-            return next();  
+            req.userCart = null;
+            return next();
         }
 
-        
+
         req.userCart = cart;
-        next(); 
+        next();
     } catch (err) {
         console.error("Error while fetching user's cart:", err);
         res.status(500).send("Internal Server Error");
@@ -282,7 +282,7 @@ export const cartPriceList = async (req, res, next) => {
 
         const subtotal = cart.items.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-       
+
         const shippingCosts = { free: 0, standard: 50, express: 100 };
 
         const selectedShipping = req.body.shipping || 'free';
@@ -308,7 +308,7 @@ export const addToCart = async (req, res) => {
     try {
         const productId = req.params.productId;
         const quantity = parseInt(req.body.quantity) || 1;
-console.log("Is working");
+        console.log("Is working");
 
         if (!req.session.userId) {
             return res.redirect('/login');
@@ -316,7 +316,7 @@ console.log("Is working");
 
         const product = await Product.findById(productId);
         console.log(product);
-        
+
         if (!product) {
             req.flash('message', "Product not found");
             return res.redirect('/cart');
@@ -347,7 +347,7 @@ console.log("Is working");
 
         await cart.save();
 
-        console.log('cart added product',cart);
+        console.log('cart added product', cart);
 
         return res.redirect('/cart');
     } catch (err) {
@@ -368,20 +368,20 @@ console.log("Is working");
 
 export const removeFromCart = async (req, res) => {
     try {
-        const productId = req.params.productId; 
-        
-        
+        const productId = req.params.productId;
+
+
         if (!req.session.user) {
-            return res.redirect('/login'); 
+            return res.redirect('/login');
         }
 
-        const userId = req.session.userId; 
+        const userId = req.session.userId;
 
-        
+
         const cart = await Cart.findOne({ userId: userId });
 
         if (!cart) {
-            return res.redirect('/cart'); 
+            return res.redirect('/cart');
         }
 
         const productIndex = cart.items.findIndex(item => item.productId.toString() === productId);
@@ -405,9 +405,9 @@ export const removeFromCart = async (req, res) => {
 
 export const updateCart = async (req, res) => {
     try {
-        const productId = req.params.productId; 
-        const action = req.body.action; 
-        
+        const productId = req.params.productId;
+        const action = req.body.action;
+
         const MAX_QUANTITY = 5;
 
         // Log request details for debugging quantity update issues
@@ -418,7 +418,7 @@ export const updateCart = async (req, res) => {
             return res.status(403).json({ success: false, message: "User not logged in" });
         }
 
-        const userId = req.session.userId; 
+        const userId = req.session.userId;
         const cart = await Cart.findOne({ userId: userId });
         const product = await Product.findById(productId);
 
@@ -431,17 +431,17 @@ export const updateCart = async (req, res) => {
         if (productIndex > -1) {
             const item = cart.items[productIndex];
             const availableStock = product.stock;
-            const maxAllowedQuantity = Math.min(availableStock, MAX_QUANTITY); 
-            
+            const maxAllowedQuantity = Math.min(availableStock, MAX_QUANTITY);
+
             if (action === 'increase') {
-                
+
                 if (item.quantity < maxAllowedQuantity) {
                     item.quantity += 1;
                 } else {
                     return res.status(400).json({ success: false, message: `You can only add up to ${maxAllowedQuantity} items for this product.` });
                 }
             } else if (action === 'decrease' && item.quantity > 1) {
-                item.quantity -= 1;  
+                item.quantity -= 1;
             }
 
             await cart.save();
@@ -464,9 +464,9 @@ export const updateCart = async (req, res) => {
 
 
 
-export const searchProduct=async(req,res,next)=>{
-    try{
-        const searchQuery = req.query.q; 
+export const searchProduct = async (req, res, next) => {
+    try {
+        const searchQuery = req.query.q;
         console.log("Search Query:", searchQuery);
 
         if (!searchQuery) {
@@ -474,14 +474,14 @@ export const searchProduct=async(req,res,next)=>{
             return res.redirect('/shop');
         }
 
-         req.products = await Product.find({
-            title: { $regex: searchQuery, $options: 'i' } 
+        req.products = await Product.find({
+            title: { $regex: searchQuery, $options: 'i' }
         });
-            res.redirect('/shop')
+        res.redirect('/shop')
 
-    }catch(err){
-        console.log("Error while trying to search products",err);
-        
+    } catch (err) {
+        console.log("Error while trying to search products", err);
+
     }
 }
 

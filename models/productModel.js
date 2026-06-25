@@ -60,6 +60,12 @@ const productSchema = new mongoose.Schema({
   }
 });
 
+productSchema.post('init', function(doc) {
+  if (doc.images && Array.isArray(doc.images)) {
+    doc.images = doc.images.map(img => img ? img.replace(/\\/g, '/') : img);
+  }
+});
+
 
 const Product = mongoose.model('Product', productSchema);
 

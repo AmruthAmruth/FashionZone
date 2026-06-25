@@ -35,6 +35,20 @@ const OrderSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
+OrderSchema.post('init', function(doc) {
+  if (doc.products && Array.isArray(doc.products)) {
+    doc.products.forEach(p => {
+      if (p.items && Array.isArray(p.items)) {
+        p.items.forEach(item => {
+          if (item.image) {
+            item.image = item.image.replace(/\\/g, '/');
+          }
+        });
+      }
+    });
+  }
+});
+
 export default mongoose.model("Order", OrderSchema);
 
 

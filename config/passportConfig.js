@@ -6,21 +6,21 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 
-passport.use(  
+passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: 'https://thefashionzone.ddns.net/auth/google/callback',
-    }, 
-    async (accessToken, refreshToken, profile, done) => { 
+    },
+    async (accessToken, refreshToken, profile, done) => {
       try {
-        
-        
+
+
         let user = await User.findOne({ email: profile.emails[0].value });
 
         if (!user) {
-          const initialPassword = Math.random().toString(36).slice(-8); 
+          const initialPassword = Math.random().toString(36).slice(-8);
           const hashedPassword = await bcrypt.hash(initialPassword, 10);
           const refCode = `Ref${Date.now()}`;
           user = new User({
@@ -30,32 +30,32 @@ passport.use(
             password: hashedPassword,
           });
 
-         await user.save().then((data)=>{
-            req.session.user=data
-           
-           })
+          await user.save().then((data) => {
+            req.session.user = data
 
-           
-           
-        
+          })
+
+
+
+
         }
 
-        return done(null, user); 
+        return done(null, user);
       } catch (err) {
         console.error('Error During Google Login:', err);
-        return done(err, null); 
+        return done(err, null);
       }
     }
   )
 );
 
 passport.serializeUser((user, done) => {
-  done(null, user.id); 
+  done(null, user.id);
 });
 
 passport.deserializeUser(async (id, done) => {
   try {
-    const user = await User.findById(id); 
+    const user = await User.findById(id);
     done(null, user);
   } catch (err) {
     done(err, null);

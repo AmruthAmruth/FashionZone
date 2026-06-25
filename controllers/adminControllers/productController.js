@@ -89,7 +89,7 @@ export const addProduct = async (req, res) => {
         }
 
         const isActive = status !== 'Inactive';
-        const imagePaths = req.files.map((file) => file.path);
+        const imagePaths = req.files.map((file) => file.path.replace(/\\/g, '/'));
         const tagList = String(tags)
             .split(',')
             .map((t) => t.trim())
@@ -212,11 +212,11 @@ export const updateProduct = async (req, res) => {
         }
 
         const uploadedFiles = req.files || [];
-        const existingImages = Array.isArray(req.body.existingImages) ? req.body.existingImages : [req.body.existingImages].filter(Boolean);
+        const existingImages = (Array.isArray(req.body.existingImages) ? req.body.existingImages : [req.body.existingImages].filter(Boolean)).map(img => img.replace(/\\/g, '/'));
 
         const imagePaths = [...existingImages];
         uploadedFiles.forEach((file) => {
-            imagePaths.push(file.path); 
+            imagePaths.push(file.path.replace(/\\/g, '/')); 
         });
 
         

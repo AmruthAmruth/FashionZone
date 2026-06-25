@@ -1,4 +1,3 @@
-
 import mongoose from "mongoose";
 
 const cartItemSchema = new mongoose.Schema({
@@ -12,6 +11,16 @@ const cartItemSchema = new mongoose.Schema({
 const cartSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     items: [cartItemSchema],
+});
+
+cartSchema.post('init', function(doc) {
+  if (doc.items && Array.isArray(doc.items)) {
+    doc.items.forEach(item => {
+      if (item.image) {
+        item.image = item.image.replace(/\\/g, '/');
+      }
+    });
+  }
 });
 
 export default mongoose.model('Cart', cartSchema);

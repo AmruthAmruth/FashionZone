@@ -9,11 +9,11 @@ const couponSchema = new mongoose.Schema({
     },
     discount: {
         type: Number,
-        required:true
+        required: true
     },
     description: {
         type: String,
-        required:true
+        required: true
     },
     expiryDate: {
         type: Date,
@@ -22,18 +22,18 @@ const couponSchema = new mongoose.Schema({
     ,
     minPurchaseAmount: {
         type: Number,
-        required:true
+        required: true
     },
-    usedUsers:[
+    usedUsers: [
         {
-            type:String
+            type: String
         }
     ],
     isActive: {
         type: Boolean,
-        default:true
+        default: true
     }
-}); 
+});
 
 
-export default mongoose.model('Coupen',couponSchema)
+export default mongoose.model('Coupen', couponSchema)
