@@ -1,6 +1,7 @@
 import Product from "../../models/productModel.js";
 import User from "../../models/userModel.js";
 import Wishlist from "../../models/wishlistModel.js";
+import { HttpStatusCode, CommonMessages } from "../../config/constants.js";
 
 
 
@@ -23,7 +24,7 @@ export const getWishList = async (req, res) => {
       });
   } catch (err) {
       console.log("Error while trying to get the wishlist", err);
-      res.status(500).send("An error occurred while fetching the wishlist.");
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send("An error occurred while fetching the wishlist.");
   }
 };
 
@@ -37,7 +38,7 @@ export const removeProductFromWishlist=async(req,res)=>{
         
         const wishList= await Wishlist.findOne({user:req.session.userId})
         if (!wishList) {
-            return res.status(404).json({ message: 'Wishlist not found' });
+            return res.status(HttpStatusCode.NOT_FOUND).json({ message: 'Wishlist not found' });
           }
 
           wishList.products = wishList.products.filter(id => id.toString() !== productId);
@@ -71,13 +72,13 @@ export const addToWishlist=async(req,res)=>{
         const user= await User.findById(req.session.userId)
 
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(HttpStatusCode.NOT_FOUND).json({ message: CommonMessages.USER_NOT_FOUND });
           }
 
           const product= await Product.findById(productId)
 
           if (!product) {
-            return res.status(404).json({ message: 'Product not found' });
+            return res.status(HttpStatusCode.NOT_FOUND).json({ message: CommonMessages.PRODUCT_NOT_FOUND });
           }
 
 
