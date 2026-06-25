@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Offer from "../../models/offerModel.js";
 import Product from "../../models/productModel.js";
 import Category from "../../models/categoryModel.js";
+import { HttpStatusCode } from "../../config/constants.js";
 
 
 export const getOfferPage = async (req, res) => {
@@ -40,15 +41,15 @@ export const addOfferForProduct = async (req, res) => {
         const productsArray = Array.isArray(products) ? products : [products];
         
         if (!Array.isArray(productsArray)) {
-            return res.status(400).json({ message: "'products' should be an array" });
+            return res.status(HttpStatusCode.BAD_REQUEST).json({ message: "'products' should be an array" });
         }
 
         if (!offerName || !description || !discount || !productsArray || !status) {
-            return res.status(400).json({ message: "All fields are required!" });
+            return res.status(HttpStatusCode.BAD_REQUEST).json({ message: "All fields are required!" });
         }
 
         if (discount < 0 || discount > 100) {
-            return res.status(400).json({ message: "Discount should be between 0 and 100!" });
+            return res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Discount should be between 0 and 100!" });
         }
 
         const productIds = productsArray.map(productId => new mongoose.Types.ObjectId(productId));
@@ -56,7 +57,7 @@ export const addOfferForProduct = async (req, res) => {
         const foundProducts = await Product.find({ '_id': { $in: productIds } });
 
         if (foundProducts.length !== productIds.length) {
-            return res.status(400).json({ message: "Some products were not found!" });
+            return res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Some products were not found!" });
         }
 
         const productName = foundProducts.map(pro => pro.title);
@@ -81,11 +82,11 @@ export const addOfferForProduct = async (req, res) => {
 
         console.log("Discount added successfully");
 
-        return res.redirect('/admin/offers');
+        return res.status(HttpStatusCode.OK).json({ success: true, message: "Offer added successfully." });
 
     } catch (err) {
         console.log("Error during adding offer for products", err);
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
     }
 }
 
@@ -148,15 +149,15 @@ export const editOfferForProduct = async (req, res) => {
 
         if (!offerId || !offerName || !description || !discount || !products || !status) {
             console.log("Validation failed: Missing fields.");
-            return res.status(400).json({ message: "All fields are required!" });
+            return res.status(HttpStatusCode.BAD_REQUEST).json({ message: "All fields are required!" });
         }
         if (!Array.isArray(products) || products.length === 0) {
             console.log("Validation failed: Products field is not a non-empty array.");
-            return res.status(400).json({ message: "Products field should be a non-empty array!" });
+            return res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Products field should be a non-empty array!" });
         }
         if (discount < 0 || discount > 100) {
             console.log("Validation failed: Invalid discount value.");
-            return res.status(400).json({ message: "Discount should be between 0 and 100!" });
+            return res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Discount should be between 0 and 100!" });
         }
 
         const productIds = products.map(productId => new mongoose.Types.ObjectId(productId));
@@ -164,7 +165,7 @@ export const editOfferForProduct = async (req, res) => {
         const offer = await Offer.findById(offerId);
         if (!offer) {
             console.log("Offer not found for ID:", offerId);
-            return res.status(404).json({ message: "Offer not found!" });
+            return res.status(HttpStatusCode.NOT_FOUND).json({ message: "Offer not found!" });
         }
 
         const foundProducts = await Product.find({ '_id': { $in: productIds } });
@@ -172,7 +173,7 @@ export const editOfferForProduct = async (req, res) => {
 
         if (foundProducts.length !== productIds.length) {
             console.log("Mismatch in product IDs. Some products not found.");
-            return res.status(400).json({ message: "Some products were not found!" });
+            return res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Some products were not found!" });
         }
 
         foundProducts.forEach(product => {
@@ -196,11 +197,11 @@ export const editOfferForProduct = async (req, res) => {
         await offer.save();
 
         console.log("Offer updated successfully");
-       res.redirect('/admin/offers')
+        return res.status(HttpStatusCode.OK).json({ success: true, message: "Offer updated successfully." });
 
     } catch (err) {
         console.error("Error while editing offer for products:", err);
-        return res.status(500).json({ message: "An internal error occurred. Please try again later." });
+        return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "An internal error occurred. Please try again later." });
     }
 };
 
@@ -248,10 +249,10 @@ export const addOfferForCategory = async (req, res) => {
         const { offerName, description, discount, categories, status } = req.body;
 
         if (!offerName || !description || !discount || !categories || !status) {
-            return res.status(400).json({ message: "All fields are required!" });
+            return res.status(HttpStatusCode.BAD_REQUEST).json({ message: "All fields are required!" });
         }
         if (discount < 0 || discount > 100) {
-            return res.status(400).json({ message: "Discount should be between 0 and 100!" });
+            return res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Discount should be between 0 and 100!" });
         }
 
         const categoriesArray = Array.isArray(categories) ? categories : [categories];
@@ -280,11 +281,11 @@ export const addOfferForCategory = async (req, res) => {
         console.log("Discount added successfully on category based products",newOffer);
 
 
-      return res.redirect('/admin/offers')
+        return res.status(HttpStatusCode.OK).json({ success: true, message: "Category offer added successfully." });
 
     } catch (err) {
         console.log("Error while trying to add category offer", err);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
     }
 };
 
@@ -351,10 +352,10 @@ export const editCategoryOffer=async(req,res)=>{
 console.log(req.body);
 
         if (!offerId || !offerName || !description || !discount || !categories || !status) {
-            return res.status(400).json({ message: "All fields are required!" });
+            return res.status(HttpStatusCode.BAD_REQUEST).json({ message: "All fields are required!" });
         }
         if (discount < 0 || discount > 100) {
-            return res.status(400).json({ message: "Discount should be between 0 and 100!" });
+            return res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Discount should be between 0 and 100!" });
         }
 
         const categoriesArray = Array.isArray(categories) ? categories : [categories];
@@ -383,11 +384,11 @@ console.log(req.body);
         await offer.save();
         
         console.log("Category based offer updated");
-        res.redirect('/admin/categoryoffer')
+        return res.status(HttpStatusCode.OK).json({ success: true, message: "Category offer updated successfully." });
           
-    }catch(err){
+    } catch(err){
         console.log("Error while editing the category offer",err);
-        
+        return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "Internal server error." });
     }
 }
 

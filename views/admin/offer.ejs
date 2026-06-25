@@ -73,7 +73,7 @@
                                                     </div>
                                                     <div class="card-footer">
                                                         <!-- Edit Button -->
-                                                        <button type="button" class="btn btn-outline-dark border-thick m-3 px-4"
+                                                        <button type="button" class="btn btn-outline-dark border-thick m-3 px-4 edit-offer-btn"
                                                             data-bs-toggle="modal" data-bs-target="#editOfferModal"
                                                             data-offer-id="<%= offer._id %>"
                                                             data-offer-name="<%= offer.offerName %>"
@@ -550,7 +550,7 @@
                     document.getElementById('offerName').value = offerName || '';
                     document.getElementById('description').value = description || '';
                     document.getElementById('discount').value = discount || '';
-                    document.getElementById('status').value = status === 'true' ? 'Active' : 'Inactive';
+                    document.getElementById('status').value = status || 'Active';
         
                     // Set selected products in the dropdown
                     const productsSelect = document.getElementById('products');
@@ -558,6 +558,109 @@
                         option.selected = productIds.includes(option.value);
                     });
                 });
+            });
+
+            // Handle Add Offer Form Submission
+            document.getElementById('offerForm').addEventListener('submit', async function (event) {
+                event.preventDefault();
+
+                const formData = new FormData(this);
+                const selectedProducts = Array.from(document.getElementById('ecommerce-applied-products').selectedOptions).map(option => option.value);
+                
+                const payload = {
+                    offerName: formData.get('offerName'),
+                    description: formData.get('description'),
+                    discount: Number(formData.get('discount')),
+                    products: selectedProducts,
+                    status: formData.get('status')
+                };
+
+                try {
+                    const response = await fetch('/admin/addofferforproduct', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: data.message || 'Offer added successfully.',
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Validation Error',
+                            text: data.message || 'Something went wrong.'
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error submitting form:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An unexpected error occurred.'
+                    });
+                }
+            });
+
+            // Handle Edit Offer Form Submission
+            document.getElementById('editOfferForm').addEventListener('submit', async function (event) {
+                event.preventDefault();
+
+                const formData = new FormData(this);
+                const selectedProducts = Array.from(document.getElementById('products').selectedOptions).map(option => option.value);
+
+                const payload = {
+                    offerId: formData.get('offerId'),
+                    offerName: formData.get('offerName'),
+                    description: formData.get('description'),
+                    discount: Number(formData.get('discount')),
+                    products: selectedProducts,
+                    status: formData.get('status')
+                };
+
+                try {
+                    const response = await fetch('/admin/editofferforproduct', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: data.message || 'Offer updated successfully.',
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Validation Error',
+                            text: data.message || 'Something went wrong.'
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error submitting form:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An unexpected error occurred.'
+                    });
+                }
             });
         </script>
         

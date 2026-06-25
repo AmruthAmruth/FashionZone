@@ -352,6 +352,109 @@
                 var myModal = new bootstrap.Modal(document.getElementById('editModal'));
                 myModal.show();
             }
+
+            // Handle Add Category Offer Form Submission
+            document.getElementById('categoryOfferForm').addEventListener('submit', async function (event) {
+                event.preventDefault();
+
+                const formData = new FormData(this);
+                const selectedCategories = Array.from(document.getElementById('categorySelection').selectedOptions).map(option => option.value);
+
+                const payload = {
+                    offerName: formData.get('offerName'),
+                    description: formData.get('description'),
+                    discount: Number(formData.get('discount')),
+                    categories: selectedCategories,
+                    status: formData.get('status')
+                };
+
+                try {
+                    const response = await fetch('/admin/addofferforcategory', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: data.message || 'Category offer added successfully.',
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Validation Error',
+                            text: data.message || 'Something went wrong.'
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error submitting form:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An unexpected error occurred.'
+                    });
+                }
+            });
+
+            // Handle Edit Category Offer Form Submission
+            document.getElementById('editOfferForm').addEventListener('submit', async function (event) {
+                event.preventDefault();
+
+                const formData = new FormData(this);
+                const selectedCategories = Array.from(document.getElementById('categories').selectedOptions).map(option => option.value);
+
+                const payload = {
+                    offerId: formData.get('offerId'),
+                    offerName: formData.get('offerName'),
+                    description: formData.get('description'),
+                    discount: Number(formData.get('discount')),
+                    categories: selectedCategories,
+                    status: formData.get('status')
+                };
+
+                try {
+                    const response = await fetch('/admin/editcategoryoffer', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: data.message || 'Category offer updated successfully.',
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Validation Error',
+                            text: data.message || 'Something went wrong.'
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error submitting form:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An unexpected error occurred.'
+                    });
+                }
+            });
         </script>
     </body>
 
